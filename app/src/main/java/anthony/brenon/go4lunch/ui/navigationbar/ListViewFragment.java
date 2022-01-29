@@ -1,4 +1,4 @@
-package anthony.brenon.go4lunch.ui.bottomnav;
+package anthony.brenon.go4lunch.ui.navigationbar;
 
 import android.os.Bundle;
 

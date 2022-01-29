@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="anthony.brenon.go4lunch.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:name="anthony.brenon.go4lunch.ui.navigationbar.MapViewFragment"
+        android:label="@string/menu_map_view"
+        tools:layout="@layout/fragment_map_view" />
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="anthony.brenon.go4lunch.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:name="anthony.brenon.go4lunch.ui.navigationbar.ListViewFragment"
+        android:label="@string/menu_list_view"
+        tools:layout="@layout/fragment_list_view" />
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="anthony.brenon.go4lunch.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:name="anthony.brenon.go4lunch.ui.navigationbar.WorkmatesFragment"
+        android:label="@string/menu_workmates"
+        tools:layout="@layout/fragment_workmates" />
 </navigation>

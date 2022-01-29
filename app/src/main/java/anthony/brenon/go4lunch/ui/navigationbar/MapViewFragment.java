@@ -1,4 +1,4 @@
-package anthony.brenon.go4lunch.ui.bottomnav;
+package anthony.brenon.go4lunch.ui.navigationbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +18,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import anthony.brenon.go4lunch.R;
 
-public class MapsFragment extends Fragment {
+public class MapViewFragment extends Fragment {
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 

@@ -19,7 +19,12 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@color/drawer_orange"
         android:fitsSystemWindows="true"
+        android:foreground="@drawable/logo_go4lunch128"
+        android:foregroundGravity="bottom|center_horizontal"
+
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer" />
+
 </androidx.drawerlayout.widget.DrawerLayout>
