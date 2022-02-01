@@ -1,14 +1,24 @@
 package anthony.brenon.go4lunch.ui;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.Menu;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.navigation.NavigationBarView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
@@ -22,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import anthony.brenon.go4lunch.R;
+import anthony.brenon.go4lunch.data.Manager;
 import anthony.brenon.go4lunch.databinding.ActivityMainBinding;
 import anthony.brenon.go4lunch.ui.navigationbar.ListViewFragment;
 import anthony.brenon.go4lunch.ui.navigationbar.MapViewFragment;
@@ -30,7 +41,6 @@ import anthony.brenon.go4lunch.ui.navigationbar.WorkmatesFragment;
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    BottomNavigationView bottomNavigationView;
     private ActivityMainBinding binding;
 
     //Firebase login
@@ -58,12 +68,13 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        //permet la navigation depuis le drawer
+        //for navigation in drawer
         //NavigationUI.setupWithNavController(navigationView, navController);
 
-        //setup bottom navigation
-        setupNavigationBottom();
+        View hView = navigationView.getHeaderView(0);
 
+        //setupNavigationBottom();
+        updateUIWithUserData(hView);
     }
 
     @Override
@@ -78,24 +89,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
-    }
-
-    private void startSignInActivity(){
-
-        // Choose authentication providers
-        List<AuthUI.IdpConfig> providers = Arrays.asList(
-                new AuthUI.IdpConfig.GoogleBuilder().build(),
-                new AuthUI.IdpConfig.FacebookBuilder().build(),
-                new AuthUI.IdpConfig.EmailBuilder().build());
-
-        // Launch the activity
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .setIsSmartLockEnabled(false, true)
-                        .build(),
-                RC_SIGN_IN);
     }
 
     private void setupNavigationBottom() {
@@ -122,5 +115,38 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void startSignInActivity(){
+
+        // Choose authentication providers
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.GoogleBuilder().build(),
+                new AuthUI.IdpConfig.FacebookBuilder().build());
+
+        // Launch the activity
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .setIsSmartLockEnabled(false, true)
+                        .build(),
+                RC_SIGN_IN);
+    }
+
+    private void updateUIWithUserData(View viewHeader){
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            ImageView imageUser = viewHeader.findViewById(R.id.imageUser);
+            TextView firstName = viewHeader.findViewById(R.id.firstName);
+            TextView addressMail = viewHeader.findViewById(R.id.addressMail);
+
+            if(user.getPhotoUrl() != null){
+                Glide.with(this)
+                        .load(user.getPhotoUrl())
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(imageUser);
+            }
+            firstName.setText(user.getDisplayName());
+            addressMail.setText(user.getEmail());
     }
 }

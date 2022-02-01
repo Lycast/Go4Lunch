@@ -7,14 +7,14 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:275672921266:android:3b01e100715ccdc1ab45ab",
+        "mobilesdk_app_id": "1:275672921266:android:ce814c96ed6e6c4bab45ab",
         "android_client_info": {
           "package_name": "anthony.brenon.go4lunch"
         }
       },
       "oauth_client": [
         {
-          "client_id": "275672921266-qpf3r7it65a0iuf36vf5vkblehkp2rv3.apps.googleusercontent.com",
+          "client_id": "275672921266-eqk6nupqk7dq63pmbjv0f4rs7g08jtk8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "anthony.brenon.go4lunch",

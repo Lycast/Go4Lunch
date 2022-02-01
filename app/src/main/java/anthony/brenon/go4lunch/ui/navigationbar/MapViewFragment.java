@@ -20,7 +20,7 @@ import anthony.brenon.go4lunch.R;
 
 public class MapViewFragment extends Fragment {
 
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+    private final OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
          * Manipulates the map once available.

@@ -20,6 +20,8 @@
     <string name="google_maps_key">KEY_MAP</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="info_no_email_found">email not found</string>
+    <string name="info_no_username_found">username not found</string>
 
 
 </resources>
