@@ -1,4 +1,4 @@
-package anthony.brenon.go4lunch.ui.navigationbar;
+package anthony.brenon.go4lunch.ui.bottom_navigation;
 
 import androidx.appcompat.app.AppCompatActivity;
 

@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
+<!--TOOLBAR-->
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,9 +24,11 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <include
-        android:id="@+id/include"
-        layout="@layout/content_main" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/content_main"/>
 
+<!--FAB-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -32,10 +36,12 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email"
+        android:contentDescription="@string/content_description"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@android:drawable/ic_dialog_email" />
 
+<!--BOTTOM NAVIGATION-->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"

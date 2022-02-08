@@ -3,8 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.4322916666666667" />
+        <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_launcher_background.xml" value="0.4322916666666667" />
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_menu_workmates.xml" value="0.4322916666666667" />
-        <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/activity_login.xml" value="0.17753623188405798" />
+        <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/activity_details_restaurant.xml" value="0.240625" />
+        <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/activity_login.xml" value="0.2857142857142857" />
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.3828571428571429" />
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/app_bar_main.xml" value="0.19954591321897075" />
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/bottom_navigation.xml" value="0.34646739130434784" />
@@ -16,6 +19,7 @@
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/fragment_my_lunch.xml" value="0.23020833333333332" />
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/fragment_slideshow.xml" value="0.19954591321897075" />
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/fragment_workmates.xml" value="0.34646739130434784" />
+        <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/fragment_your_lunch.xml" value="0.240625" />
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/item.xml" value="0.34646739130434784" />
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/item_restaurant.xml" value="0.34646739130434784" />
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/layout/nav_header_main.xml" value="0.3828571428571429" />

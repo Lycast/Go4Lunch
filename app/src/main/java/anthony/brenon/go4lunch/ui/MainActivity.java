@@ -1,11 +1,8 @@
 package anthony.brenon.go4lunch.ui;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.MenuItem;
-import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,7 +10,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -21,76 +17,126 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Arrays;
-import java.util.List;
-
 import anthony.brenon.go4lunch.R;
-import anthony.brenon.go4lunch.data.Manager;
 import anthony.brenon.go4lunch.databinding.ActivityMainBinding;
-import anthony.brenon.go4lunch.ui.navigationbar.ListViewFragment;
-import anthony.brenon.go4lunch.ui.navigationbar.MapViewFragment;
-import anthony.brenon.go4lunch.ui.navigationbar.WorkmatesFragment;
+import anthony.brenon.go4lunch.ui.drawer.YourLunchFragment;
+import anthony.brenon.go4lunch.ui.bottom_navigation.ListViewFragment;
+import anthony.brenon.go4lunch.ui.bottom_navigation.MapViewFragment;
+import anthony.brenon.go4lunch.ui.bottom_navigation.WorkmatesFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
 
-    //Firebase login
-    private static final int RC_SIGN_IN = 123;
+    private DrawerLayout drawer;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //startSignInActivity();
-
+        // Init view
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
-        DrawerLayout drawer = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
-                .setOpenableLayout(drawer)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        //for navigation in drawer
-        //NavigationUI.setupWithNavController(navigationView, navController);
+        // [Drawer setup]
+        // Bind action bar
+        toolbar = binding.appBarMain.toolbar;
+        // Init toolbar
+        setSupportActionBar(toolbar);
+        // Setup toolbar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        View hView = navigationView.getHeaderView(0);
+        // Bind layout
+        drawer = binding.drawerLayout;
+        // Bind and init drawer view
+        NavigationView nvDrawer = binding.navView;
+        setupDrawerContent(nvDrawer);
+        // Init header view
+        View hView = nvDrawer.getHeaderView(0);
 
-        //setupNavigationBottom();
+        // Bind and listener fab
+        binding.appBarMain.fab.setOnClickListener(view ->
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show()
+                //signOut()
+        );
+
+        setupNavigationBottom();
         updateUIWithUserData(hView);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+    private ActionBarDrawerToggle setupDrawerToggle() {
+        // NOTE: Make sure you pass in a valid toolbar reference.  ActionBarDrawToggle() does not require it
+        // and will not render the hamburger icon without it.
+        return new ActionBarDrawerToggle(this, binding.drawerLayout, toolbar, R.string.drawer_open,  R.string.drawer_close);
+    }
+
+    // Content of drawer menu
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                menuItem -> {
+                    selectDrawerItem(menuItem);
+                    return true;
+                });
+    }
+
+    // Bind and listener drawer menu
+    public void selectDrawerItem(MenuItem menuItem) {
+        // Specify the fragment to show based on nav item clicked
+        final YourLunchFragment firstFragment = new YourLunchFragment();
+
+        switch(menuItem.getItemId()) {
+            case R.id.nav_drawer_your_lunch:
+                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, firstFragment).commit();
+                break;
+            case R.id.nav_drawer_settings:
+                break;
+            case R.id.nav_drawer_logout:
+                signOut();
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // The action bar home/up action should open or close the drawer.
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                drawer.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
+    // Populate header
+    private void updateUIWithUserData(View viewHeader){
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+         if (user != null) {
+             ImageView imageUser = viewHeader.findViewById(R.id.imageUser);
+             TextView firstName = viewHeader.findViewById(R.id.firstName);
+             TextView addressMail = viewHeader.findViewById(R.id.addressMail);
+
+
+             if (user.getPhotoUrl() != null) {
+                 Glide.with(this)
+                         .load(user.getPhotoUrl())
+                         .apply(RequestOptions.circleCropTransform())
+                         .into(imageUser);
+             }
+             firstName.setText(user.getDisplayName());
+             addressMail.setText(user.getEmail());
+         }
+    }
+
+    // Bind and listener navigation bottom
     private void setupNavigationBottom() {
         binding.appBarMain.bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             final MapViewFragment firstFragment = new MapViewFragment();
@@ -117,36 +163,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void startSignInActivity(){
-
-        // Choose authentication providers
-        List<AuthUI.IdpConfig> providers = Arrays.asList(
-                new AuthUI.IdpConfig.GoogleBuilder().build(),
-                new AuthUI.IdpConfig.FacebookBuilder().build());
-
-        // Launch the activity
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .setIsSmartLockEnabled(false, true)
-                        .build(),
-                RC_SIGN_IN);
-    }
-
-    private void updateUIWithUserData(View viewHeader){
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            ImageView imageUser = viewHeader.findViewById(R.id.imageUser);
-            TextView firstName = viewHeader.findViewById(R.id.firstName);
-            TextView addressMail = viewHeader.findViewById(R.id.addressMail);
-
-            if(user.getPhotoUrl() != null){
-                Glide.with(this)
-                        .load(user.getPhotoUrl())
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(imageUser);
-            }
-            firstName.setText(user.getDisplayName());
-            addressMail.setText(user.getEmail());
+    // Logout application
+    public void signOut(){
+        AuthUI.getInstance().signOut(this);
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
