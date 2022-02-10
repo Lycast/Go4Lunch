@@ -40,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Init view
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // [Drawer setup]
+
+// [Drawer setup]
         // Bind action bar
         toolbar = binding.appBarMain.toolbar;
         // Init toolbar
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Bind and listener fab
         binding.appBarMain.fab.setOnClickListener(view ->
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show()
+                        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show()
                 //signOut()
         );
 
@@ -91,12 +91,12 @@ public class MainActivity extends AppCompatActivity {
         final YourLunchFragment firstFragment = new YourLunchFragment();
 
         switch(menuItem.getItemId()) {
-            case R.id.nav_drawer_your_lunch:
+            case R.id.dv_your_lunch:
                 getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, firstFragment).commit();
                 break;
-            case R.id.nav_drawer_settings:
+            case R.id.dv_settings:
                 break;
-            case R.id.nav_drawer_logout:
+            case R.id.dv_logout:
                 signOut();
                 break;
             default:
@@ -117,23 +117,23 @@ public class MainActivity extends AppCompatActivity {
 
     // Populate header
     private void updateUIWithUserData(View viewHeader){
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-         if (user != null) {
-             ImageView imageUser = viewHeader.findViewById(R.id.imageUser);
-             TextView firstName = viewHeader.findViewById(R.id.firstName);
-             TextView addressMail = viewHeader.findViewById(R.id.addressMail);
+        if (user != null) {
+            ImageView imageUser = viewHeader.findViewById(R.id.imageUser);
+            TextView firstName = viewHeader.findViewById(R.id.firstName);
+            TextView addressMail = viewHeader.findViewById(R.id.addressMail);
 
 
-             if (user.getPhotoUrl() != null) {
-                 Glide.with(this)
-                         .load(user.getPhotoUrl())
-                         .apply(RequestOptions.circleCropTransform())
-                         .into(imageUser);
-             }
-             firstName.setText(user.getDisplayName());
-             addressMail.setText(user.getEmail());
-         }
+            if (user.getPhotoUrl() != null) {
+                Glide.with(this)
+                        .load(user.getPhotoUrl())
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(imageUser);
+            }
+            firstName.setText(user.getDisplayName());
+            addressMail.setText(user.getEmail());
+        }
     }
 
     // Bind and listener navigation bottom

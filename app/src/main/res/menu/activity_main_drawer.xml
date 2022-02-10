@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="navigation_view">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="none">
         <item
-            android:id="@+id/nav_drawer_your_lunch"
+            android:id="@+id/dv_your_lunch"
             android:icon="@drawable/ic_menu_lunch"
             android:title="@string/drawer_your_lunch" />
         <item
-            android:id="@+id/nav_drawer_settings"
+            android:id="@+id/dv_settings"
             android:icon="@drawable/ic_menu_settings"
             android:title="@string/drawer_setting" />
         <item
-            android:id="@+id/nav_drawer_logout"
+            android:id="@+id/dv_logout"
             android:icon="@drawable/ic_menu_logout"
             android:title="@string/drawer_logout" />
     </group>

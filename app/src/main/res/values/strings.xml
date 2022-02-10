@@ -7,11 +7,6 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <!--Bottom navigation menu-->
-    <string name="menu_map_view">Map View</string>
-    <string name="menu_list_view">List View</string>
-    <string name="menu_workmates">Workmates</string>
-
     <!--Drawer menu-->
     <string name="drawer_your_lunch">YOUR LUNCH</string>
     <string name="drawer_setting">SETTINGS</string>
@@ -19,21 +14,26 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
-    <!--fab description-->
-    <string name="content_description">CHAT</string>
-
-    <string name="facebook_application_id" translatable="false">2336891809780660</string>
-    <string name="facebook_login_protocol_scheme" translatable="false">fb2336891809780660</string>
-
-    <string name="google_maps_key">KEY_MAP</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="info_no_email_found">email not found</string>
-    <string name="info_no_username_found">username not found</string>
+    <!-- fb login -->
+    <string name="facebook_application_id">460021055576210</string>
+    <string name="fb_login_protocol_scheme">fb460021055576210</string>
 
     <!-- LOGIN -->
     <string name="catch_phrase">Find a nice restaurant and invite your co-worker for lunch!</string>
     <string name="connect_text_google">Sign in with Google</string>
     <string name="connect_text_facebook">Sign in with Facebook</string>
 
+    <!--Bottom navigation menu-->
+    <string name="menu_map_view">Map View</string>
+    <string name="menu_list_view">List View</string>
+    <string name="menu_workmates">Workmates</string>
 
+    <!--fab description-->
+    <string name="content_description">CHAT</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="connection_succeed">connection is successful</string>
+    <string name="error_authentication_canceled">error authentication canceled</string>
+    <string name="error_no_internet">error no internet</string>
+    <string name="error_unknown_error">unknown error</string>
 </resources>

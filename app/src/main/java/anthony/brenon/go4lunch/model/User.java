@@ -1,26 +1,33 @@
 package anthony.brenon.go4lunch.model;
 
+import androidx.annotation.Nullable;
+
 /**
  * Created by Lycast on 29/01/2022.
  */
 class User {
 
-    private String urlImage;
-    private String firstName;
-    private String mail;
+    private String uid;
+    private String username;
+    @Nullable
+    private String urlPicture = "";
 
-    public User(String urlImage, String firstName, String mail) {
-        this.urlImage = urlImage;
-        this.firstName = firstName;
-        this.mail = mail;
+    public User() {}
+
+    public User(String uid, String username, @Nullable String urlPicture) {
+        this.uid = uid;
+        this.username = username;
+        this.urlPicture = urlPicture;
     }
 
-    public String getUrlImage() { return urlImage; }
-    public void setUrlImage(String urlImage) { this.urlImage = urlImage; }
+    // GETTERS
+    public String getUid() { return uid; }
+    public String getUsername() { return username; }
+    @Nullable
+    public String getUrlPicture() { return urlPicture; }
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-
-    public String getMail() { return mail; }
-    public void setMail(String mail) { this.mail = mail; }
+    // SETTERS
+    public void setUsername(String username) { this.username = username; }
+    public void setUid(String uid) { this.uid = uid; }
+    public void setUrlPicture(@Nullable String urlPicture) { this.urlPicture = urlPicture; }
 }
