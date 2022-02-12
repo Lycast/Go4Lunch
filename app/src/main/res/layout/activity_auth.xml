@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/background_login"
     android:id="@+id/loginLayout"
-    tools:context=".ui.LoginActivity">
+    tools:context=".ui.AuthActivity">
 
     <ImageView
         android:id="@+id/logo"

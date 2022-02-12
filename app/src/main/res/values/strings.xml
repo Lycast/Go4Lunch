@@ -15,7 +15,7 @@
     <string name="drawer_close">Close navigation drawer</string>
 
     <!-- fb login -->
-    <string name="facebook_application_id">460021055576210</string>
+    <string name="facebook_application_id" translatable="false">460021055576210</string>
     <string name="fb_login_protocol_scheme">fb460021055576210</string>
 
     <!-- LOGIN -->

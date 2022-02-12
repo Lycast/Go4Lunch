@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Go4Lunch">
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".ui.AuthActivity"
             android:theme="@style/Theme.Go4Lunch.NoActionBar"
             android:exported="true" >
             <intent-filter>

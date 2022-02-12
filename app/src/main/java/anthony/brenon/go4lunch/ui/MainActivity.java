@@ -1,7 +1,9 @@
 package anthony.brenon.go4lunch.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,11 +19,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Objects;
 
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityMainBinding;
@@ -32,25 +35,26 @@ import anthony.brenon.go4lunch.ui.bottom_navigation.WorkmatesFragment;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "Activity_Main";
     private ActivityMainBinding binding;
 
     private DrawerLayout drawer;
-    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        Log.d(TAG, "onCreate");
 
 
 // [Drawer setup]
         // Bind action bar
-        toolbar = binding.appBarMain.toolbar;
+        Toolbar toolbar = binding.appBarMain.toolbar;
         // Init toolbar
         setSupportActionBar(toolbar);
         // Setup toolbar
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         // Bind layout
         drawer = binding.drawerLayout;
@@ -70,12 +74,6 @@ public class MainActivity extends AppCompatActivity {
         updateUIWithUserData(hView);
     }
 
-    private ActionBarDrawerToggle setupDrawerToggle() {
-        // NOTE: Make sure you pass in a valid toolbar reference.  ActionBarDrawToggle() does not require it
-        // and will not render the hamburger icon without it.
-        return new ActionBarDrawerToggle(this, binding.drawerLayout, toolbar, R.string.drawer_open,  R.string.drawer_close);
-    }
-
     // Content of drawer menu
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
@@ -86,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Bind and listener drawer menu
+    @SuppressLint("NonConstantResourceId")
     public void selectDrawerItem(MenuItem menuItem) {
         // Specify the fragment to show based on nav item clicked
         final YourLunchFragment firstFragment = new YourLunchFragment();
@@ -95,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, firstFragment).commit();
                 break;
             case R.id.dv_settings:
+                Log.d(TAG, "settings");
                 break;
             case R.id.dv_logout:
                 signOut();
@@ -104,13 +104,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // he action bar home/up action should open or close the drawer.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // The action bar home/up action should open or close the drawer.
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                drawer.openDrawer(GravityCompat.START);
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            drawer.openDrawer(GravityCompat.START);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
             final MapViewFragment firstFragment = new MapViewFragment();
             final ListViewFragment secondFragment = new ListViewFragment();
             final WorkmatesFragment thirdFragment = new WorkmatesFragment();
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
@@ -165,9 +166,10 @@ public class MainActivity extends AppCompatActivity {
 
     // Logout application
     public void signOut(){
-        AuthUI.getInstance().signOut(this);
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        finish();
+        AuthUI.getInstance().signOut(this).addOnSuccessListener(unused -> {
+            Intent intent = new Intent(this, AuthActivity.class);
+            startActivity(intent);
+            finish();
+        });
     }
 }
