@@ -10,10 +10,11 @@
 
     <!-- app color -->
     <color name="colorPrimary">#ff3c00</color>
-    <color name="colorPrimaryVar">#941100</color>
+    <color name="colorPrimaryVar">#424242</color>
     <color name="drawer_orange">#ff7340</color>
 
-    <!-- login btn color -->
+    <!-- login color -->
     <color name="btn_fb_connect">#385fa8</color>
     <color name="btn_g_connect">#db3627</color>
+    <color name="window_color">#941100</color>
 </resources>

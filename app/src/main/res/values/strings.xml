@@ -36,4 +36,5 @@
     <string name="error_authentication_canceled">error authentication canceled</string>
     <string name="error_no_internet">error no internet</string>
     <string name="error_unknown_error">unknown error</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>

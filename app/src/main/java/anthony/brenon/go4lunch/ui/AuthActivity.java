@@ -1,6 +1,7 @@
 package anthony.brenon.go4lunch.ui;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -20,6 +21,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityAuthBinding;
@@ -104,6 +106,7 @@ public class AuthActivity extends AppCompatActivity {
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAuthMethodPickerLayout(customLayout)
+                        .setTheme(R.style.Theme_Go4Lunch)
                         .setAvailableProviders(Arrays.asList(
                                 new AuthUI.IdpConfig.GoogleBuilder().build(),
                                 new AuthUI.IdpConfig.FacebookBuilder().build()

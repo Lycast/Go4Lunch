@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     tools:context=".ui.bottom_navigation.ListViewFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -11,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:textSize="50dp"
+        android:textSize="50sp"
         android:text="@string/menu_list_view" />
 
 </FrameLayout>
