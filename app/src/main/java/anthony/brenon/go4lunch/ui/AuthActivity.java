@@ -1,12 +1,11 @@
 package anthony.brenon.go4lunch.ui;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.StyleRes;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthMethodPickerLayout;
 import com.firebase.ui.auth.AuthUI;
@@ -21,7 +20,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityAuthBinding;
@@ -41,21 +39,8 @@ public class AuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAuthBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        try {
-            if (auth.getCurrentUser() != null) {
-                createUser();
-            } else {
-                customLayoutAuth();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        initUserSession();
     }
 
     // Show Snack Bar with a message
@@ -72,6 +57,7 @@ public class AuthActivity extends AppCompatActivity {
             // SUCCESS
             if (resultCode == RESULT_OK) {
                 showSnackBar(getString(R.string.connection_succeed));
+                createUser();
             } else {
                 // ERRORS
                 if (response == null) {
@@ -96,6 +82,7 @@ public class AuthActivity extends AppCompatActivity {
 
     // Create a custom layout for SignIn Activity
     private void customLayoutAuth() {
+        setContentView(binding.getRoot());
         AuthMethodPickerLayout customLayout = new AuthMethodPickerLayout
                 .Builder(R.layout.activity_auth)
                 .setGoogleButtonId(R.id.sign_in_google)
@@ -164,7 +151,7 @@ public class AuthActivity extends AppCompatActivity {
                                     .addOnSuccessListener(documentSnapshot -> startMainActivity())
                                     .addOnFailureListener(updateUserException -> {
                                         Log.e(TAG, updateUserException.getMessage());
-                                        showSnackBar("Erreur lors de votre connection, veuillez réessayer");
+                                        showSnackBar("error while connecting");
                                     })
                     )
                     .addOnFailureListener(notExistException ->
@@ -174,9 +161,17 @@ public class AuthActivity extends AppCompatActivity {
                                     .addOnSuccessListener(documentSnapshot -> startMainActivity())
                                     .addOnFailureListener(createException -> {
                                         Log.e(TAG, createException.getMessage());
-                                        showSnackBar("Erreur lors de votre connection, veuillez réessayer");
+                                        showSnackBar("error while connecting");
                                     })
                     );
+        }
+    }
+
+    private void initUserSession() {
+        if (auth.getCurrentUser() != null) {
+            createUser();
+        } else {
+            customLayoutAuth();
         }
     }
 }

@@ -1,6 +1,5 @@
 package anthony.brenon.go4lunch.ui;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,12 +26,11 @@ import com.google.firebase.auth.FirebaseUser;
 
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityMainBinding;
-import anthony.brenon.go4lunch.ui.bottom_navigation.ListViewFragment;
-import anthony.brenon.go4lunch.ui.bottom_navigation.MapViewFragment;
-import anthony.brenon.go4lunch.ui.bottom_navigation.WorkmatesFragment;
-import anthony.brenon.go4lunch.ui.drawer.YourLunchFragment;
+import anthony.brenon.go4lunch.ui.bottom_navigation.list_view.ListViewFragment;
+import anthony.brenon.go4lunch.ui.bottom_navigation.map.MapViewFragment;
+import anthony.brenon.go4lunch.ui.bottom_navigation.workmates.WorkmatesFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private static final String TAG = "Activity_Main";
     private ActivityMainBinding binding;
@@ -61,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         View hView = nvDrawer.getHeaderView(0);
 
         // Bind and listener fab
-        binding.appBarMain.fab.setOnClickListener(view ->
+        binding.appBarMain.fabChat.setOnClickListener(view ->
             Snackbar.make(view, "Replace action to open a chat", Snackbar.LENGTH_LONG).setAction("Action", null).show()
         );
 
@@ -69,35 +67,34 @@ public class MainActivity extends AppCompatActivity {
         updateUIWithUserData(hView);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        final MapViewFragment mapsFragment = new MapViewFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, mapsFragment).commit();
+    }
+
 
     // Bind and listener navigation bottom
     private void setupNavigationBottom() {
         bottomNavMenu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            final MapViewFragment firstFragment = new MapViewFragment();
-            final ListViewFragment secondFragment = new ListViewFragment();
-            final WorkmatesFragment thirdFragment = new WorkmatesFragment();
-            //TODO change this suppressLint
-            @SuppressLint("NonConstantResourceId")
+            final MapViewFragment mapsFragment = new MapViewFragment();
+            final ListViewFragment listViewFragment = new ListViewFragment();
+            final WorkmatesFragment workmatesFragment = new WorkmatesFragment();
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
-                switch(id){
-                    case R.id.page_0_invisible:
-                        return true;
-                    case R.id.page_1_map_view:
-                        item.setCheckable(true);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, firstFragment).commit();
-                        return true;
 
-                    case R.id.page_2_list_view:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, secondFragment).commit();
-                        return true;
-
-                    case R.id.page_3_workmates:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, thirdFragment).commit();
-                        return true;
-                }
-                return false;
+                if (id == R.id.page_1_map_view) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, mapsFragment).commit();
+                    return true;
+                } else if (id == R.id.page_2_list_view) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, listViewFragment).commit();
+                    return true;
+                } else if (id == R.id.page_3_workmates) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, workmatesFragment).commit();
+                    return true;
+                } else return id == R.id.page_4_invisible;
             }
         });
     }
@@ -142,28 +139,19 @@ public class MainActivity extends AppCompatActivity {
     // Bind and listener drawer menu
     public void selectDrawerItem(MenuItem menuItem) {
         // Specify the fragment to show based on nav item clicked
-        final YourLunchFragment firstFragment = new YourLunchFragment();
-
-        switch(menuItem.getItemId()) {
-            case R.id.dv_your_lunch:
-                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, firstFragment).commit();
+            int id = menuItem.getItemId(); {
+                if ( id == R.id.dv_your_lunch ) {
                 deselectBottomNav();
                 drawer.closeDrawer(GravityCompat.START);
-                break;
-            case R.id.dv_settings:
-                Log.d(TAG, "settings");
-                deselectBottomNav();
-                drawer.closeDrawer(GravityCompat.START);
-
-                break;
-            case R.id.dv_logout:
-                signOut();
-                break;
-            default:
-                break;
+                } else if ( id == R.id.dv_settings) {
+                    Log.d(TAG, "settings");
+                    deselectBottomNav();
+                    drawer.closeDrawer(GravityCompat.START);
+                } else if ( id == R.id.dv_logout) {
+                    signOut();
+                }
         }
     }
-
 
     // Logout application
     private void signOut(){
@@ -177,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
     // deselect bottom navigation
     private void deselectBottomNav(){
         // select and invisible item
-        bottomNavMenu.setSelectedItemId(R.id.page_0_invisible);
+        bottomNavMenu.setSelectedItemId(R.id.page_4_invisible);
     }
+
 }

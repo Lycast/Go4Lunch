@@ -1,7 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/page_0_invisible"
-        android:visible="false"/>
+
     <item
         android:id="@+id/page_1_map_view"
         android:enabled="true"
@@ -18,5 +16,8 @@
         android:enabled="true"
         android:icon="@drawable/ic_menu_workmates"
         android:title="@string/menu_workmates"/>
+    <item
+        android:id="@+id/page_4_invisible"
+        android:visible="false"/>
 
 </menu>
