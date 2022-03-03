@@ -1,7 +1,6 @@
 package anthony.brenon.go4lunch.ui.bottom_navigation.map;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -69,7 +68,6 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
                 this);
     }
 
-
     private void permissionPosition() {
         Log.d(TAG, "method : Permission Position");
         // When permission already granted
@@ -115,30 +113,4 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
-
-
-
-    // ----- STATES TEST START ùez-----------------------------------------------------------------------------------
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-    @Override
-    public void onAttach(@NonNull Activity activity) {
-        super.onAttach(activity);
-    }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-    // ----- STATES TEST END -------------------------------------------------------------------------------------
 }
