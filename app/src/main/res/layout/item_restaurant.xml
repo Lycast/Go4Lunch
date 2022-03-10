@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_restaurant"
+    android:layout_margin="5dp">
+
+    <TextView
+        android:id="@+id/restaurant_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <TextView
+        android:id="@+id/restaurant_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="address"
+        app:layout_constraintTop_toBottomOf="@id/restaurant_name"
+        app:layout_constraintBottom_toTopOf="@id/restaurant_opening"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <TextView
+        android:id="@+id/restaurant_opening"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="opening"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+
+    <ImageView
+        android:id="@+id/restaurant_image"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:src="@drawable/ic_image_not_supported_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <TextView
+        android:id="@+id/restaurant_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="distance"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/restaurant_image"/>
+
+    <TextView
+        android:id="@+id/restaurant_workmates"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(2)"
+        app:layout_constraintTop_toBottomOf="@id/restaurant_distance"
+        app:layout_constraintBottom_toTopOf="@id/restaurant_rating"
+        app:layout_constraintRight_toLeftOf="@id/restaurant_image"/>
+
+    <TextView
+        android:id="@+id/restaurant_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="rating"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/restaurant_image"/>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

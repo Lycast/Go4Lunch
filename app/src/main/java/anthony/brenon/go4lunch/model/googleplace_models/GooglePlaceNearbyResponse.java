@@ -1,4 +1,4 @@
-package anthony.brenon.go4lunch.model.placedetails;
+package anthony.brenon.go4lunch.model.googleplace_models;
 
 import java.util.List;
 

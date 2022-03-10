@@ -1,15 +1,21 @@
 package anthony.brenon.go4lunch.api;
 
 
-import anthony.brenon.go4lunch.model.placedetails.GooglePlaceNearbyResponse;
+import anthony.brenon.go4lunch.BuildConfig;
+import anthony.brenon.go4lunch.model.googleplace_models.GooglePlaceNearbyResponse;
+import anthony.brenon.go4lunch.model.googleplace_models.PlaceDetails;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 /**
  * Created by Lycast on 24/02/2022.
  */
 public interface JsonPlaceHolderApi {
 
-    @GET("nearbysearch/json?keyword=cruise&location=-33.8670522%2C151.1957362&radius=1500&type=restaurant&key=AIzaSyDxwT81XIPCXAkmy5kC6Rr_TgvpMTbTiUw")
-    Call<GooglePlaceNearbyResponse> getRestaurants();
+    @GET("nearbysearch/json?type=restaurant&key=" + BuildConfig.MAPS_API_KEY)
+    Call<GooglePlaceNearbyResponse> getApiNearbyRestaurantResponse(@Query("location") String location, @Query("radius") String radius);
+
+    @GET("details/json?key=" + BuildConfig.MAPS_API_KEY)
+    Call<PlaceDetails> getApiDetailsResponse(@Query("place_id") String place_id );
 }

@@ -2,6 +2,8 @@ package anthony.brenon.go4lunch.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import anthony.brenon.go4lunch.model.googleplace_models.GeometryPlace;
+
 /**
  * Created by Lycast on 01/03/2022.
  */
@@ -13,12 +15,12 @@ public class Restaurant {
     private String name;
     @SerializedName("vicinity")
     private String address;
-    //@SerializedName("location")
-    //private Location location;
+    @SerializedName("geometry")
+    private GeometryPlace geometryPlace;
 
     //GETTERS
     public String getId() { return id; }
     public String getName() { return name; }
     public String getAddress() { return address; }
-    //public Location getLocation() { return location; }
+    public GeometryPlace getGeometryPlace() { return geometryPlace; }
 }

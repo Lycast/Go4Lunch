@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -19,15 +20,22 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.List;
+
+import anthony.brenon.go4lunch.model.Restaurant;
+import anthony.brenon.go4lunch.model.googleplace_models.LocationPlace;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MapViewFragment extends SupportMapFragment implements OnMapReadyCallback {
 
     private GoogleMap googleMap;
+    private MapViewModel mapViewModel;
     private FusedLocationProviderClient fusedLocationClient;
     private static final String TAG = "Fragment_map";
+
 
 
     //3
@@ -43,6 +51,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         super.onCreate(savedInstanceState);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
+        mapViewModel = new ViewModelProvider(this).get(MapViewModel.class);
 
     }
 
@@ -99,7 +108,10 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
                         if (location != null) {
                             // Logic to handle location object
                             LatLng position = new LatLng ( location.getLatitude(), location.getLongitude());
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom( position , 12));
+                            LocationPlace locationPlace = new LocationPlace(location.getLatitude(), location.getLongitude());
+                            mapViewModel.getAllRestaurants(locationPlace).observe(getViewLifecycleOwner(), restaurants1 ->
+                                    displayRestaurants(restaurants1));
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom( position , 14));
                         }
                     }
                 });
@@ -112,5 +124,14 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
             return; }
         googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+    }
+
+    private void displayRestaurants(List<Restaurant> restaurants) {
+        for (Restaurant restaurant : restaurants) {
+            LatLng restaurantLocation = new LatLng(restaurant.getGeometryPlace().getLocationPlace().getLat(), restaurant.getGeometryPlace().getLocationPlace().getLng());
+            googleMap.addMarker(new MarkerOptions()
+                    .position(restaurantLocation)
+                    .title(restaurant.getName()));
+        }
     }
 }
