@@ -6,4 +6,5 @@ import androidx.lifecycle.ViewModel;
  * Created by Lycast on 24/02/2022.
  */
 public class MainViewModel extends ViewModel {
+
 }

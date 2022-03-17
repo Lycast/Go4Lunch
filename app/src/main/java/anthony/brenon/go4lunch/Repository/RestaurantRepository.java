@@ -1,6 +1,5 @@
 package anthony.brenon.go4lunch.Repository;
 
-import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -8,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import anthony.brenon.go4lunch.api.JsonPlaceHolderApi;
 import anthony.brenon.go4lunch.model.Restaurant;
@@ -36,8 +36,8 @@ public class RestaurantRepository {
     String radius = "2000";
 
 
-    public RestaurantRepository (Application application) {
-    }
+
+    public RestaurantRepository () {}
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("https://maps.googleapis.com/maps/api/place/")
@@ -60,9 +60,36 @@ public class RestaurantRepository {
             public void onResponse(@NonNull Call<GooglePlaceNearbyResponse> call,
                                    @NonNull Response<GooglePlaceNearbyResponse> response) {
                 if(response.isSuccessful()){
-                    Log.d(TAG, "onResponse: " + response.body().getResults());
+                    Log.d(TAG, "onResponse: " + Objects.requireNonNull(response.body()).getResults());
                     restaurants = response.body().getResults();
                     result.postValue(restaurants);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<GooglePlaceNearbyResponse> call, @NonNull Throwable t) {
+                Log.d(TAG, "onFailure: " + t.getMessage());
+            }
+        });
+        return result;
+    }
+
+    public List<Restaurant> getAllRestaurantsList(LocationPlace locationPlace) {
+
+        Log.d(TAG, "getAllRestaurants");
+
+        List<Restaurant> result = new ArrayList<>();
+        Call<GooglePlaceNearbyResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationPlace.toString(), radius);
+
+        call.enqueue(new Callback<GooglePlaceNearbyResponse>() {
+
+            @Override
+            public void onResponse(@NonNull Call<GooglePlaceNearbyResponse> call,
+                                   @NonNull Response<GooglePlaceNearbyResponse> response) {
+                if(response.isSuccessful()){
+                    Log.d(TAG, "onResponse: " + Objects.requireNonNull(response.body()).getResults());
+                    restaurants = response.body().getResults();
+                    result.addAll(restaurants);
                 }
             }
 

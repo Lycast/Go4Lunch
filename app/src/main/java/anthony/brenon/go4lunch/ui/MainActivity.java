@@ -33,7 +33,6 @@ import anthony.brenon.go4lunch.ui.bottom_navigation.workmates.WorkmatesFragment;
 public class MainActivity extends AppCompatActivity{
 
     private static final String TAG = "Activity_Main";
-    private ActivityMainBinding binding;
 
     private DrawerLayout drawer;
     private BottomNavigationView bottomNavMenu;
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Init bottom navigation

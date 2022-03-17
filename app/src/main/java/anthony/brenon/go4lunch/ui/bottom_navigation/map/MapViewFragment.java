@@ -1,44 +1,42 @@
 package anthony.brenon.go4lunch.ui.bottom_navigation.map;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.List;
+import java.util.Objects;
 
 import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.model.googleplace_models.LocationPlace;
-import pub.devrel.easypermissions.EasyPermissions;
 
-public class MapViewFragment extends SupportMapFragment implements OnMapReadyCallback {
+public class MapViewFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener {
 
+    private static final int PERMS_CALL_ID = 101;
+    private LocationManager locationManager;
     private GoogleMap googleMap;
-    private MapViewModel mapViewModel;
-    private FusedLocationProviderClient fusedLocationClient;
+    private SharedViewModel sharedViewModel;
     private static final String TAG = "Fragment_map";
 
 
-
-    //3
     @Override
     public void onMapReady(@NonNull final GoogleMap googleMap) {
         this.googleMap = googleMap;
@@ -49,15 +47,14 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
-        mapViewModel = new ViewModelProvider(this).get(MapViewModel.class);
-
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         getMapAsync(this);
     }
 
@@ -65,61 +62,57 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     public void onResume() {
         super.onResume();
 
-        permissionPosition();
+        checkPermissions();
     }
 
+    @SuppressLint("MissingPermission")
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        //Handle the request result
-        Log.d(TAG, "method : onRequestPermissionsResult");
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults,
-                this);
-    }
+    public void onPause() {
+        super.onPause();
 
-    private void permissionPosition() {
-        Log.d(TAG, "method : Permission Position");
-        // When permission already granted
-        // Display snackBar
-        if (EasyPermissions.hasPermissions(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-            // Show Snack Bar with a message
-            Toast.makeText(getContext(),"Gps position already", Toast.LENGTH_SHORT).show();
-            getLocationUser();
-        } else {
-            // When permission not granted
-            // Request permission
-            EasyPermissions.requestPermissions(getActivity(),
-                    "App needs access to your position",
-                    101,
-                    Manifest.permission.ACCESS_FINE_LOCATION);
+        if(locationManager != null) {
+            locationManager.removeUpdates(this);
         }
     }
 
+    @SuppressLint("MissingPermission")
+    private void checkPermissions() {
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), new String[] {
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            }, PERMS_CALL_ID);
+            return;
+        }
 
-    private void getLocationUser() {
-        Log.d(TAG, "method : get Location User");
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return; }
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener( new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            // Logic to handle location object
-                            LatLng position = new LatLng ( location.getLatitude(), location.getLongitude());
-                            LocationPlace locationPlace = new LocationPlace(location.getLatitude(), location.getLongitude());
-                            mapViewModel.getAllRestaurants(locationPlace).observe(getViewLifecycleOwner(), restaurants1 ->
-                                    displayRestaurants(restaurants1));
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom( position , 14));
-                        }
-                    }
-                });
+        locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService( Context.LOCATION_SERVICE );
+        if (locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER)) {
+            locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 30000, 0, this);
+        }
+        if (locationManager.isProviderEnabled( LocationManager.PASSIVE_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 30000, 0, this);
+        }
+        if (locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 0, this);
+        }
     }
 
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        LatLng position = new LatLng ( location.getLatitude(), location.getLongitude());
+        LocationPlace locationPlace = new LocationPlace(location.getLatitude(), location.getLongitude());
+        sharedViewModel.setLocation(locationPlace);
+        sharedViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), this::displayRestaurants);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom( position , 15));
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) { }
+
+    @SuppressLint("MissingPermission")
     private void getPositionButton() {
-        Log.d(TAG, "method : get position button");
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return; }
         googleMap.setMyLocationEnabled(true);

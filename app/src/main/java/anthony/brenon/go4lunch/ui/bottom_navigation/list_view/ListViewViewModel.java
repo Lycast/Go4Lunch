@@ -17,15 +17,13 @@ import anthony.brenon.go4lunch.model.googleplace_models.LocationPlace;
 public class ListViewViewModel extends AndroidViewModel {
 
     private final RestaurantRepository restaurantRepository;
-    private LiveData<List<Restaurant>> allRestaurants;
 
     public ListViewViewModel(Application application) {
         super(application);
-        restaurantRepository = new RestaurantRepository(application);
+        restaurantRepository = new RestaurantRepository();
 
     }
 
     public LiveData<List<Restaurant>> getAllRestaurants(LocationPlace locationPlace) {
-        allRestaurants = restaurantRepository.getAllRestaurants(locationPlace);
-        return allRestaurants;}
+        return restaurantRepository.getAllRestaurants(locationPlace);}
 }

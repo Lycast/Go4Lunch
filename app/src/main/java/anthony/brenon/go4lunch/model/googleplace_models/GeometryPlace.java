@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 public class GeometryPlace {
 
     @SerializedName("location")
-    private LocationPlace locationPlace;
+    private final LocationPlace locationPlace;
 
     public GeometryPlace(LocationPlace locationPlace) {
         this.locationPlace = locationPlace;
@@ -16,9 +16,5 @@ public class GeometryPlace {
 
     public LocationPlace getLocationPlace() {
         return locationPlace;
-    }
-
-    public void setLocationPlace(LocationPlace locationPlace) {
-        this.locationPlace = locationPlace;
     }
 }

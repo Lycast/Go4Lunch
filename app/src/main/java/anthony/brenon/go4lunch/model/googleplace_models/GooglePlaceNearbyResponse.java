@@ -9,13 +9,13 @@ import anthony.brenon.go4lunch.model.Restaurant;
  */
 public class GooglePlaceNearbyResponse {
 
-    private List<Restaurant> results;
+    private final List<Restaurant> results;
+
+    public GooglePlaceNearbyResponse(List<Restaurant> results) {
+        this.results = results;
+    }
 
     public List<Restaurant> getResults() {
         return results;
-    }
-
-    public void setResult(List<Restaurant> results) {
-        this.results = results;
     }
 }

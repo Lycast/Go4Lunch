@@ -151,7 +151,6 @@ public class AuthActivity extends AppCompatActivity {
                                     .addOnSuccessListener(documentSnapshot -> startMainActivity())
                                     .addOnFailureListener(updateUserException -> {
                                         Log.e(TAG, updateUserException.getMessage());
-                                        showSnackBar("error while connecting");
                                     })
                     )
                     .addOnFailureListener(notExistException ->
@@ -161,7 +160,6 @@ public class AuthActivity extends AppCompatActivity {
                                     .addOnSuccessListener(documentSnapshot -> startMainActivity())
                                     .addOnFailureListener(createException -> {
                                         Log.e(TAG, createException.getMessage());
-                                        showSnackBar("error while connecting");
                                     })
                     );
         }
