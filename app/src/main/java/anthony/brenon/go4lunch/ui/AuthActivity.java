@@ -149,18 +149,14 @@ public class AuthActivity extends AppCompatActivity {
                                     .document(uid)
                                     .set(userToCreate)
                                     .addOnSuccessListener(documentSnapshot -> startMainActivity())
-                                    .addOnFailureListener(updateUserException -> {
-                                        Log.e(TAG, updateUserException.getMessage());
-                                    })
+                                    .addOnFailureListener(updateUserException -> Log.e(TAG, updateUserException.getMessage()))
                     )
                     .addOnFailureListener(notExistException ->
                             // User doesn't exist in database -> create user
                             getUsersCollection()
                                     .add(userToCreate)
                                     .addOnSuccessListener(documentSnapshot -> startMainActivity())
-                                    .addOnFailureListener(createException -> {
-                                        Log.e(TAG, createException.getMessage());
-                                    })
+                                    .addOnFailureListener(createException -> Log.e(TAG, createException.getMessage()))
                     );
         }
     }

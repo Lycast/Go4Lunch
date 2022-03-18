@@ -1,6 +1,6 @@
 package anthony.brenon.go4lunch.ui.adapter;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -23,12 +23,12 @@ import anthony.brenon.go4lunch.model.Restaurant;
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
 
     private List<Restaurant> restaurants;
-    Context context;
     ItemRestaurantBinding binding;
 
     public RestaurantsAdapter() {
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void updateData(List<Restaurant> restaurants) {
         this.restaurants = restaurants;
         notifyDataSetChanged();
@@ -73,7 +73,6 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                         .transform(new CenterCrop(), new RoundedCorners(8))
                         .into(itemBinding.restaurantImage);
                 setRestaurantRating((int) restaurant.getRating());
-                itemBinding.restaurantOpening.setText("" + (int) restaurant.getRating());
         }
 
         private void setRestaurantRating(int rating) {

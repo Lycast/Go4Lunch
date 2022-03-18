@@ -1,6 +1,4 @@
-package anthony.brenon.go4lunch.ui.bottom_navigation.map;
-
-import android.util.Log;
+package anthony.brenon.go4lunch.ui;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -27,13 +25,11 @@ public class SharedViewModel extends ViewModel {
     }
 
     public void getAllRestaurants() {
-        Log.d("TAG__", "getAll " + locationPlace.toString() );
         restaurantsLiveData.postValue(restaurantRepository.getAllRestaurantsList(locationPlace));
     }
 
     public void setLocation(LocationPlace locationPlace) {
         this.locationPlace = locationPlace;
-        Log.d("TAG__","setLoc " + locationPlace.toString() );
         getAllRestaurants();
     }
 

@@ -27,6 +27,7 @@ import java.util.Objects;
 
 import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.model.googleplace_models.LocationPlace;
+import anthony.brenon.go4lunch.ui.SharedViewModel;
 
 public class MapViewFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener {
 
@@ -34,8 +35,6 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     private LocationManager locationManager;
     private GoogleMap googleMap;
     private SharedViewModel sharedViewModel;
-    private static final String TAG = "Fragment_map";
-
 
     @Override
     public void onMapReady(@NonNull final GoogleMap googleMap) {

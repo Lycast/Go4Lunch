@@ -166,5 +166,4 @@ public class MainActivity extends AppCompatActivity{
         // select and invisible item
         bottomNavMenu.setSelectedItemId(R.id.page_4_invisible);
     }
-
 }
