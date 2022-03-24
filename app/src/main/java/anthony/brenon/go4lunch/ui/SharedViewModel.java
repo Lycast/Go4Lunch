@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel;
 import java.util.List;
 
 import anthony.brenon.go4lunch.Repository.RestaurantRepository;
+import anthony.brenon.go4lunch.model.Location;
 import anthony.brenon.go4lunch.model.Restaurant;
-import anthony.brenon.go4lunch.model.googleplace_models.LocationPlace;
 
 /**
  * Created by Lycast on 24/02/2022.
@@ -16,7 +16,7 @@ import anthony.brenon.go4lunch.model.googleplace_models.LocationPlace;
 public class SharedViewModel extends ViewModel {
 
     private final RestaurantRepository restaurantRepository;
-    private LocationPlace locationPlace;
+    private Location locationUser;
     private final MutableLiveData<List<Restaurant>> restaurantsLiveData = new MutableLiveData<>();
 
     public SharedViewModel() {
@@ -25,11 +25,11 @@ public class SharedViewModel extends ViewModel {
     }
 
     public void getAllRestaurants() {
-        restaurantsLiveData.postValue(restaurantRepository.getAllRestaurantsList(locationPlace));
+        restaurantsLiveData.postValue(restaurantRepository.getAllRestaurantsList(locationUser));
     }
 
-    public void setLocation(LocationPlace locationPlace) {
-        this.locationPlace = locationPlace;
+    public void setLocationUser(Location locationUser) {
+        this.locationUser = locationUser;
         getAllRestaurants();
     }
 

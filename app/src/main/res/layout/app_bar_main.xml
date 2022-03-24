@@ -27,7 +27,7 @@
                 android:id="@+id/btn_research_toolbar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_search_24"
+                android:src="@drawable/ic_search"
                 android:layout_gravity="end"
                 android:contentDescription="@string/search_text">
             </ImageView>
@@ -44,11 +44,13 @@
         layout="@layout/content_main"/>
 
     <!--FAB-->
+    <!--TODO don't forget invisible fab !-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_chat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:visibility="invisible"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:contentDescription="@string/content_description"

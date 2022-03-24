@@ -2,6 +2,7 @@ package anthony.brenon.go4lunch.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -22,8 +23,9 @@ import anthony.brenon.go4lunch.model.Restaurant;
  */
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
 
-    private List<Restaurant> restaurants;
+    public List<Restaurant> restaurants;
     ItemRestaurantBinding binding;
+    private static ClickListener clickListener;
 
     public RestaurantsAdapter() {
     }
@@ -53,39 +55,43 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         return 0;
     }
 
+    public void setOnItemClickListener(ClickListener clickListener) {
+        RestaurantsAdapter.clickListener = clickListener;
+    }
+
+    public interface ClickListener {
+        void onItemClick(String placeId);
+    }
 
     // --ViewHolder--
-    static class RestaurantsViewHolder extends RecyclerView.ViewHolder {
+    class RestaurantsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-            ItemRestaurantBinding itemBinding;
+        ItemRestaurantBinding itemBinding;
 
-            public RestaurantsViewHolder(ItemRestaurantBinding itemBinding) {
-                super(itemBinding.getRoot());
-                this.itemBinding = itemBinding;
-            }
-
-            void bind(Restaurant restaurant) {
-                itemBinding.restaurantName.setText(restaurant.getName());
-                itemBinding.restaurantAddress.setText(restaurant.getAddress());
-                Glide.with(itemBinding.restaurantImage.getContext())
-                        .load(restaurant.getPhoto(600))
-                        .placeholder(R.drawable.ic_image_not_supported_24)
-                        .transform(new CenterCrop(), new RoundedCorners(8))
-                        .into(itemBinding.restaurantImage);
-                setRestaurantRating((int) restaurant.getRating());
+        public RestaurantsViewHolder(ItemRestaurantBinding itemBinding) {
+            super(itemBinding.getRoot());
+            itemView.setOnClickListener(this);
+            this.itemBinding = itemBinding;
         }
 
-        private void setRestaurantRating(int rating) {
-            if (rating >= 1)
-                itemBinding.restaurantRating1.setImageResource(R.drawable.ic_star_rate);
-            if (rating >= 2)
-                itemBinding.restaurantRating2.setImageResource(R.drawable.ic_star_rate);
-            if (rating >= 3)
-                itemBinding.restaurantRating3.setImageResource(R.drawable.ic_star_rate);
-            if (rating >= 4)
-                itemBinding.restaurantRating4.setImageResource(R.drawable.ic_star_rate);
-            if (rating == 5)
-                itemBinding.restaurantRating5.setImageResource(R.drawable.ic_star_rate);
+        void bind(Restaurant restaurant) {
+            itemBinding.restaurantName.setText(restaurant.getName());
+            itemBinding.restaurantAddress.setText(restaurant.getAddress());
+            Glide.with(itemBinding.restaurantImage.getContext())
+                    .load(restaurant.getPhoto(600))
+                    .placeholder(R.drawable.ic_image_not_supported)
+                    .transform(new CenterCrop(), new RoundedCorners(8))
+                    .into(itemBinding.restaurantImage);
+            itemBinding.restaurantRatingBar.setRating(restaurant.getRating());
+            itemBinding.restaurantDistance.setText(String.format("%sm", (int) restaurant.getDistance()));
+            if (restaurant.getOpening_hours() != null)
+                if (restaurant.getOpening_hours().isOpen_now()) {
+                    itemBinding.restaurantOpening.setText(R.string.isOpen);
+                } else itemBinding.restaurantOpening.setText(R.string.isClose);
+        }
+        @Override
+        public void onClick(View v) {
+            clickListener.onItemClick(restaurants.get(getAdapterPosition()).getId());
         }
     }
 }

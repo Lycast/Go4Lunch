@@ -1,16 +1,16 @@
-package anthony.brenon.go4lunch.model.googleplace_models;
+package anthony.brenon.go4lunch.model;
 
 import androidx.annotation.NonNull;
 
 /**
  * Created by Lycast on 01/03/2022.
  */
-public class LocationPlace {
+public class Location {
 
     private Double lat;
     private Double lng;
 
-    public LocationPlace(Double lat, Double lng) {
+    public Location(Double lat, Double lng) {
         this.lat = lat;
         this.lng = lng;
     }

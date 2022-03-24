@@ -5,7 +5,7 @@
     <group android:checkableBehavior="none">
         <item
             android:id="@+id/dv_your_lunch"
-            android:icon="@drawable/ic_menu_lunch"
+            android:icon="@drawable/ic_restaurant_menu_white"
             android:title="@string/drawer_your_lunch" />
         <item
             android:id="@+id/dv_settings"

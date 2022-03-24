@@ -1,107 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item_restaurant"
-    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginBottom="1dp"
-    android:paddingVertical="10dp"
-    android:paddingHorizontal="5dp">
+    android:background="@color/white"
+    android:backgroundTint="#FFFFFF"
+    android:paddingHorizontal="5dp"
+    android:paddingVertical="10dp">
 
     <TextView
         android:id="@+id/restaurant_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="name"
+        android:text="@string/name_not_found"
         android:textColor="@color/black"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/restaurant_address"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="address"
-        app:layout_constraintTop_toBottomOf="@id/restaurant_name"
+        android:layout_marginEnd="5dp"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:maxLines="1"
+        android:text="@string/address_not_found"
         app:layout_constraintBottom_toTopOf="@id/restaurant_opening"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintEnd_toStartOf="@+id/person_img"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/restaurant_name" />
 
     <TextView
         android:id="@+id/restaurant_opening"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="opening"
+        android:text="@string/Not_specified"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent" />
 
 
     <ImageView
         android:id="@+id/restaurant_image"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:src="@drawable/ic_image_not_supported_24"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        android:src="@drawable/ic_image_not_supported"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/restaurant_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
-        android:text="150m"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/restaurant_image"/>
+        android:text=""
+        app:layout_constraintRight_toLeftOf="@id/restaurant_image"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/person_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_person_outline"
+        app:layout_constraintBottom_toTopOf="@id/restaurant_rating_bar"
+        app:layout_constraintRight_toLeftOf="@id/restaurant_workmates"
+        app:layout_constraintTop_toBottomOf="@id/restaurant_distance" />
 
     <TextView
         android:id="@+id/restaurant_workmates"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
-        android:text="(2)"
-        app:layout_constraintTop_toBottomOf="@id/restaurant_distance"
-        app:layout_constraintBottom_toTopOf="@id/restaurant_rating_1"
-        app:layout_constraintRight_toLeftOf="@id/restaurant_image"/>
+        android:text="@string/workmates_by_default"
+        app:layout_constraintBottom_toTopOf="@id/restaurant_rating_bar"
+        app:layout_constraintRight_toLeftOf="@id/restaurant_image"
+        app:layout_constraintTop_toBottomOf="@id/restaurant_distance" />
 
-<!-- RATING IMG -->
 
-    <ImageView
-        android:id="@+id/restaurant_rating_1"
+    <RatingBar
+        android:id="@+id/restaurant_rating_bar"
+        style="@style/Widget.AppCompat.RatingBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
+        android:isIndicator="true"
+        android:rating="3.5"
+        android:stepSize="0.1"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/restaurant_image"/>
-
-    <ImageView
-        android:id="@+id/restaurant_rating_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/restaurant_rating_1"/>
-
-    <ImageView
-        android:id="@+id/restaurant_rating_3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/restaurant_rating_2"/>
-
-    <ImageView
-        android:id="@+id/restaurant_rating_4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/restaurant_rating_3"/>
-
-    <ImageView
-        android:id="@+id/restaurant_rating_5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/restaurant_rating_4"/>
-
-
-
+        app:layout_constraintRight_toLeftOf="@id/restaurant_image" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

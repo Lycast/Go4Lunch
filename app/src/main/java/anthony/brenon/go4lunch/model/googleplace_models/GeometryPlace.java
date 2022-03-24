@@ -2,19 +2,22 @@ package anthony.brenon.go4lunch.model.googleplace_models;
 
 import com.google.gson.annotations.SerializedName;
 
+import anthony.brenon.go4lunch.model.Location;
+
 /**
  * Created by Lycast on 10/03/2022.
  */
 public class GeometryPlace {
 
     @SerializedName("location")
-    private final LocationPlace locationPlace;
+    private final Location locationPlace;
 
-    public GeometryPlace(LocationPlace locationPlace) {
+    public GeometryPlace(Location locationPlace) {
         this.locationPlace = locationPlace;
     }
 
-    public LocationPlace getLocationPlace() {
+
+    public Location getLocationPlace() {
         return locationPlace;
     }
 }

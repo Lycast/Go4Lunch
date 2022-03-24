@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity{
     private DrawerLayout drawer;
     private BottomNavigationView bottomNavMenu;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +72,6 @@ public class MainActivity extends AppCompatActivity{
         getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, mapsFragment).commit();
     }
 
-
     // Bind and listener navigation bottom
     private void setupNavigationBottom() {
         bottomNavMenu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -106,6 +104,7 @@ public class MainActivity extends AppCompatActivity{
                     return true;
                 });
     }
+
     // Open/close drawer
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -115,6 +114,7 @@ public class MainActivity extends AppCompatActivity{
         }
         return super.onOptionsItemSelected(item);
     }
+
     // Populate header
     private void updateUIWithUserData(View viewHeader){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity{
             addressMail.setText(user.getEmail());
         }
     }
+
     // Bind and listener drawer menu
     public void selectDrawerItem(MenuItem menuItem) {
         // Specify the fragment to show based on nav item clicked

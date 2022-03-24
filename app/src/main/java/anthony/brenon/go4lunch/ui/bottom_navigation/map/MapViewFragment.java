@@ -4,10 +4,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -25,8 +26,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 import java.util.Objects;
 
+import anthony.brenon.go4lunch.model.Location;
 import anthony.brenon.go4lunch.model.Restaurant;
-import anthony.brenon.go4lunch.model.googleplace_models.LocationPlace;
 import anthony.brenon.go4lunch.ui.SharedViewModel;
 
 public class MapViewFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener {
@@ -35,6 +36,8 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     private LocationManager locationManager;
     private GoogleMap googleMap;
     private SharedViewModel sharedViewModel;
+    private LatLng position;
+    Location locationUser;
 
     @Override
     public void onMapReady(@NonNull final GoogleMap googleMap) {
@@ -55,6 +58,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         super.onViewCreated(view, savedInstanceState);
 
         getMapAsync(this);
+
     }
 
     @Override
@@ -98,22 +102,37 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     }
 
     @Override
-    public void onLocationChanged(@NonNull Location location) {
-        LatLng position = new LatLng ( location.getLatitude(), location.getLongitude());
-        LocationPlace locationPlace = new LocationPlace(location.getLatitude(), location.getLongitude());
-        sharedViewModel.setLocation(locationPlace);
+    public void onLocationChanged(@NonNull android.location.Location location) {
+        Log.d("pos__", "onLocationChange");
+        position = new LatLng ( location.getLatitude(), location.getLongitude());
+        locationUser = new Location(location.getLatitude(), location.getLongitude());
+        sharedViewModel.setLocationUser(locationUser);
         sharedViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), this::displayRestaurants);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom( position , 15));
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) { }
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        String newStatus = "";
+        switch (status) {
+            case LocationProvider
+                    .OUT_OF_SERVICE:
+                newStatus = "OUT_OF_SERVICE";
+            break;
+            case LocationProvider
+                    .TEMPORARILY_UNAVAILABLE:
+                newStatus = "TEMPORARILY_UNAVAILABLE";
+                break;
+            case LocationProvider
+                    .AVAILABLE:
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom( position , 15));
+                newStatus = "AVAILABLE";
+                break;
+        }
+        Log.d("onStatusChanged", "onStatus : " + newStatus);
+    }
 
     @SuppressLint("MissingPermission")
     private void getPositionButton() {
-        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return; }
         googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
     }

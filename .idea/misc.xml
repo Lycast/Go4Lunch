@@ -3,9 +3,17 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/drawable/ic_launcher_background.xml" value="0.42390194075587334" />
+        <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/drawable/ic_menu_lunch.xml" value="0.42390194075587334" />
+        <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/drawable/ic_menu_map_view.xml" value="0.42390194075587334" />
+        <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/drawable/ic_restaurant_menu.xml" value="0.42390194075587334" />
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/drawable/ic_star_rate.xml" value="0.4322916666666667" />
+        <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/layout/activity_details_restaurant.xml" value="0.2683982683982684" />
+        <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.4119791666666667" />
+        <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/layout/app_bar_main.xml" value="0.4119791666666667" />
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/layout/fragment_list_view.xml" value="0.3828571428571429" />
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/layout/item_restaurant.xml" value="0.3828571428571429" />
+        <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/layout/nav_header_main.xml" value="0.4119791666666667" />
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.4322916666666667" />
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_launcher_background.xml" value="0.4322916666666667" />
         <entry key="..\:/Users/Lycast/AndroidStudioProjects/Go4Lunch/app/src/main/res/drawable/ic_menu_settings.xml" value="0.26614583333333336" />

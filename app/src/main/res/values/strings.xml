@@ -31,11 +31,24 @@
     <!--fab description-->
     <string name="content_description">CHAT</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="connection_succeed">connection is successful</string>
     <string name="error_authentication_canceled">error authentication canceled</string>
     <string name="error_no_internet">error no internet</string>
     <string name="error_unknown_error">unknown error</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="search_text">search</string>
+
+    <!--item restaurant-->
+    <string name="name_not_found">Name not found</string>
+    <string name="address_not_found">Address not found</string>
+    <string name="workmates_by_default">(0)</string>
+    <string name="isOpen">Open</string>
+    <string name="isClose">Close</string>
+    <string name="Not_specified">Not specified</string>
+
+
+    <string name="call">CALL</string>
+    <string name="like">LIKE</string>
+    <string name="website">WEBSITE</string>
+
 </resources>

@@ -25,6 +25,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:backgroundTint="@color/white"
-        android:src="@drawable/ic_fab_gps_24" />
+        android:src="@drawable/ic_fab_gps" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

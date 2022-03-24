@@ -7,11 +7,11 @@ import anthony.brenon.go4lunch.model.Restaurant;
 /**
  * Created by Lycast on 03/03/2022.
  */
-public class GooglePlaceNearbyResponse {
+public class GooglePlaceResponse {
 
     private final List<Restaurant> results;
 
-    public GooglePlaceNearbyResponse(List<Restaurant> results) {
+    public GooglePlaceResponse(List<Restaurant> results) {
         this.results = results;
     }
 
