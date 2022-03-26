@@ -8,6 +8,7 @@ import anthony.brenon.go4lunch.model.Restaurant;
  * Created by Lycast on 03/03/2022.
  */
 public class GooglePlaceResponse {
+    private final String TAG = "my logs";
 
     private final List<Restaurant> results;
 

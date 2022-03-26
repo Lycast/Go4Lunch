@@ -1,16 +1,14 @@
 package anthony.brenon.go4lunch.model;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.google.firebase.database.IgnoreExtraProperties;
-
-import java.io.Serializable;
 
 /**
  * Created by Lycast on 29/01/2022.
  */
 
 public class User {
+    private final String TAG = "my logs";
 
     private String uid;
     private String username;
@@ -36,6 +34,7 @@ public class User {
     public void setUid(String uid) { this.uid = uid; }
     public void setUrlPicture(@Nullable String urlPicture) { this.urlPicture = urlPicture; }
 
+    @NonNull
     @Override
     public String toString() {
         return "User{" +

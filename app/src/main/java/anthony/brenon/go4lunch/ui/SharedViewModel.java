@@ -14,6 +14,7 @@ import anthony.brenon.go4lunch.model.Restaurant;
  * Created by Lycast on 24/02/2022.
  */
 public class SharedViewModel extends ViewModel {
+    private final String TAG = "my_logs";
 
     private final RestaurantRepository restaurantRepository;
     private Location locationUser;

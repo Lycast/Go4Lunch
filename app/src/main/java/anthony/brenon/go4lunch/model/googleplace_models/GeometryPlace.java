@@ -8,6 +8,7 @@ import anthony.brenon.go4lunch.model.Location;
  * Created by Lycast on 10/03/2022.
  */
 public class GeometryPlace {
+    private final String TAG = "my logs";
 
     @SerializedName("location")
     private final Location locationPlace;

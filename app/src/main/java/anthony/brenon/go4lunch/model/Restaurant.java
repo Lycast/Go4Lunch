@@ -13,6 +13,7 @@ import anthony.brenon.go4lunch.model.googleplace_models.Photo;
  * Created by Lycast on 01/03/2022.
  */
 public class Restaurant {
+    private final String TAG = "my logs";
 
     @SerializedName("place_id")
     private String id;
@@ -26,6 +27,10 @@ public class Restaurant {
     private List<Photo> photosUrl = null;
     @SerializedName("rating")
     private float rating;
+    @SerializedName("website")
+    private String website;
+    @SerializedName("international_phone_number")
+    private String phoneNumber;
     @SerializedName("opening_hours")
     private OpeningHours opening_hours;
 
@@ -41,6 +46,8 @@ public class Restaurant {
     public List<Photo> getPhotosUrl() { return photosUrl; }
     public float getRating() { return rating; }
     public double getDistance() { return distance; }
+    public String getWebsite() { return website; }
+    public String getPhoneNumber() { return phoneNumber; }
     public OpeningHours getOpening_hours() { return opening_hours; }
 
     // --SETTERS--
@@ -52,7 +59,8 @@ public class Restaurant {
     public void setRating(float rating) { this.rating = rating; }
     public void setOpening_hours(OpeningHours opening_hours) { this.opening_hours = opening_hours; }
     public void setDistance(double distance) { this.distance = distance; }
-
+    public void setWebsite(String website) { this.website = website; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
     public void setDistance(Location locationUser) {
 

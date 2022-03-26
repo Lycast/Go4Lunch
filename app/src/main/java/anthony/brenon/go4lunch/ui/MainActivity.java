@@ -31,8 +31,7 @@ import anthony.brenon.go4lunch.ui.bottom_navigation.map.MapViewFragment;
 import anthony.brenon.go4lunch.ui.bottom_navigation.workmates.WorkmatesFragment;
 
 public class MainActivity extends AppCompatActivity{
-
-    private static final String TAG = "Activity_Main";
+    private final String TAG = "my_logs";
 
     private DrawerLayout drawer;
     private BottomNavigationView bottomNavMenu;
@@ -70,6 +69,7 @@ public class MainActivity extends AppCompatActivity{
         super.onResume();
         final MapViewFragment mapsFragment = new MapViewFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, mapsFragment).commit();
+        bottomNavMenu.setSelectedItemId(R.id.page_1_map_view);
     }
 
     // Bind and listener navigation bottom

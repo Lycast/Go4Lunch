@@ -20,6 +20,7 @@ import anthony.brenon.go4lunch.ui.SharedViewModel;
 import anthony.brenon.go4lunch.ui.adapter.RestaurantsAdapter;
 
 public class ListViewFragment extends Fragment {
+    private final String TAG = "my_logs";
 
     private FragmentListViewBinding binding;
     SharedViewModel sharedViewModel;
@@ -44,13 +45,10 @@ public class ListViewFragment extends Fragment {
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         sharedViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), adapter::updateData);
 
-        adapter.setOnItemClickListener(new RestaurantsAdapter.ClickListener() {
-            @Override
-            public void onItemClick(String placeId) {
-                Intent intent = new Intent(getActivity(), DetailsRestaurantActivity.class);
-                intent.putExtra("place_id", placeId);
-                startActivity(intent);
-            }
+        adapter.setOnItemClickListener(placeId -> {
+            Intent intent = new Intent(getActivity(), DetailsRestaurantActivity.class);
+            intent.putExtra("place_id", placeId);
+            startActivity(intent);
         });
     }
 }

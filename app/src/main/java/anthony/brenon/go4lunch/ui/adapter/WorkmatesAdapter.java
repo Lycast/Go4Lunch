@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
  * Created by Lycast on 09/03/2022.
  */
 public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.WorkmatesViewHolder> {
+    private final String TAG = "my_logs";
+
     @NonNull
     @Override
     public WorkmatesAdapter.WorkmatesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

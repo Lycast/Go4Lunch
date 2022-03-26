@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
  * Created by Lycast on 01/03/2022.
  */
 public class Location {
+    private final String TAG = "my logs";
 
     private Double lat;
     private Double lng;

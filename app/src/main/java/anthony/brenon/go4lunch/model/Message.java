@@ -8,6 +8,8 @@ import java.sql.Date;
  * Created by Lycast on 10/02/2022.
  */
 class Message {
+    private final String TAG = "my logs";
+
     private String message;
     private Date dateCreated;
     private User userSender;

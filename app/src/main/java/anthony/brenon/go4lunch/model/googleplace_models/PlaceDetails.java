@@ -6,6 +6,7 @@ import anthony.brenon.go4lunch.model.Restaurant;
  * Created by Lycast on 08/03/2022.
  */
 public class PlaceDetails {
+    private final String TAG = "my logs";
 
     private final Restaurant result;
 

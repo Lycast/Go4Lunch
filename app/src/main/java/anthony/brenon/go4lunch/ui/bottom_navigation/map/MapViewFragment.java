@@ -36,6 +36,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     private LocationManager locationManager;
     private GoogleMap googleMap;
     private SharedViewModel sharedViewModel;
+    private final LatLng POS_DEFAULT = new LatLng(47.060234, -0.884324);
     private LatLng position;
     Location locationUser;
 
@@ -44,6 +45,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         this.googleMap = googleMap;
 
         getPositionButton();
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(getPosition(), 14));
     }
 
     @Override
@@ -58,7 +60,6 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         super.onViewCreated(view, savedInstanceState);
 
         getMapAsync(this);
-
     }
 
     @Override
@@ -91,13 +92,13 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
 
         locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService( Context.LOCATION_SERVICE );
         if (locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER)) {
-            locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 30000, 0, this);
+            locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 30000, 20, this);
         }
         if (locationManager.isProviderEnabled( LocationManager.PASSIVE_PROVIDER)) {
-            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 30000, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 30000, 20, this);
         }
         if (locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER)) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 20, this);
         }
     }
 
@@ -107,6 +108,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         position = new LatLng ( location.getLatitude(), location.getLongitude());
         locationUser = new Location(location.getLatitude(), location.getLongitude());
         sharedViewModel.setLocationUser(locationUser);
+        if (getView() != null)
         sharedViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), this::displayRestaurants);
     }
 
@@ -124,7 +126,6 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
                 break;
             case LocationProvider
                     .AVAILABLE:
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom( position , 15));
                 newStatus = "AVAILABLE";
                 break;
         }
@@ -144,5 +145,11 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
                     .position(restaurantLocation)
                     .title(restaurant.getName()));
         }
+    }
+
+    private LatLng getPosition() {
+        if (position == null)
+            return POS_DEFAULT;
+            return position;
     }
 }

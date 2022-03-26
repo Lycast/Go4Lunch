@@ -22,6 +22,7 @@ import anthony.brenon.go4lunch.model.Restaurant;
  * Created by Lycast on 09/03/2022.
  */
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
+    private final String TAG = "my_logs";
 
     public List<Restaurant> restaurants;
     ItemRestaurantBinding binding;

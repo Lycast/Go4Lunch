@@ -26,8 +26,8 @@ import anthony.brenon.go4lunch.databinding.ActivityAuthBinding;
 import anthony.brenon.go4lunch.model.User;
 
 public class AuthActivity extends AppCompatActivity {
+    private final String TAG = "my_logs";
 
-    private static final String TAG = "Activity_Auth";
     private ActivityAuthBinding binding;
 
     private static final String COLLECTION_NAME = "users";

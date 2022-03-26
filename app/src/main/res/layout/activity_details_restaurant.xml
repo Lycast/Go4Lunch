@@ -49,6 +49,7 @@
         android:layout_alignParentStart="true"/>
 
     <ImageView
+        android:id="@+id/img_like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -80,22 +81,26 @@
 
         <Button
             android:id="@+id/btn_call"
+            style="?materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="80dp"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
+            android:background="@color/white"
             android:text="@string/call"
             android:textColor="#F4511E"
             app:icon="@drawable/ic_phone_enabled"
             app:iconGravity="top"
             app:iconTint="#F4511E" />
 
+        <!--android:background="@android:color/transparent"-->
+
         <Button
             android:id="@+id/btn_like"
+            style="?materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="80dp"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
+            android:background="@color/white"
             android:text="@string/like"
             android:textColor="#F4511E"
             app:icon="@drawable/ic_star"
@@ -104,10 +109,11 @@
 
         <Button
             android:id="@+id/btn_website"
+            style="?materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="80dp"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
+            android:background="@color/white"
             android:text="@string/website"
             android:textColor="#F4511E"
             app:icon="@drawable/ic_public"

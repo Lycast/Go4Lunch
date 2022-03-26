@@ -7,14 +7,13 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import anthony.brenon.go4lunch.api.JsonPlaceHolderApi;
 import anthony.brenon.go4lunch.model.Location;
 import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.model.googleplace_models.GooglePlaceResponse;
 import anthony.brenon.go4lunch.model.googleplace_models.PlaceDetails;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,8 +24,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by Lycast on 24/02/2022.
  */
 public class RestaurantRepository {
+    private final String TAG = "my logs";
 
-    private static final String TAG = "repository_restaurant";
     private List<Restaurant> restaurants = new ArrayList<>();
     JsonPlaceHolderApi jsonPlaceHolderApi;
 
@@ -37,13 +36,13 @@ public class RestaurantRepository {
     public RestaurantRepository () {
 
         Log.d("getExtra", "construct ");
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://maps.googleapis.com/maps/api/place/")
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
+                //.client(client)
                 .build();
         jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
     }
@@ -67,7 +66,7 @@ public class RestaurantRepository {
             public void onResponse(@NonNull Call<GooglePlaceResponse> call,
                                    @NonNull Response<GooglePlaceResponse> response) {
                 if(response.isSuccessful()){
-                    restaurants = response.body().getResults();
+                    restaurants = Objects.requireNonNull(response.body()).getResults();
                     for (Restaurant restaurant : restaurants) {
                         restaurant.setDistance(locationUser);
                     }
@@ -90,14 +89,14 @@ public class RestaurantRepository {
 
         restaurantCall.enqueue(new Callback<PlaceDetails>() {
             @Override
-            public void onResponse(Call<PlaceDetails> call, Response<PlaceDetails> response) {
+            public void onResponse(@NonNull Call<PlaceDetails> call, @NonNull Response<PlaceDetails> response) {
                 Log.d("getExtra", "onResponse ");
                 if (response.isSuccessful()) {
-                    restaurant.postValue(response.body().getResults());
+                    restaurant.postValue(Objects.requireNonNull(response.body()).getResults());
                 }
             }
             @Override
-            public void onFailure(Call<PlaceDetails> call, Throwable t) {
+            public void onFailure(@NonNull Call<PlaceDetails> call, @NonNull Throwable t) {
                 Log.d("getExtra", "onFailure: " + t.getMessage());
             }
         });
