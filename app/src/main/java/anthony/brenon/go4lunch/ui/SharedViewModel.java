@@ -1,7 +1,6 @@
 package anthony.brenon.go4lunch.ui;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
@@ -18,23 +17,17 @@ public class SharedViewModel extends ViewModel {
 
     private final RestaurantRepository restaurantRepository;
     private Location locationUser;
-    private final MutableLiveData<List<Restaurant>> restaurantsLiveData = new MutableLiveData<>();
 
     public SharedViewModel() {
         super();
         restaurantRepository = new RestaurantRepository();
     }
 
-    public void getAllRestaurants() {
-        restaurantsLiveData.postValue(restaurantRepository.getAllRestaurantsList(locationUser));
+    public LiveData<List<Restaurant>> getRestaurantsLiveData() {
+        return restaurantRepository.getNearbyRestaurants(locationUser);
     }
 
     public void setLocationUser(Location locationUser) {
         this.locationUser = locationUser;
-        getAllRestaurants();
-    }
-
-    public LiveData<List<Restaurant>> getRestaurantsLiveData() {
-        return restaurantsLiveData;
     }
 }

@@ -81,44 +81,40 @@
 
         <Button
             android:id="@+id/btn_call"
-            style="?materialButtonOutlinedStyle"
+            style="@style/DetailButton"
+            android:textColorHighlight="@color/white"
+            android:enabled="false"
             android:layout_width="wrap_content"
             android:layout_height="80dp"
             android:layout_weight="1"
-            android:background="@color/white"
             android:text="@string/call"
-            android:textColor="#F4511E"
             app:icon="@drawable/ic_phone_enabled"
-            app:iconGravity="top"
-            app:iconTint="#F4511E" />
+            app:iconGravity="top"/>
 
         <!--android:background="@android:color/transparent"-->
 
         <Button
             android:id="@+id/btn_like"
-            style="?materialButtonOutlinedStyle"
+            style="@style/DetailButton"
+            android:textColorHighlight="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="80dp"
             android:layout_weight="1"
-            android:background="@color/white"
             android:text="@string/like"
-            android:textColor="#F4511E"
             app:icon="@drawable/ic_star"
-            app:iconGravity="top"
-            app:iconTint="#F4511E" />
+            app:iconGravity="top" />
 
         <Button
             android:id="@+id/btn_website"
-            style="?materialButtonOutlinedStyle"
+            android:enabled="false"
+            style="@style/DetailButton"
+            android:textColorHighlight="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="80dp"
             android:layout_weight="1"
-            android:background="@color/white"
             android:text="@string/website"
-            android:textColor="#F4511E"
             app:icon="@drawable/ic_public"
-            app:iconGravity="top"
-            app:iconTint="#F4511E" />
+            app:iconGravity="top" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

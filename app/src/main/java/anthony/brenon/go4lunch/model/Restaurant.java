@@ -6,7 +6,7 @@ import java.util.List;
 
 import anthony.brenon.go4lunch.BuildConfig;
 import anthony.brenon.go4lunch.model.googleplace_models.GeometryPlace;
-import anthony.brenon.go4lunch.model.googleplace_models.OpeningHours;
+import anthony.brenon.go4lunch.model.googleplace_models.Opening;
 import anthony.brenon.go4lunch.model.googleplace_models.Photo;
 
 /**
@@ -25,18 +25,31 @@ public class Restaurant {
     private GeometryPlace geometryPlace;
     @SerializedName("photos")
     private List<Photo> photosUrl = null;
-    @SerializedName("rating")
-    private float rating;
     @SerializedName("website")
     private String website;
     @SerializedName("international_phone_number")
     private String phoneNumber;
     @SerializedName("opening_hours")
-    private OpeningHours opening_hours;
+    private Opening openingHours;
 
+    private int nbLikes = 0;
     private double distance;
 
     public Restaurant() { }
+
+    public Restaurant(String id, String name, String address, GeometryPlace geometryPlace, List<Photo> photosUrl, String website,
+                      String phoneNumber, Opening openingHours, int nbLikes, double distance) {
+        this.setId(id);
+        this.setName(name);
+        this.setAddress(address);
+        this.setGeometryPlace(geometryPlace);
+        this.setPhotosUrl(photosUrl);
+        this.setWebsite(website);
+        this.setPhoneNumber(phoneNumber);
+        this.setOpeningHours(openingHours);
+        this.setNbLikes(nbLikes);
+        this.setDistance(distance);
+    }
 
     // --GETTERS--
     public String getId() { return id; }
@@ -44,11 +57,17 @@ public class Restaurant {
     public String getAddress() { return address; }
     public GeometryPlace getGeometryPlace() { return geometryPlace; }
     public List<Photo> getPhotosUrl() { return photosUrl; }
-    public float getRating() { return rating; }
+    public int getNbLikes() {
+        int accumulator = 0;
+        while (nbLikes > 0) {
+            nbLikes /= 4;
+            accumulator ++;
+        }
+        return accumulator; }
     public double getDistance() { return distance; }
     public String getWebsite() { return website; }
     public String getPhoneNumber() { return phoneNumber; }
-    public OpeningHours getOpening_hours() { return opening_hours; }
+    public Opening getOpeningHours() { return openingHours; }
 
     // --SETTERS--
     public void setId(String id) { this.id = id; }
@@ -56,8 +75,8 @@ public class Restaurant {
     public void setAddress(String address) { this.address = address; }
     public void setGeometryPlace(GeometryPlace geometryPlace) { this.geometryPlace = geometryPlace; }
     public void setPhotosUrl(List<Photo> photosUrl) { this.photosUrl = photosUrl; }
-    public void setRating(float rating) { this.rating = rating; }
-    public void setOpening_hours(OpeningHours opening_hours) { this.opening_hours = opening_hours; }
+    public void setNbLikes(int nbLikes) { this.nbLikes = nbLikes; }
+    public void setOpeningHours(Opening openingHours) { this.openingHours = openingHours; }
     public void setDistance(double distance) { this.distance = distance; }
     public void setWebsite(String website) { this.website = website; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
@@ -82,21 +101,4 @@ public class Restaurant {
                     + "&key=" + BuildConfig.MAPS_API_KEY;
         } else return "";
     }
-
-//    public String setPhoto(int size) {
-//        if (photosUrl != null && photosUrl.size() > 0) {
-//            return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + size
-//                    + "&maxheight=" + size
-//                    + "&photoreference=" + photosUrl.get(0).getPhotoReference()
-//                    + "&key=" + BuildConfig.MAPS_API_KEY;
-//        } else return "";
-//    }
-//
-//    public ImageView getPhoto2 (Restaurant restaurant) {
-//        Glide.with()
-//                .load(restaurant.setPhoto(600))
-//                .placeholder(R.drawable.ic_image_not_supported)
-//                .transform(new CenterCrop(), new RoundedCorners(8))
-//                .into(itemBinding.restaurantImage);
-//    }
 }

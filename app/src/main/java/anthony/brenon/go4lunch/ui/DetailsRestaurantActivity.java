@@ -31,6 +31,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     private static final int REQUEST_CALL = 123;
     private String phoneNumber;
+    private String restaurantName;
 
     //TODO go to make that into restaurant model !
     private Boolean like = false;
@@ -43,6 +44,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         detailsRestaurantViewModel = new ViewModelProvider(this).get(DetailsRestaurantViewModel.class);
+
         setLikeImage();
 
 
@@ -56,11 +58,17 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             populateDetailsRestaurant(placeId);
             onClickListenerBtnWebsite(placeId);
             onClickListenerBtnCall(placeId);
+            setEnableButton(placeId);
         }
     }
 
+
+    //TODO make enable button if  we get website and phoneNumber
+
     private void populateDetailsRestaurant(String placeId) {
         detailsRestaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
+            phoneNumber = restaurant.getPhoneNumber();
+            restaurantName = restaurant.getName();
             binding.tvDetailsName.setText(restaurant.getName());
             binding.tvDetailsAddress.setText(restaurant.getAddress());
             Glide.with(binding.ivDetailsRestaurant.getContext())
@@ -69,40 +77,6 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                     .transform(new CenterCrop(), new RoundedCorners(8))
                     .into(binding.ivDetailsRestaurant);
             Log.d(TAG, restaurant.getName());
-        });
-    }
-
-    private void setSelectedRestaurant() {
-        binding.fabRestaurantChoice.setOnClickListener(view -> {
-            restaurantSelected = !restaurantSelected;
-            setSelectedRestaurantImage();
-        });
-    }
-
-    private void onClickListenerBtnCall(String placeId) {
-        binding.btnCall.setOnClickListener(view -> {
-            detailsRestaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
-                phoneNumber = restaurant.getPhoneNumber();
-                setAlertDialog();
-            });
-        });
-    }
-
-    private void onClickListenerBtnLike() {
-        binding.btnLike.setOnClickListener(view -> {
-            like = !like;
-            setLikeImage();
-        });
-    }
-
-    private void onClickListenerBtnWebsite(String placeId) {
-        binding.btnWebsite.setOnClickListener(view -> {
-            detailsRestaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
-                if (restaurant.getWebsite() != null) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(restaurant.getWebsite()));
-                    startActivity(browserIntent); }
-                else Toast.makeText(this,"website not available", Toast.LENGTH_LONG).show();
-            });
         });
     }
 
@@ -126,7 +100,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                 String dial = "tel:" + phoneNumber;
                 startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial))); }
         } else {
-            Toast.makeText(this, "No phone number", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No phone number", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -145,11 +119,51 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     private void setAlertDialog() {
 
         new AlertDialog.Builder(this)
-                .setTitle("  Make a call")
-                .setMessage("Are you sure you want to call this number?\n\n" + phoneNumber)
+                .setIcon(R.drawable.ic_phone_enabled)
+                .setMessage("Are you sure you want to call this number?\n\n" + restaurantName + "  "  + phoneNumber)
                 .setPositiveButton(android.R.string.yes, (dialog, which) -> makePhoneCall())
                 .setNegativeButton(android.R.string.no, null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    // SET ON CLICK LISTENER METHODS
+    private void setSelectedRestaurant() {
+        binding.fabRestaurantChoice.setOnClickListener(view -> {
+            restaurantSelected = !restaurantSelected;
+            setSelectedRestaurantImage();
+        });
+    }
+    private void onClickListenerBtnCall(String placeId) {
+        binding.btnCall.setOnClickListener(view -> {
+            detailsRestaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
+                setAlertDialog();
+            });
+        });
+    }
+    private void onClickListenerBtnLike() {
+        binding.btnLike.setOnClickListener(view -> {
+            like = !like;
+            setLikeImage();
+        });
+    }
+    private void onClickListenerBtnWebsite(String placeId) {
+        binding.btnWebsite.setOnClickListener(view -> {
+            detailsRestaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(restaurant.getWebsite()));
+                    startActivity(browserIntent);
+            });
+        });
+    }
+
+    private void setEnableButton(String placeId) {
+        detailsRestaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
+            if(restaurant.getWebsite() != null) {
+                binding.btnWebsite.setEnabled(true);
+                binding.btnWebsite.setActivated(true);
+            }
+            if(restaurant.getPhoneNumber() != null)
+                binding.btnCall.setEnabled(true);
+        });
     }
 }

@@ -35,11 +35,12 @@ public class MainActivity extends AppCompatActivity{
 
     private DrawerLayout drawer;
     private BottomNavigationView bottomNavMenu;
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Init bottom navigation
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    // Populate header
+    // Populate header TODO MVVM
     private void updateUIWithUserData(View viewHeader){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 

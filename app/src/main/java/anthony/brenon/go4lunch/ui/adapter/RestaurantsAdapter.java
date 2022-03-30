@@ -83,10 +83,10 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                     .placeholder(R.drawable.ic_image_not_supported)
                     .transform(new CenterCrop(), new RoundedCorners(8))
                     .into(itemBinding.restaurantImage);
-            itemBinding.restaurantRatingBar.setRating(restaurant.getRating());
+            itemBinding.restaurantRatingBar.setRating(restaurant.getNbLikes());
             itemBinding.restaurantDistance.setText(String.format("%sm", (int) restaurant.getDistance()));
-            if (restaurant.getOpening_hours() != null)
-                if (restaurant.getOpening_hours().isOpen_now()) {
+            if (restaurant.getOpeningHours() != null)
+                if (restaurant.getOpeningHours().isOpen_now()) {
                     itemBinding.restaurantOpening.setText(R.string.isOpen);
                 } else itemBinding.restaurantOpening.setText(R.string.isClose);
         }

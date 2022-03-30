@@ -25,6 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class RestaurantRepository {
     private final String TAG = "my logs";
+    private final String LOG_INFO = "restaurant_repository ";
 
     private List<Restaurant> restaurants = new ArrayList<>();
     JsonPlaceHolderApi jsonPlaceHolderApi;
@@ -35,7 +36,7 @@ public class RestaurantRepository {
 
     public RestaurantRepository () {
 
-        Log.d("getExtra", "construct ");
+        Log.d(TAG, LOG_INFO + "construct ");
 //        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
 //        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 //        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
@@ -47,17 +48,10 @@ public class RestaurantRepository {
         jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
     }
 
+    public MutableLiveData<List<Restaurant>> getNearbyRestaurants(Location locationUser) {
 
+        MutableLiveData<List<Restaurant>> result = new MutableLiveData<>();
 
-
-
-
-
-
-
-    public List<Restaurant> getAllRestaurantsList(Location locationUser) {
-
-        List<Restaurant> result = new ArrayList<>();
         Call<GooglePlaceResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
 
         call.enqueue(new Callback<GooglePlaceResponse>() {
@@ -70,12 +64,12 @@ public class RestaurantRepository {
                     for (Restaurant restaurant : restaurants) {
                         restaurant.setDistance(locationUser);
                     }
-                    result.addAll(restaurants);
+                    result.postValue(restaurants);
                 }
             }
             @Override
             public void onFailure(@NonNull Call<GooglePlaceResponse> call, @NonNull Throwable t) {
-                Log.d(TAG, "onFailure: " + t.getMessage());
+                Log.d(TAG,  LOG_INFO + "onFailure: " + t.getMessage());
             }
         });
         return result;
@@ -90,14 +84,14 @@ public class RestaurantRepository {
         restaurantCall.enqueue(new Callback<PlaceDetails>() {
             @Override
             public void onResponse(@NonNull Call<PlaceDetails> call, @NonNull Response<PlaceDetails> response) {
-                Log.d("getExtra", "onResponse ");
+                Log.d(TAG,  LOG_INFO + "onResponse ");
                 if (response.isSuccessful()) {
                     restaurant.postValue(Objects.requireNonNull(response.body()).getResults());
                 }
             }
             @Override
             public void onFailure(@NonNull Call<PlaceDetails> call, @NonNull Throwable t) {
-                Log.d("getExtra", "onFailure: " + t.getMessage());
+                Log.d(TAG,  LOG_INFO + "onFailure: " + t.getMessage());
             }
         });
         return restaurant;

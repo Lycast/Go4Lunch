@@ -27,11 +27,12 @@ import anthony.brenon.go4lunch.model.User;
 
 public class AuthActivity extends AppCompatActivity {
     private final String TAG = "my_logs";
-
-    private ActivityAuthBinding binding;
+    private final String LOG_INFO = "auth_activity ";
 
     private static final String COLLECTION_NAME = "users";
     private static final int RC_SIGN_IN = 123;
+
+    private ActivityAuthBinding binding;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
@@ -75,7 +76,7 @@ public class AuthActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        Log.d(TAG, "on activity result");
+        Log.d(TAG,LOG_INFO + "on activity result");
         super.onActivityResult(requestCode, resultCode, data);
         this.handleResponseAfterSignIn(requestCode, resultCode, data);
     }
@@ -149,14 +150,14 @@ public class AuthActivity extends AppCompatActivity {
                                     .document(uid)
                                     .set(userToCreate)
                                     .addOnSuccessListener(documentSnapshot -> startMainActivity())
-                                    .addOnFailureListener(updateUserException -> Log.e(TAG, updateUserException.getMessage()))
+                                    .addOnFailureListener(updateUserException -> Log.e(TAG,LOG_INFO +  updateUserException.getMessage()))
                     )
                     .addOnFailureListener(notExistException ->
                             // User doesn't exist in database -> create user
                             getUsersCollection()
                                     .add(userToCreate)
                                     .addOnSuccessListener(documentSnapshot -> startMainActivity())
-                                    .addOnFailureListener(createException -> Log.e(TAG, createException.getMessage()))
+                                    .addOnFailureListener(createException -> Log.e(TAG,LOG_INFO +  createException.getMessage()))
                     );
         }
     }
