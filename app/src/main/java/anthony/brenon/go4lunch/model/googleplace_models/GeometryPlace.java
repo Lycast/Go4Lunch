@@ -21,4 +21,11 @@ public class GeometryPlace {
     public Location getLocationPlace() {
         return locationPlace;
     }
+
+    @Override
+    public String toString() {
+        return "GeometryPlace{" +
+                "locationPlace=" + locationPlace +
+                '}';
+    }
 }

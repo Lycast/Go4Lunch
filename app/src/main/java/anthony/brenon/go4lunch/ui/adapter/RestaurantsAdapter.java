@@ -23,6 +23,7 @@ import anthony.brenon.go4lunch.model.Restaurant;
  */
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
     private final String TAG = "my_logs";
+    private final String LOG_INFO = "restaurant_adapter ";
 
     public List<Restaurant> restaurants;
     ItemRestaurantBinding binding;
@@ -83,7 +84,7 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                     .placeholder(R.drawable.ic_image_not_supported)
                     .transform(new CenterCrop(), new RoundedCorners(8))
                     .into(itemBinding.restaurantImage);
-            itemBinding.restaurantRatingBar.setRating(restaurant.getNbLikes());
+            itemBinding.restaurantRatingBar.setRating(restaurant.getRating());
             itemBinding.restaurantDistance.setText(String.format("%sm", (int) restaurant.getDistance()));
             if (restaurant.getOpeningHours() != null)
                 if (restaurant.getOpeningHours().isOpen_now()) {

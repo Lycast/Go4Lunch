@@ -5,16 +5,16 @@ import anthony.brenon.go4lunch.model.Restaurant;
 /**
  * Created by Lycast on 08/03/2022.
  */
-public class PlaceDetails {
+public class PlaceResponse {
     private final String TAG = "my logs";
 
     private final Restaurant result;
 
-    public PlaceDetails(Restaurant results) {
-        this.result = results;
+    public PlaceResponse(Restaurant result) {
+        this.result = result;
     }
 
-    public Restaurant getResults() {
+    public Restaurant getResult() {
         return result;
     }
 }

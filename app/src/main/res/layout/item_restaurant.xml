@@ -37,7 +37,7 @@
         android:id="@+id/restaurant_opening"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Not_specified"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />
 
@@ -86,10 +86,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
         android:isIndicator="true"
-        android:numStars="3"
+        android:numStars="5"
         android:progressTint="#F7F33E"
-        android:rating="0"
-        android:stepSize="1"
+        android:stepSize="0.5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toLeftOf="@id/restaurant_image" />
 

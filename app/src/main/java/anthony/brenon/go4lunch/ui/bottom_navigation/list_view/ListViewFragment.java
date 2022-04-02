@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import anthony.brenon.go4lunch.databinding.FragmentListViewBinding;
 import anthony.brenon.go4lunch.ui.DetailsRestaurantActivity;
-import anthony.brenon.go4lunch.ui.SharedViewModel;
+import anthony.brenon.go4lunch.viewmodel.SharedViewModel;
 import anthony.brenon.go4lunch.ui.adapter.RestaurantsAdapter;
 
 public class ListViewFragment extends Fragment {

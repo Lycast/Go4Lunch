@@ -28,9 +28,11 @@ import java.util.Objects;
 
 import anthony.brenon.go4lunch.model.Location;
 import anthony.brenon.go4lunch.model.Restaurant;
-import anthony.brenon.go4lunch.ui.SharedViewModel;
+import anthony.brenon.go4lunch.viewmodel.SharedViewModel;
 
 public class MapViewFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener {
+    private final String TAG = "my logs";
+    private final String LOG_INFO = "map view fragment ";
 
     private static final int PERMS_CALL_ID = 101;
     private LocationManager locationManager;
@@ -45,7 +47,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         this.googleMap = googleMap;
 
         getPositionButton();
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(getPosition(), 14));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(getPosition(), 13));
     }
 
     @Override
@@ -104,12 +106,10 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
 
     @Override
     public void onLocationChanged(@NonNull android.location.Location location) {
-        Log.d("pos__", "onLocationChange");
+        Log.d(TAG, LOG_INFO + "onLocationChanged");
         position = new LatLng ( location.getLatitude(), location.getLongitude());
         locationUser = new Location(location.getLatitude(), location.getLongitude());
         sharedViewModel.setLocationUser(locationUser);
-        if (getView() != null)
-        sharedViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), this::displayRestaurants);
     }
 
     @Override
@@ -127,9 +127,12 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
             case LocationProvider
                     .AVAILABLE:
                 newStatus = "AVAILABLE";
+                sharedViewModel.setLocationUser(locationUser);
+                sharedViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), this::displayRestaurants);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(getPosition(), 13));
                 break;
         }
-        Log.d("onStatusChanged", "onStatus : " + newStatus);
+        Log.d(TAG, LOG_INFO + "onStatusChange: " + newStatus);
     }
 
     @SuppressLint("MissingPermission")

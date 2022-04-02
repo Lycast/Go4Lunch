@@ -1,5 +1,7 @@
 package anthony.brenon.go4lunch.Repository;
 
+import static anthony.brenon.go4lunch.api.JsonPlaceHolderApi.retrofit;
+
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -12,39 +14,29 @@ import java.util.Objects;
 import anthony.brenon.go4lunch.api.JsonPlaceHolderApi;
 import anthony.brenon.go4lunch.model.Location;
 import anthony.brenon.go4lunch.model.Restaurant;
-import anthony.brenon.go4lunch.model.googleplace_models.GooglePlaceResponse;
-import anthony.brenon.go4lunch.model.googleplace_models.PlaceDetails;
+import anthony.brenon.go4lunch.model.googleplace_models.PlaceNearbyResponse;
+import anthony.brenon.go4lunch.model.googleplace_models.PlaceResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Lycast on 24/02/2022.
  */
 public class RestaurantRepository {
+    private static final String COLLECTION_RESTAURANTS = "restaurants";
     private final String TAG = "my logs";
     private final String LOG_INFO = "restaurant_repository ";
 
     private List<Restaurant> restaurants = new ArrayList<>();
-    JsonPlaceHolderApi jsonPlaceHolderApi;
+    private final JsonPlaceHolderApi jsonPlaceHolderApi;
 
     //TODO put there variable into shared view model radius setting
     String radius = "2000";
 
 
     public RestaurantRepository () {
-
-        Log.d(TAG, LOG_INFO + "construct ");
-//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-//        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://maps.googleapis.com/maps/api/place/")
-                .addConverterFactory(GsonConverterFactory.create())
-                //.client(client)
-                .build();
+        Log.d(TAG, LOG_INFO + "construct");
         jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
     }
 
@@ -52,13 +44,13 @@ public class RestaurantRepository {
 
         MutableLiveData<List<Restaurant>> result = new MutableLiveData<>();
 
-        Call<GooglePlaceResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
+        Call<PlaceNearbyResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
 
-        call.enqueue(new Callback<GooglePlaceResponse>() {
+        call.enqueue(new Callback<PlaceNearbyResponse>() {
 
             @Override
-            public void onResponse(@NonNull Call<GooglePlaceResponse> call,
-                                   @NonNull Response<GooglePlaceResponse> response) {
+            public void onResponse(@NonNull Call<PlaceNearbyResponse> call,
+                                   @NonNull Response<PlaceNearbyResponse> response) {
                 if(response.isSuccessful()){
                     restaurants = Objects.requireNonNull(response.body()).getResults();
                     for (Restaurant restaurant : restaurants) {
@@ -68,7 +60,7 @@ public class RestaurantRepository {
                 }
             }
             @Override
-            public void onFailure(@NonNull Call<GooglePlaceResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<PlaceNearbyResponse> call, @NonNull Throwable t) {
                 Log.d(TAG,  LOG_INFO + "onFailure: " + t.getMessage());
             }
         });
@@ -79,18 +71,18 @@ public class RestaurantRepository {
 
         MutableLiveData<Restaurant> restaurant = new MutableLiveData<>();
 
-        Call<PlaceDetails> restaurantCall = jsonPlaceHolderApi.getApiDetailsResponse(place_id);
+        Call<PlaceResponse> restaurantCall = jsonPlaceHolderApi.getApiDetailsResponse(place_id);
 
-        restaurantCall.enqueue(new Callback<PlaceDetails>() {
+        restaurantCall.enqueue(new Callback<PlaceResponse>() {
             @Override
-            public void onResponse(@NonNull Call<PlaceDetails> call, @NonNull Response<PlaceDetails> response) {
+            public void onResponse(@NonNull Call<PlaceResponse> call, @NonNull Response<PlaceResponse> response) {
                 Log.d(TAG,  LOG_INFO + "onResponse ");
                 if (response.isSuccessful()) {
-                    restaurant.postValue(Objects.requireNonNull(response.body()).getResults());
+                    restaurant.postValue(Objects.requireNonNull(response.body()).getResult());
                 }
             }
             @Override
-            public void onFailure(@NonNull Call<PlaceDetails> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<PlaceResponse> call, @NonNull Throwable t) {
                 Log.d(TAG,  LOG_INFO + "onFailure: " + t.getMessage());
             }
         });

@@ -1,4 +1,4 @@
-package anthony.brenon.go4lunch.ui;
+package anthony.brenon.go4lunch.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
@@ -30,4 +30,5 @@ public class SharedViewModel extends ViewModel {
     public void setLocationUser(Location locationUser) {
         this.locationUser = locationUser;
     }
+
 }

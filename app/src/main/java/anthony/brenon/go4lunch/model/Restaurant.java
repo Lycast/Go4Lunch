@@ -1,12 +1,13 @@
 package anthony.brenon.go4lunch.model;
 
+import com.google.firebase.firestore.Exclude;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
 import anthony.brenon.go4lunch.BuildConfig;
 import anthony.brenon.go4lunch.model.googleplace_models.GeometryPlace;
-import anthony.brenon.go4lunch.model.googleplace_models.Opening;
+import anthony.brenon.go4lunch.model.googleplace_models.OpeningHours;
 import anthony.brenon.go4lunch.model.googleplace_models.Photo;
 
 /**
@@ -30,15 +31,16 @@ public class Restaurant {
     @SerializedName("international_phone_number")
     private String phoneNumber;
     @SerializedName("opening_hours")
-    private Opening openingHours;
+    private OpeningHours openingHours;
+    @SerializedName("rating")
+    private float rating = 0;
 
-    private int nbLikes = 0;
     private double distance;
 
     public Restaurant() { }
 
     public Restaurant(String id, String name, String address, GeometryPlace geometryPlace, List<Photo> photosUrl, String website,
-                      String phoneNumber, Opening openingHours, int nbLikes, double distance) {
+                      String phoneNumber, OpeningHours openingHours, float rating, double distance) {
         this.setId(id);
         this.setName(name);
         this.setAddress(address);
@@ -47,27 +49,30 @@ public class Restaurant {
         this.setWebsite(website);
         this.setPhoneNumber(phoneNumber);
         this.setOpeningHours(openingHours);
-        this.setNbLikes(nbLikes);
+        this.setRating(rating);
         this.setDistance(distance);
     }
 
     // --GETTERS--
     public String getId() { return id; }
+    @Exclude
     public String getName() { return name; }
+    @Exclude
     public String getAddress() { return address; }
+    @Exclude
     public GeometryPlace getGeometryPlace() { return geometryPlace; }
+    @Exclude
     public List<Photo> getPhotosUrl() { return photosUrl; }
-    public int getNbLikes() {
-        int accumulator = 0;
-        while (nbLikes > 0) {
-            nbLikes /= 4;
-            accumulator ++;
-        }
-        return accumulator; }
-    public double getDistance() { return distance; }
+    @Exclude
     public String getWebsite() { return website; }
+    @Exclude
     public String getPhoneNumber() { return phoneNumber; }
-    public Opening getOpeningHours() { return openingHours; }
+    @Exclude
+    public OpeningHours getOpeningHours() { return openingHours; }
+    @Exclude
+    public float getRating() { return rating; }
+    @Exclude
+    public double getDistance() { return distance; }
 
     // --SETTERS--
     public void setId(String id) { this.id = id; }
@@ -75,11 +80,11 @@ public class Restaurant {
     public void setAddress(String address) { this.address = address; }
     public void setGeometryPlace(GeometryPlace geometryPlace) { this.geometryPlace = geometryPlace; }
     public void setPhotosUrl(List<Photo> photosUrl) { this.photosUrl = photosUrl; }
-    public void setNbLikes(int nbLikes) { this.nbLikes = nbLikes; }
-    public void setOpeningHours(Opening openingHours) { this.openingHours = openingHours; }
     public void setDistance(double distance) { this.distance = distance; }
     public void setWebsite(String website) { this.website = website; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public void setOpeningHours(OpeningHours openingHours) { this.openingHours = openingHours; }
+    public void setRating(float rating) { this.rating = rating; }
 
     public void setDistance(Location locationUser) {
 

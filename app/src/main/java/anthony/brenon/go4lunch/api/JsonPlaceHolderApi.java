@@ -2,9 +2,11 @@ package anthony.brenon.go4lunch.api;
 
 
 import anthony.brenon.go4lunch.BuildConfig;
-import anthony.brenon.go4lunch.model.googleplace_models.GooglePlaceResponse;
-import anthony.brenon.go4lunch.model.googleplace_models.PlaceDetails;
+import anthony.brenon.go4lunch.model.googleplace_models.PlaceNearbyResponse;
+import anthony.brenon.go4lunch.model.googleplace_models.PlaceResponse;
 import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
@@ -14,8 +16,17 @@ import retrofit2.http.Query;
 public interface JsonPlaceHolderApi {
 
     @GET("nearbysearch/json?type=restaurant&key=" + BuildConfig.MAPS_API_KEY)
-    Call<GooglePlaceResponse> getApiNearbyRestaurantResponse(@Query("location") String location, @Query("radius") String radius);
+    Call<PlaceNearbyResponse> getApiNearbyRestaurantResponse(@Query("location") String location, @Query("radius") String radius);
 
     @GET("details/json?key=" + BuildConfig.MAPS_API_KEY)
-    Call<PlaceDetails> getApiDetailsResponse(@Query("place_id") String place_id );
+    Call<PlaceResponse> getApiDetailsResponse(@Query("place_id") String place_id );
+
+//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("https://maps.googleapis.com/maps/api/place/")
+            .addConverterFactory(GsonConverterFactory.create())
+            //.client(client)
+            .build();
 }

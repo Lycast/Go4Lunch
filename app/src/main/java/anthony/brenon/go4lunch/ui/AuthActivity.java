@@ -6,24 +6,20 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.firebase.ui.auth.AuthMethodPickerLayout;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
 
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityAuthBinding;
-import anthony.brenon.go4lunch.model.User;
+import anthony.brenon.go4lunch.viewmodel.UserViewModel;
 
 public class AuthActivity extends AppCompatActivity {
     private final String TAG = "my_logs";
@@ -33,6 +29,7 @@ public class AuthActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
 
     private ActivityAuthBinding binding;
+    private UserViewModel userViewModel;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
@@ -40,6 +37,8 @@ public class AuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAuthBinding.inflate(getLayoutInflater());
+
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 
         initUserSession();
     }
@@ -58,7 +57,7 @@ public class AuthActivity extends AppCompatActivity {
             // SUCCESS
             if (resultCode == RESULT_OK) {
                 showSnackBar(getString(R.string.connection_succeed));
-                createUser();
+                userViewModel.createUser().addOnSuccessListener(user -> startMainActivity());
             } else {
                 // ERRORS
                 if (response == null) {
@@ -76,7 +75,7 @@ public class AuthActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        Log.d(TAG,LOG_INFO + "on activity result");
+        Log.d(TAG, LOG_INFO + "on activity result");
         super.onActivityResult(requestCode, resultCode, data);
         this.handleResponseAfterSignIn(requestCode, resultCode, data);
     }
@@ -110,61 +109,9 @@ public class AuthActivity extends AppCompatActivity {
         finish();
     }
 
-
-    // -- IMPLEMENT USER IN DATABASE --
-    // Get the Collection Reference
-    private CollectionReference getUsersCollection() {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
-    }
-
-    // Get the Current user id
-    @Nullable
-    public String getCurrentUserUID() {
-        FirebaseUser user = auth.getCurrentUser();
-        return (user != null) ? user.getUid() : null;
-    }
-
-    // Get data of user
-    public Task<DocumentSnapshot> getUserData() {
-        String uid = this.getCurrentUserUID();
-        if (uid != null) {
-            return this.getUsersCollection().document(uid).get();
-        } else {
-            return null;
-        }
-    }
-
-    // Create User in Firestore
-    public void createUser() {
-        FirebaseUser user = auth.getCurrentUser();
-        if (user != null) {
-            String urlPicture = (user.getPhotoUrl() != null) ? user.getPhotoUrl().toString() : null;
-            String username = user.getDisplayName();
-            String uid = user.getUid();
-
-            User userToCreate = new User(uid, username, urlPicture);
-            getUserData()
-                    .addOnSuccessListener(data ->
-                            // User exist in database -> update user
-                            getUsersCollection()
-                                    .document(uid)
-                                    .set(userToCreate)
-                                    .addOnSuccessListener(documentSnapshot -> startMainActivity())
-                                    .addOnFailureListener(updateUserException -> Log.e(TAG,LOG_INFO +  updateUserException.getMessage()))
-                    )
-                    .addOnFailureListener(notExistException ->
-                            // User doesn't exist in database -> create user
-                            getUsersCollection()
-                                    .add(userToCreate)
-                                    .addOnSuccessListener(documentSnapshot -> startMainActivity())
-                                    .addOnFailureListener(createException -> Log.e(TAG,LOG_INFO +  createException.getMessage()))
-                    );
-        }
-    }
-
     private void initUserSession() {
         if (auth.getCurrentUser() != null) {
-            createUser();
+            userViewModel.createUser().addOnSuccessListener(user -> startMainActivity());
         } else {
             customLayoutAuth();
         }
