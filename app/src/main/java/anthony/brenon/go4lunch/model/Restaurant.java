@@ -3,6 +3,7 @@ package anthony.brenon.go4lunch.model;
 import com.google.firebase.firestore.Exclude;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import anthony.brenon.go4lunch.BuildConfig;
@@ -14,7 +15,7 @@ import anthony.brenon.go4lunch.model.googleplace_models.Photo;
  * Created by Lycast on 01/03/2022.
  */
 public class Restaurant {
-    private final String TAG = "my logs";
+
 
     @SerializedName("place_id")
     private String id;
@@ -34,13 +35,16 @@ public class Restaurant {
     private OpeningHours openingHours;
     @SerializedName("rating")
     private float rating = 0;
-
+    private List<String> usersChoice;
+    private int numberWorkmateChoice;
     private double distance;
 
-    public Restaurant() { }
+
+    public Restaurant() {}
+
 
     public Restaurant(String id, String name, String address, GeometryPlace geometryPlace, List<Photo> photosUrl, String website,
-                      String phoneNumber, OpeningHours openingHours, float rating, double distance) {
+                      String phoneNumber, OpeningHours openingHours, float rating, double distance, List<String> usersChoice, int numberWorkmateChoice) {
         this.setId(id);
         this.setName(name);
         this.setAddress(address);
@@ -51,11 +55,13 @@ public class Restaurant {
         this.setOpeningHours(openingHours);
         this.setRating(rating);
         this.setDistance(distance);
+        this.setUsersChoice(usersChoice);
+        this.setNumberWorkmateChoice(numberWorkmateChoice);
     }
+
 
     // --GETTERS--
     public String getId() { return id; }
-    @Exclude
     public String getName() { return name; }
     @Exclude
     public String getAddress() { return address; }
@@ -73,6 +79,12 @@ public class Restaurant {
     public float getRating() { return rating; }
     @Exclude
     public double getDistance() { return distance; }
+    @Exclude
+    public int getNumberWorkmateChoice() {return numberWorkmateChoice;}
+    public List<String> getUsersChoice() {
+        if (usersChoice == null) return new ArrayList<>();
+        else return  usersChoice;}
+
 
     // --SETTERS--
     public void setId(String id) { this.id = id; }
@@ -85,18 +97,20 @@ public class Restaurant {
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
     public void setOpeningHours(OpeningHours openingHours) { this.openingHours = openingHours; }
     public void setRating(float rating) { this.rating = rating; }
+    public void setUsersChoice(List<String> usersChoice) {this.usersChoice = usersChoice;}
+    public void setNumberWorkmateChoice(int numberWorkmateChoice) {this.numberWorkmateChoice = numberWorkmateChoice;}
+
 
     public void setDistance(Location locationUser) {
-
         android.location.Location place = new android.location.Location("Restaurant");
         place.setLatitude(getGeometryPlace().getLocationPlace().getLat());
         place.setLongitude(getGeometryPlace().getLocationPlace().getLng());
-
         android.location.Location user = new android.location.Location("User");
         user.setLatitude(locationUser.getLat());
         user.setLongitude(locationUser.getLng());
         setDistance(user.distanceTo(place));
     }
+
 
     public String getPhoto(int size) {
         if (photosUrl != null && photosUrl.size() > 0) {
@@ -105,5 +119,11 @@ public class Restaurant {
                     + "&photoreference=" + photosUrl.get(0).getPhotoReference()
                     + "&key=" + BuildConfig.MAPS_API_KEY;
         } else return "";
+    }
+
+
+    @Override
+    public String toString() {
+        return "(" + name + ")";
     }
 }

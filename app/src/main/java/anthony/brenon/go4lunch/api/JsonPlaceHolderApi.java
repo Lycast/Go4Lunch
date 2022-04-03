@@ -15,18 +15,22 @@ import retrofit2.http.Query;
  */
 public interface JsonPlaceHolderApi {
 
+
     @GET("nearbysearch/json?type=restaurant&key=" + BuildConfig.MAPS_API_KEY)
     Call<PlaceNearbyResponse> getApiNearbyRestaurantResponse(@Query("location") String location, @Query("radius") String radius);
+
 
     @GET("details/json?key=" + BuildConfig.MAPS_API_KEY)
     Call<PlaceResponse> getApiDetailsResponse(@Query("place_id") String place_id );
 
-//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-//        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("https://maps.googleapis.com/maps/api/place/")
             .addConverterFactory(GsonConverterFactory.create())
             //.client(client)
             .build();
 }
+
+//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();

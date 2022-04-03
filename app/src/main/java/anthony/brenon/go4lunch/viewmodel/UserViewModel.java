@@ -2,10 +2,13 @@ package anthony.brenon.go4lunch.viewmodel;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.List;
 
 import anthony.brenon.go4lunch.Repository.UsersRepository;
 import anthony.brenon.go4lunch.model.User;
@@ -19,29 +22,27 @@ public class UserViewModel extends ViewModel {
 
     private final UsersRepository usersRepository;
 
+
     public UserViewModel() {
         super();
         usersRepository = new UsersRepository();
     }
 
-    public Task<User> createUser() {
-        FirebaseUser fbUser = usersRepository.getFirebaseUser();
 
+    public Task<User> createUser() {
+        FirebaseUser fbUser = usersRepository.getCurrentFirebaseUser();
         if (fbUser == null) {
             throw new NullPointerException("FirebaseUser is not defined");
         }
-
         String urlPicture = (fbUser.getPhotoUrl() != null) ? fbUser.getPhotoUrl().toString() : null;
         String username = fbUser.getDisplayName();
         String uid = fbUser.getUid();
-
         return usersRepository.getUserData()
                 .addOnSuccessListener(dbUser -> {
                     // User exist in database -> update user
                     dbUser.setUsername(username);
                     dbUser.setUid(uid);
                     dbUser.setUrlPicture(urlPicture);
-
                     usersRepository.updateUser(dbUser);
                 })
                 .addOnFailureListener(notExistException -> {
@@ -49,11 +50,11 @@ public class UserViewModel extends ViewModel {
                     User userToCreate = new User(uid, username, urlPicture);
                     usersRepository.createUser(userToCreate);
                 });
-
     }
 
-    public Task<User> updateUser(User userUpdate) {
-        return usersRepository.getUserData()
+
+    public void updateUser(User userUpdate) {
+        usersRepository.getUserData()
                 .addOnSuccessListener(data -> {
                             updateUser(userUpdate, data);
                             // User exist in database -> update user
@@ -66,13 +67,20 @@ public class UserViewModel extends ViewModel {
                 );
     }
 
+
     public Task<User> getCurrentUserFirebase(){
         return usersRepository.getUserData();
     }
+
 
     private void updateUser(User userUpdate, User dbUser) {
         userUpdate.setUsername(dbUser.getUsername());
         userUpdate.setUid(dbUser.getUid());
         userUpdate.setUrlPicture(dbUser.getUrlPicture());
+    }
+
+
+    public LiveData<List<User>> getUsersList() {
+        return usersRepository.getUsersLiveData();
     }
 }

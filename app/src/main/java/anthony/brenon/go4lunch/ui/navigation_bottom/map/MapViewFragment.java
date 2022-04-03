@@ -1,4 +1,4 @@
-package anthony.brenon.go4lunch.ui.bottom_navigation.map;
+package anthony.brenon.go4lunch.ui.navigation_bottom.map;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -31,8 +31,8 @@ import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.viewmodel.SharedViewModel;
 
 public class MapViewFragment extends SupportMapFragment implements OnMapReadyCallback, LocationListener {
-    private final String TAG = "my logs";
-    private final String LOG_INFO = "map view fragment ";
+    private final String TAG = "my_logs";
+    private final String LOG_INFO = "MapViewFragment ";
 
     private static final int PERMS_CALL_ID = 101;
     private LocationManager locationManager;
@@ -42,44 +42,45 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     private LatLng position;
     Location locationUser;
 
+
     @Override
     public void onMapReady(@NonNull final GoogleMap googleMap) {
         this.googleMap = googleMap;
-
         getPositionButton();
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(getPosition(), 13));
     }
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         getMapAsync(this);
     }
+
 
     @Override
     public void onResume() {
         super.onResume();
-
         checkPermissions();
     }
+
 
     @SuppressLint("MissingPermission")
     @Override
     public void onPause() {
         super.onPause();
-
         if(locationManager != null) {
             locationManager.removeUpdates(this);
         }
     }
+
 
     @SuppressLint("MissingPermission")
     private void checkPermissions() {
@@ -91,7 +92,6 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
             }, PERMS_CALL_ID);
             return;
         }
-
         locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService( Context.LOCATION_SERVICE );
         if (locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER)) {
             locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 30000, 20, this);
@@ -104,6 +104,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         }
     }
 
+
     @Override
     public void onLocationChanged(@NonNull android.location.Location location) {
         Log.d(TAG, LOG_INFO + "onLocationChanged");
@@ -111,6 +112,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         locationUser = new Location(location.getLatitude(), location.getLongitude());
         sharedViewModel.setLocationUser(locationUser);
     }
+
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -135,11 +137,13 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         Log.d(TAG, LOG_INFO + "onStatusChange: " + newStatus);
     }
 
+
     @SuppressLint("MissingPermission")
     private void getPositionButton() {
         googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
+
 
     private void displayRestaurants(List<Restaurant> restaurants) {
         for (Restaurant restaurant : restaurants) {
@@ -149,6 +153,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
                     .title(restaurant.getName()));
         }
     }
+
 
     private LatLng getPosition() {
         if (position == null)

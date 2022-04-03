@@ -23,36 +23,32 @@ import anthony.brenon.go4lunch.viewmodel.UserViewModel;
 
 public class AuthActivity extends AppCompatActivity {
     private final String TAG = "my_logs";
-    private final String LOG_INFO = "auth_activity ";
+    private final String LOG_INFO = "AuthActivity ";
 
-    private static final String COLLECTION_NAME = "users";
     private static final int RC_SIGN_IN = 123;
-
     private ActivityAuthBinding binding;
     private UserViewModel userViewModel;
-
     FirebaseAuth auth = FirebaseAuth.getInstance();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAuthBinding.inflate(getLayoutInflater());
-
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-
         initUserSession();
     }
+
 
     // Show Snack Bar with a message
     private void showSnackBar(String message) {
         Snackbar.make(binding.loginLayout, message, Snackbar.LENGTH_SHORT).show();
     }
 
+
     // Method that handles response after SignIn Activity close
     private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data) {
-
         IdpResponse response = IdpResponse.fromResultIntent(data);
-
         if (requestCode == RC_SIGN_IN) {
             // SUCCESS
             if (resultCode == RESULT_OK) {
@@ -73,12 +69,14 @@ public class AuthActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         Log.d(TAG, LOG_INFO + "on activity result");
         super.onActivityResult(requestCode, resultCode, data);
         this.handleResponseAfterSignIn(requestCode, resultCode, data);
     }
+
 
     // Create a custom layout for SignIn Activity
     private void customLayoutAuth() {
@@ -88,7 +86,6 @@ public class AuthActivity extends AppCompatActivity {
                 .setGoogleButtonId(R.id.sign_in_google)
                 .setFacebookButtonId(R.id.sign_in_facebook)
                 .build();
-
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -102,12 +99,14 @@ public class AuthActivity extends AppCompatActivity {
                 RC_SIGN_IN);
     }
 
+
     // Start main activity and close this activity
     private void startMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
+
 
     private void initUserSession() {
         if (auth.getCurrentUser() != null) {

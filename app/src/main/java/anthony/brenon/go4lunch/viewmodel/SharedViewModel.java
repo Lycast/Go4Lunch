@@ -18,14 +18,17 @@ public class SharedViewModel extends ViewModel {
     private final RestaurantRepository restaurantRepository;
     private Location locationUser;
 
+
     public SharedViewModel() {
         super();
         restaurantRepository = new RestaurantRepository();
     }
 
+
     public LiveData<List<Restaurant>> getRestaurantsLiveData() {
         return restaurantRepository.getNearbyRestaurants(locationUser);
     }
+
 
     public void setLocationUser(Location locationUser) {
         this.locationUser = locationUser;

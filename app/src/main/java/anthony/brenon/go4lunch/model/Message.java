@@ -8,19 +8,22 @@ import java.sql.Date;
  * Created by Lycast on 10/02/2022.
  */
 class Message {
-    private final String TAG = "my logs";
+
 
     private String message;
     private Date dateCreated;
     private User userSender;
     private String urlImage;
 
+
     public Message() {}
+
 
     public Message(String message, User userSender) {
         this.message = message;
         this.userSender = userSender;
     }
+
 
     public Message(String message, User userSender, String urlImage) {
         this.message = message;
@@ -28,12 +31,14 @@ class Message {
         this.urlImage = urlImage;
     }
 
+
     // GETTERS
     public String getMessage() { return message; }
     @ServerTimestamp
     public Date getDateCreated() { return dateCreated; }
     public User getUserSender() { return userSender; }
     public String getUrlImage() { return urlImage; }
+
 
     // SETTERS
     public void setMessage(String message) { this.message = message; }

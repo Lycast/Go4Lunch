@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -24,50 +23,51 @@ import java.util.List;
 
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityDetailsRestaurantBinding;
+import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.model.User;
 import anthony.brenon.go4lunch.viewmodel.RestaurantViewModel;
 import anthony.brenon.go4lunch.viewmodel.UserViewModel;
 
 public class DetailsRestaurantActivity extends AppCompatActivity {
     private final String TAG = "my_logs";
-    private final String LOG_INFO = "details_activity ";
+    private final String LOG_INFO = "DetailsRestaurantActivity ";
 
     private RestaurantViewModel restaurantViewModel;
     private UserViewModel userViewModel;
     private ActivityDetailsRestaurantBinding binding;
-
-
     private static final int REQUEST_CALL = 123;
     private String placeId;
     private User currentUser;
+    private Restaurant restaurantDto;
 
-    //TODO go to make that into restaurant model !
-    private Boolean restaurantSelected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailsRestaurantBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         restaurantViewModel = new ViewModelProvider(this).get(RestaurantViewModel.class);
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        // set placeId
+        placeId = getIntent().getStringExtra("place_id");
+        // set current user
         userViewModel.getCurrentUserFirebase().addOnSuccessListener(user -> {
             this.currentUser = user;
-            setLike();
+            setLikeImage();
+            setImageChoice();
         });
-
-        if (getIntent().hasExtra("place_id")) {
-            placeId = getIntent().getStringExtra("place_id");
-            //Log.d(TAG, LOG_INFO + "onCreate getExtra: " + placeId);
-            populateDetailsRestaurant(placeId);
-            onClickListenerBtnWebsite();
-            onClickListenerBtnCall();
-            setEnableButton();
-            onClickListenerBtnLike();
-            setSelectedRestaurant();
-        }
+        // populate restaurant data
+        if ( placeId != null) { populateDetailsRestaurant(placeId); }
+        // get restaurant dto
+        restaurantViewModel.getRestaurantDto(placeId).addOnSuccessListener(restaurant -> this.restaurantDto = restaurant);
+        // set all buttons listeners
+        onClickListenerBtnWebsite();
+        onClickListenerBtnCall();
+        onClickListenerBtnLike();
+        onClickListenerFabChoice();
+        setEnableButton();
     }
+
 
     private void populateDetailsRestaurant(String placeId) {
         restaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
@@ -78,12 +78,11 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                     .placeholder(R.drawable.ic_image_not_supported)
                     .transform(new CenterCrop(), new RoundedCorners(8))
                     .into(binding.ivDetailsRestaurant);
-            //Log.d(TAG, "" + restaurant.getName());
         });
     }
 
 
-    private void setLike() {
+    private void setLikeImage() {
         if (currentUser.getRestaurantsLiked().contains(placeId)) {
             //Log.d(TAG, LOG_INFO + "if is : " + currentUser.getRestaurantsLiked().contains(placeId));
             binding.imgLike.setVisibility(View.VISIBLE);
@@ -93,6 +92,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
     }
 
+
     private void setLikeList() {
         List<String> restaurantsIds = currentUser.getRestaurantsLiked();
         if (currentUser.getRestaurantsLiked().contains(placeId))
@@ -101,16 +101,40 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         currentUser.setRestaurantsLiked(restaurantsIds);
     }
 
-    private void setSelectedRestaurantImage() {
-        if (restaurantSelected)
-            binding.fabRestaurantChoice.setImageResource(R.drawable.ic_check_circle);
-        else binding.fabRestaurantChoice.setImageResource(R.drawable.ic_restaurant_menu);
+
+    private void setImageChoice() {
+        if (currentUser.getRestaurantChosenId().equals(placeId)) {
+            binding.fabRestaurantChoice.setImageResource(R.drawable.ic_check_circle); }
+        else { binding.fabRestaurantChoice.setImageResource(R.drawable.ic_restaurant_menu); }
     }
+
+
+    private void setUserChoice() {
+        if (currentUser.getRestaurantChosenId().equals(placeId) || currentUser.getRestaurantChosenId().equals("")) {
+            // set new choice
+            List<String> userChoice = restaurantDto.getUsersChoice();
+
+            if (restaurantDto.getUsersChoice().contains(currentUser.getUid())) {
+                userChoice.remove(currentUser.getUid());
+                currentUser.setRestaurantChosenId("");
+                currentUser.setRestaurantChosenName("");
+            } else {
+                userChoice.add(currentUser.getUid());
+                currentUser.setRestaurantChosenId(restaurantDto.getId());
+                currentUser.setRestaurantChosenName(restaurantDto.getName());
+            }
+            userViewModel.updateUser(currentUser);
+            restaurantViewModel.updateRestaurantDto(restaurantDto);
+            setImageChoice();
+        } else // alert if user want to select 2 restaurants
+            Toast.makeText(this, "Take can't chosen 2 restaurant", Toast.LENGTH_SHORT).show();
+    }
+
 
     private void makePhoneCall() {
         restaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
-            if (restaurant.getPhoneNumber().trim().length() > 0) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+             if (restaurant.getPhoneNumber().trim().length() > 0) {
+               if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
                 } else {
                     String dial = "tel:" + restaurant.getPhoneNumber();
@@ -119,6 +143,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             }
         });
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -132,36 +157,37 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
     }
 
+
     private void setAlertDialog() {
         restaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> new AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_phone_enabled)
-                .setMessage("Are you sure you want to call this number?\n\n" + restaurant.getName() + "  " + restaurant.getPhoneNumber())
+                .setTitle(" call")
+                .setMessage(restaurant.getName() + "  " + restaurant.getPhoneNumber() + " ?")
                 .setPositiveButton(android.R.string.yes, (dialog, which) -> makePhoneCall())
                 .setNegativeButton(android.R.string.no, null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
                 .show());
     }
 
+
     // SET ON CLICK LISTENER METHODS
-    private void setSelectedRestaurant() {
-        binding.fabRestaurantChoice.setOnClickListener(view -> {
-            restaurantSelected = !restaurantSelected;
-            setSelectedRestaurantImage();
-        });
+    private void onClickListenerFabChoice() {
+        binding.fabRestaurantChoice.setOnClickListener(view -> setUserChoice());
     }
+
 
     private void onClickListenerBtnCall() {
         binding.btnCall.setOnClickListener(view -> restaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> setAlertDialog()));
     }
 
+
     private void onClickListenerBtnLike() {
         binding.btnLike.setOnClickListener(view -> {
             setLikeList();
-            setLike();
+            setLikeImage();
             userViewModel.updateUser(currentUser);
-            Log.d(TAG, LOG_INFO + "current User list: " + currentUser.getRestaurantsLiked());
         });
     }
+
 
     private void onClickListenerBtnWebsite() {
         binding.btnWebsite.setOnClickListener(view -> restaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
@@ -169,6 +195,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             startActivity(browserIntent);
         }));
     }
+
 
     private void setEnableButton() {
         restaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {

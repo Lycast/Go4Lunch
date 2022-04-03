@@ -1,4 +1,4 @@
-package anthony.brenon.go4lunch.ui.bottom_navigation.list_view;
+package anthony.brenon.go4lunch.ui.navigation_bottom.list_view;
 
 
 import android.content.Intent;
@@ -24,8 +24,8 @@ public class ListViewFragment extends Fragment {
 
     private FragmentListViewBinding binding;
     SharedViewModel sharedViewModel;
-
     private final RestaurantsAdapter adapter = new RestaurantsAdapter();
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -34,17 +34,15 @@ public class ListViewFragment extends Fragment {
         return binding.getRoot();
     }
 
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        RecyclerView listRestaurants = binding.restaurantsRecyclerView;
-        listRestaurants.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
-        listRestaurants.setAdapter(adapter);
-
+        RecyclerView recyclerView = binding.restaurantsRecyclerView;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+        recyclerView.setAdapter(adapter);
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-        sharedViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), adapter::updateData);
-
+        sharedViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), adapter::updateDataRestaurants);
         adapter.setOnItemClickListener(placeId -> {
             Intent intent = new Intent(getActivity(), DetailsRestaurantActivity.class);
             intent.putExtra("place_id", placeId);

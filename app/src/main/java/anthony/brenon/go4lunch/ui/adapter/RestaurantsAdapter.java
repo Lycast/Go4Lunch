@@ -23,20 +23,23 @@ import anthony.brenon.go4lunch.model.Restaurant;
  */
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
     private final String TAG = "my_logs";
-    private final String LOG_INFO = "restaurant_adapter ";
+    private final String LOG_INFO = "RestaurantAdapter ";
+
 
     public List<Restaurant> restaurants;
     ItemRestaurantBinding binding;
     private static ClickListener clickListener;
 
-    public RestaurantsAdapter() {
-    }
+
+    public RestaurantsAdapter() {}
+
 
     @SuppressLint("NotifyDataSetChanged")
-    public void updateData(List<Restaurant> restaurants) {
+    public void updateDataRestaurants(List<Restaurant> restaurants) {
         this.restaurants = restaurants;
         notifyDataSetChanged();
     }
+
 
     @NonNull
     @Override
@@ -45,10 +48,12 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         return new RestaurantsViewHolder(binding);
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull RestaurantsViewHolder restaurantViewHolder, int position) {
         restaurantViewHolder.bind(restaurants.get(position));
     }
+
 
     @Override
     public int getItemCount() {
@@ -57,13 +62,16 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         return 0;
     }
 
+
     public void setOnItemClickListener(ClickListener clickListener) {
         RestaurantsAdapter.clickListener = clickListener;
     }
 
+
     public interface ClickListener {
         void onItemClick(String placeId);
     }
+
 
     // --ViewHolder--
     class RestaurantsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

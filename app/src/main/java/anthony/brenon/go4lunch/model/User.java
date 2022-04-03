@@ -8,15 +8,18 @@ import java.util.List;
  */
 
 public class User {
-    private final String TAG = "my logs";
+
 
     private String uid;
     private String username;
     private String urlPicture;
-    private String restaurantChosenId = "";
+    private String restaurantChosenName;
+    private String restaurantChosenId;
     private List<String> restaurantsLiked = new ArrayList<>();
 
+
     public User() {}
+
 
     public User(String uid, String username, String urlPicture) {
         this.setUid(uid);
@@ -24,30 +27,41 @@ public class User {
         this.setUrlPicture(urlPicture);
     }
 
-    public User(String uid, String username, String urlPicture, String restaurantChosenId, List<String> restaurantsLiked) {
+
+    public User(String uid, String username, String urlPicture, String restaurantChosenName, String restaurantChosenId, List<String> restaurantsLiked) {
         this.uid = uid;
         this.username = username;
         this.urlPicture = urlPicture;
+        this.restaurantChosenName = restaurantChosenName;
         this.restaurantChosenId = restaurantChosenId;
         this.restaurantsLiked = restaurantsLiked;
     }
+
 
     // GETTERS
     public String getUid() { return uid; }
     public String getUsername() { return username; }
     public String getUrlPicture() { return urlPicture; }
-    public String getRestaurantChosenId() { return restaurantChosenId; }
+    public String getRestaurantChosenName() {
+        if (restaurantChosenName == null) return "";
+        return restaurantChosenName; }
+    public String getRestaurantChosenId() {
+        if (restaurantChosenId == null) return "";
+        else return restaurantChosenId; }
     public List<String> getRestaurantsLiked() { return restaurantsLiked; }
+
 
     // SETTERS
     public void setUsername(String username) { this.username = username; }
     public void setUid(String uid) { this.uid = uid; }
     public void setUrlPicture(String urlPicture) { this.urlPicture = urlPicture; }
+    public void setRestaurantChosenName (String restaurantChosenName) {this.restaurantChosenName = restaurantChosenName;}
     public void setRestaurantChosenId(String restaurantChosenId) { this.restaurantChosenId = restaurantChosenId; }
     public void setRestaurantsLiked(List<String> restaurantsLiked) {
         if (restaurantsLiked == null) this.restaurantsLiked = new ArrayList<>();
         else this.restaurantsLiked = restaurantsLiked;
     }
+
 
     @Override
     public String toString() {
