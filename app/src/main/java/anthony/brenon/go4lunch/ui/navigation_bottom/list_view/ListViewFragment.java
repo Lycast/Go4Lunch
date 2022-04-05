@@ -25,7 +25,6 @@ import anthony.brenon.go4lunch.viewmodel.RestaurantViewModel;
 import anthony.brenon.go4lunch.viewmodel.SharedViewModel;
 
 public class ListViewFragment extends Fragment {
-    private final String TAG = "my_logs";
 
     private FragmentListViewBinding binding;
     SharedViewModel sharedViewModel;
