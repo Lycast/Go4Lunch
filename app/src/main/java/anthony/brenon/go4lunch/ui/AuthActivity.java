@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityAuthBinding;
-import anthony.brenon.go4lunch.viewmodel.UserViewModel;
+import anthony.brenon.go4lunch.viewmodel.WorkmateViewModel;
 
 public class AuthActivity extends AppCompatActivity {
     private final String TAG = "my_logs";
@@ -27,7 +27,7 @@ public class AuthActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
     private ActivityAuthBinding binding;
-    private UserViewModel userViewModel;
+    private WorkmateViewModel workmateViewModel;
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
 
@@ -35,7 +35,7 @@ public class AuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAuthBinding.inflate(getLayoutInflater());
-        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        workmateViewModel = new ViewModelProvider(this).get(WorkmateViewModel.class);
         initUserSession();
     }
 
@@ -53,7 +53,7 @@ public class AuthActivity extends AppCompatActivity {
             // SUCCESS
             if (resultCode == RESULT_OK) {
                 showSnackBar(getString(R.string.connection_succeed));
-                userViewModel.createUser().addOnSuccessListener(user -> startMainActivity());
+                workmateViewModel.createWorkmateIntoDb().addOnSuccessListener(user -> startMainActivity());
             } else {
                 // ERRORS
                 if (response == null) {
@@ -110,7 +110,7 @@ public class AuthActivity extends AppCompatActivity {
 
     private void initUserSession() {
         if (auth.getCurrentUser() != null) {
-            userViewModel.createUser().addOnSuccessListener(user -> startMainActivity());
+            workmateViewModel.createWorkmateIntoDb().addOnSuccessListener(user -> startMainActivity());
         } else {
             customLayoutAuth();
         }

@@ -14,17 +14,24 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import anthony.brenon.go4lunch.databinding.FragmentListViewBinding;
+import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.ui.DetailsRestaurantActivity;
-import anthony.brenon.go4lunch.viewmodel.SharedViewModel;
 import anthony.brenon.go4lunch.ui.adapter.RestaurantsAdapter;
+import anthony.brenon.go4lunch.viewmodel.RestaurantViewModel;
+import anthony.brenon.go4lunch.viewmodel.SharedViewModel;
 
 public class ListViewFragment extends Fragment {
     private final String TAG = "my_logs";
 
     private FragmentListViewBinding binding;
     SharedViewModel sharedViewModel;
+    RestaurantViewModel restaurantViewModel;
     private final RestaurantsAdapter adapter = new RestaurantsAdapter();
+    private List<Restaurant> restaurantsDB = new ArrayList<>();
 
 
     @Override
@@ -42,7 +49,18 @@ public class ListViewFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(adapter);
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-        sharedViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), adapter::updateDataRestaurants);
+        restaurantViewModel = new ViewModelProvider(requireActivity()).get(RestaurantViewModel.class);
+
+        restaurantViewModel.getRestaurantListDto().observe(this, restaurants -> restaurantsDB = restaurants);
+        sharedViewModel.getRestaurantsLiveData().observe(this, restaurants -> {
+            for (Restaurant restaurant : restaurants) {
+                for (Restaurant restaurant1 : restaurantsDB)
+                    if(restaurant.getId().equals(restaurant1.getId()))
+                        restaurant.setUsersChoice(restaurant1.getUsersChoice());
+            }
+            adapter.updateDataRestaurants(restaurants);
+        });
+
         adapter.setOnItemClickListener(placeId -> {
             Intent intent = new Intent(getActivity(), DetailsRestaurantActivity.class);
             intent.putExtra("place_id", placeId);

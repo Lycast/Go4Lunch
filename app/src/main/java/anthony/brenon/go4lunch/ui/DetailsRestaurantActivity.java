@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
@@ -24,21 +26,23 @@ import java.util.List;
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityDetailsRestaurantBinding;
 import anthony.brenon.go4lunch.model.Restaurant;
-import anthony.brenon.go4lunch.model.User;
+import anthony.brenon.go4lunch.model.Workmate;
+import anthony.brenon.go4lunch.ui.adapter.WorkmatesAdapter;
 import anthony.brenon.go4lunch.viewmodel.RestaurantViewModel;
-import anthony.brenon.go4lunch.viewmodel.UserViewModel;
+import anthony.brenon.go4lunch.viewmodel.WorkmateViewModel;
 
 public class DetailsRestaurantActivity extends AppCompatActivity {
     private final String TAG = "my_logs";
     private final String LOG_INFO = "DetailsRestaurantActivity ";
 
     private RestaurantViewModel restaurantViewModel;
-    private UserViewModel userViewModel;
+    private WorkmateViewModel workmateViewModel;
     private ActivityDetailsRestaurantBinding binding;
     private static final int REQUEST_CALL = 123;
     private String placeId;
-    private User currentUser;
+    private Workmate currentWorkmate;
     private Restaurant restaurantDto;
+    private final WorkmatesAdapter adapter = new WorkmatesAdapter(false);
 
 
     @Override
@@ -47,19 +51,31 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         binding = ActivityDetailsRestaurantBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         restaurantViewModel = new ViewModelProvider(this).get(RestaurantViewModel.class);
-        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        workmateViewModel = new ViewModelProvider(this).get(WorkmateViewModel.class);
+
         // set placeId
         placeId = getIntent().getStringExtra("place_id");
+
         // set current user
-        userViewModel.getCurrentUserFirebase().addOnSuccessListener(user -> {
-            this.currentUser = user;
+        workmateViewModel.getCurrentWorkmateData().observe(this, workmate -> {
+            this.currentWorkmate = workmate;
             setLikeImage();
             setImageChoice();
         });
+        // setup recycler view
+        RecyclerView recyclerView = binding.detailsRecyclerView;
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        recyclerView.setAdapter(adapter);
+
         // populate restaurant data
-        if ( placeId != null) { populateDetailsRestaurant(placeId); }
+        if ( placeId != null) {
+            populateDetailsRestaurant(placeId);
+            updateRecyclerList();
+        }
+
         // get restaurant dto
-        restaurantViewModel.getRestaurantDto(placeId).addOnSuccessListener(restaurant -> this.restaurantDto = restaurant);
+        restaurantViewModel.getRestaurantDto(placeId).observe(this, restaurant -> this.restaurantDto = restaurant);
+
         // set all buttons listeners
         onClickListenerBtnWebsite();
         onClickListenerBtnCall();
@@ -83,7 +99,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
 
     private void setLikeImage() {
-        if (currentUser.getRestaurantsLiked().contains(placeId)) {
+        if (currentWorkmate.getRestaurantsLiked().contains(placeId)) {
             //Log.d(TAG, LOG_INFO + "if is : " + currentUser.getRestaurantsLiked().contains(placeId));
             binding.imgLike.setVisibility(View.VISIBLE);
         } else {
@@ -92,42 +108,48 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
     }
 
+    private void updateRecyclerList() {
+        workmateViewModel.getWorkmateListForDetails(placeId).observe(this, adapter::updateDataWorkmates);
+    }
+
 
     private void setLikeList() {
-        List<String> restaurantsIds = currentUser.getRestaurantsLiked();
-        if (currentUser.getRestaurantsLiked().contains(placeId))
+        List<String> restaurantsIds = currentWorkmate.getRestaurantsLiked();
+        if (currentWorkmate.getRestaurantsLiked().contains(placeId))
             restaurantsIds.remove(placeId);
         else restaurantsIds.add(placeId);
-        currentUser.setRestaurantsLiked(restaurantsIds);
+        currentWorkmate.setRestaurantsLiked(restaurantsIds);
     }
 
 
     private void setImageChoice() {
-        if (currentUser.getRestaurantChosenId().equals(placeId)) {
+        if (currentWorkmate.getRestaurantChosenId().equals(placeId)) {
             binding.fabRestaurantChoice.setImageResource(R.drawable.ic_check_circle); }
         else { binding.fabRestaurantChoice.setImageResource(R.drawable.ic_restaurant_menu); }
     }
 
 
     private void setUserChoice() {
-        if (currentUser.getRestaurantChosenId().equals(placeId) || currentUser.getRestaurantChosenId().equals("")) {
+        if (currentWorkmate.getRestaurantChosenId().equals(placeId) || currentWorkmate.getRestaurantChosenId().equals("")) {
             // set new choice
             List<String> userChoice = restaurantDto.getUsersChoice();
 
-            if (restaurantDto.getUsersChoice().contains(currentUser.getUid())) {
-                userChoice.remove(currentUser.getUid());
-                currentUser.setRestaurantChosenId("");
-                currentUser.setRestaurantChosenName("");
+            if (restaurantDto.getUsersChoice().contains(currentWorkmate.getUid())) {
+                userChoice.remove(currentWorkmate.getUid());
+                currentWorkmate.setRestaurantChosenId("");
+                currentWorkmate.setRestaurantChosenName("");
             } else {
-                userChoice.add(currentUser.getUid());
-                currentUser.setRestaurantChosenId(restaurantDto.getId());
-                currentUser.setRestaurantChosenName(restaurantDto.getName());
+                userChoice.add(currentWorkmate.getUid());
+                currentWorkmate.setRestaurantChosenId(restaurantDto.getId());
+                currentWorkmate.setRestaurantChosenName(restaurantDto.getName());
             }
-            userViewModel.updateUser(currentUser);
+            workmateViewModel.updateWorkmate(currentWorkmate);
             restaurantViewModel.updateRestaurantDto(restaurantDto);
             setImageChoice();
-        } else // alert if user want to select 2 restaurants
+        } else {
+            // alert if user want to select 2 restaurants
             Toast.makeText(this, "Take can't chosen 2 restaurant", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -171,7 +193,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     // SET ON CLICK LISTENER METHODS
     private void onClickListenerFabChoice() {
-        binding.fabRestaurantChoice.setOnClickListener(view -> setUserChoice());
+        binding.fabRestaurantChoice.setOnClickListener(view -> {
+            setUserChoice();
+        });
     }
 
 
@@ -184,7 +208,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         binding.btnLike.setOnClickListener(view -> {
             setLikeList();
             setLikeImage();
-            userViewModel.updateUser(currentUser);
+            workmateViewModel.updateWorkmate(currentWorkmate);
         });
     }
 

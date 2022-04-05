@@ -1,9 +1,10 @@
 package anthony.brenon.go4lunch.viewmodel;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.android.gms.tasks.Task;
+import java.util.List;
 
 import anthony.brenon.go4lunch.Repository.RestaurantRepository;
 import anthony.brenon.go4lunch.model.Restaurant;
@@ -32,7 +33,11 @@ public class RestaurantViewModel extends ViewModel {
     }
 
 
-    public Task<Restaurant> getRestaurantDto(String placeId) {
+    public LiveData<Restaurant> getRestaurantDto(String placeId) {
         return restaurantRepository.getRestaurantDto(placeId);
+    }
+
+    public LiveData<List<Restaurant>> getRestaurantListDto() {
+        return restaurantRepository.getRestaurantListDto();
     }
 }

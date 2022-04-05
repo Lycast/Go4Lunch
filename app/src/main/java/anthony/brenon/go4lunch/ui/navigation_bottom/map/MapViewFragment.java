@@ -4,28 +4,33 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 import java.util.Objects;
 
+import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.model.Location;
 import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.viewmodel.SharedViewModel;
@@ -46,8 +51,11 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     @Override
     public void onMapReady(@NonNull final GoogleMap googleMap) {
         this.googleMap = googleMap;
-        getPositionButton();
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(getPosition(), 13));
+        if (checkFineLocationPermission()) {
+            getPositionButton();
+        } else {
+            checkPermissions();
+        }
     }
 
 
@@ -70,6 +78,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         super.onResume();
         checkPermissions();
     }
+
 
 
     @SuppressLint("MissingPermission")
@@ -105,37 +114,28 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     }
 
 
+    private boolean checkFineLocationPermission() {
+        String permission = Manifest.permission.ACCESS_FINE_LOCATION;
+        int res = Objects.requireNonNull(getContext()).checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
+
+
     @Override
     public void onLocationChanged(@NonNull android.location.Location location) {
-        Log.d(TAG, LOG_INFO + "onLocationChanged");
         position = new LatLng ( location.getLatitude(), location.getLongitude());
         locationUser = new Location(location.getLatitude(), location.getLongitude());
         sharedViewModel.setLocationUser(locationUser);
+        if (getView() != null)
+            //TODO fix problem location for wait a good location before call api
+            sharedViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), this::displayRestaurants);
+        if (googleMap != null)
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(getPosition(), 13));
     }
 
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        String newStatus = "";
-        switch (status) {
-            case LocationProvider
-                    .OUT_OF_SERVICE:
-                newStatus = "OUT_OF_SERVICE";
-            break;
-            case LocationProvider
-                    .TEMPORARILY_UNAVAILABLE:
-                newStatus = "TEMPORARILY_UNAVAILABLE";
-                break;
-            case LocationProvider
-                    .AVAILABLE:
-                newStatus = "AVAILABLE";
-                sharedViewModel.setLocationUser(locationUser);
-                sharedViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), this::displayRestaurants);
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(getPosition(), 13));
-                break;
-        }
-        Log.d(TAG, LOG_INFO + "onStatusChange: " + newStatus);
-    }
+    public void onStatusChanged(String provider, int status, Bundle extras) { }
 
 
     @SuppressLint("MissingPermission")
@@ -149,6 +149,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         for (Restaurant restaurant : restaurants) {
             LatLng restaurantLocation = new LatLng(restaurant.getGeometryPlace().getLocationPlace().getLat(), restaurant.getGeometryPlace().getLocationPlace().getLng());
             googleMap.addMarker(new MarkerOptions()
+                    .icon(BitmapFromVector(getContext(), R.drawable.marker_dinner_orange_34))
                     .position(restaurantLocation)
                     .title(restaurant.getName()));
         }
@@ -159,5 +160,27 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         if (position == null)
             return POS_DEFAULT;
             return position;
+    }
+
+    private BitmapDescriptor BitmapFromVector(Context context, int vectorResId) {
+        // below line is use to generate a drawable.
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+
+        // below line is use to set bounds to our vector drawable.
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+
+        // below line is use to create a bitmap for our
+        // drawable which we have added.
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+
+        // below line is use to add bitmap in our canvas.
+        Canvas canvas = new Canvas(bitmap);
+
+        // below line is use to draw our
+        // vector drawable in canvas.
+        vectorDrawable.draw(canvas);
+
+        // after generating our bitmap we are returning our bitmap.
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }

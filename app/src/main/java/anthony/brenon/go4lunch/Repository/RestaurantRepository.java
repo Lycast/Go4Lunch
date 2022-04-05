@@ -5,10 +5,11 @@ import static anthony.brenon.go4lunch.api.JsonPlaceHolderApi.retrofit;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -40,7 +41,6 @@ public class RestaurantRepository {
 
 
     public RestaurantRepository () {
-        Log.d(TAG, LOG_INFO + "construct");
         jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
     }
 
@@ -53,10 +53,12 @@ public class RestaurantRepository {
             public void onResponse(@NonNull Call<PlaceNearbyResponse> call,
                                    @NonNull Response<PlaceNearbyResponse> response) {
                 if(response.isSuccessful()){
-                    restaurants = Objects.requireNonNull(response.body()).getResults();
+                    restaurants = response.body().getResults();
                     for (Restaurant restaurant : restaurants) {
                         restaurant.setDistance(locationUser);
-                        addNewRestaurantIntoFirebase(restaurant);
+                        Restaurant restaurantAdd = new Restaurant(restaurant.getId(), restaurant.getName());
+                        Log.d(TAG, "resto" + restaurantAdd.toString());
+                        //addNewRestaurantIntoFirebase(restaurantAdd);
                     }
                     result.postValue(restaurants);
                 }
@@ -90,9 +92,27 @@ public class RestaurantRepository {
     }
 
 
-    public Task<Restaurant> getRestaurantDto(String placeId) {
-        return getRestaurantsCollection().document(placeId).get().continueWith(data ->
-                data.getResult().toObject(Restaurant.class));
+    public LiveData<Restaurant> getRestaurantDto(String placeId) {
+        MutableLiveData<Restaurant> restaurant = new MutableLiveData<>();
+        getRestaurantsCollection().document(placeId).get().addOnSuccessListener(data -> {
+            Restaurant restaurantData = data.toObject(Restaurant.class);
+            restaurant.setValue(restaurantData); });
+        return restaurant;
+    }
+
+
+    public LiveData<List<Restaurant>> getRestaurantListDto() {
+        MutableLiveData<List<Restaurant>> restaurantListDto = new MutableLiveData<>();
+        getRestaurantsCollection().get().addOnSuccessListener(queryDocumentSnapshots -> {
+            List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+            List<Restaurant> restaurants = new ArrayList<>();
+            for (DocumentSnapshot document : documents) {
+                Restaurant restaurant = document.toObject(Restaurant.class);
+                 restaurants.add(restaurant);
+            }
+            restaurantListDto.setValue(restaurants);
+        });
+        return restaurantListDto;
     }
 
 
@@ -102,11 +122,8 @@ public class RestaurantRepository {
 
 
     private void addNewRestaurantIntoFirebase(Restaurant restaurantAdd) {
-        // if document doesn't exist into collection set new document
-        Log.d(TAG,"addIntoFirebase condition result: " + getRestaurantsCollection().document(restaurantAdd.getId()).get().isSuccessful() + " / placeID: " + restaurantAdd.getId());
-        //TODO change this condition it's not correct
-        if (getRestaurantsCollection().document(restaurantAdd.getId()).get().isSuccessful())
-            getRestaurantsCollection().document(restaurantAdd.getId()).set(restaurantAdd);
+        // add new document into collection or merge existing document
+        getRestaurantsCollection().document(restaurantAdd.getId()).set(restaurantAdd);
     }
 
 

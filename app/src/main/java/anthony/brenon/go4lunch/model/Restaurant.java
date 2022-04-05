@@ -36,12 +36,15 @@ public class Restaurant {
     @SerializedName("rating")
     private float rating = 0;
     private List<String> usersChoice;
-    private int numberWorkmateChoice;
     private double distance;
 
 
     public Restaurant() {}
 
+    public Restaurant(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public Restaurant(String id, String name, String address, GeometryPlace geometryPlace, List<Photo> photosUrl, String website,
                       String phoneNumber, OpeningHours openingHours, float rating, double distance, List<String> usersChoice, int numberWorkmateChoice) {
@@ -56,7 +59,6 @@ public class Restaurant {
         this.setRating(rating);
         this.setDistance(distance);
         this.setUsersChoice(usersChoice);
-        this.setNumberWorkmateChoice(numberWorkmateChoice);
     }
 
 
@@ -79,8 +81,6 @@ public class Restaurant {
     public float getRating() { return rating; }
     @Exclude
     public double getDistance() { return distance; }
-    @Exclude
-    public int getNumberWorkmateChoice() {return numberWorkmateChoice;}
     public List<String> getUsersChoice() {
         if (usersChoice == null) return new ArrayList<>();
         else return  usersChoice;}
@@ -98,7 +98,6 @@ public class Restaurant {
     public void setOpeningHours(OpeningHours openingHours) { this.openingHours = openingHours; }
     public void setRating(float rating) { this.rating = rating; }
     public void setUsersChoice(List<String> usersChoice) {this.usersChoice = usersChoice;}
-    public void setNumberWorkmateChoice(int numberWorkmateChoice) {this.numberWorkmateChoice = numberWorkmateChoice;}
 
 
     public void setDistance(Location locationUser) {

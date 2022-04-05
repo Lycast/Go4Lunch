@@ -46,11 +46,15 @@
     <string name="isClose">Close</string>
     <string name="Not_specified">Not specified</string>
 
+    <!--item workmate-->
+    <string name="populate_tv_user">&#160;%1s (%2s)</string>
+    <string name="have_chosen">have chosen</string>
+    <string name="has_not_decided_yet">&#160;has not decided yet</string>
+    <string name="is_joining">&#160;is joining</string>
 
+    <!--details restaurant-->
     <string name="call">CALL</string>
     <string name="like">LIKE</string>
     <string name="website">WEBSITE</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

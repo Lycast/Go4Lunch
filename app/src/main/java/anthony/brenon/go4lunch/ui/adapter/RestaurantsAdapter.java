@@ -1,6 +1,7 @@
 package anthony.brenon.go4lunch.ui.adapter;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,6 +88,8 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         void bind(Restaurant restaurant) {
             itemBinding.restaurantName.setText(restaurant.getName());
             itemBinding.restaurantAddress.setText(restaurant.getAddress());
+            itemBinding.restaurantWorkmates.setText(String.format("(%s)", restaurant.getUsersChoice().size()));
+            Log.d(TAG,"numberChoice: " + restaurant.getUsersChoice().size());
             Glide.with(itemBinding.restaurantImage.getContext())
                     .load(restaurant.getPhoto(600))
                     .placeholder(R.drawable.ic_image_not_supported)

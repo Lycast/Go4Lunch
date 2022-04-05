@@ -10,55 +10,54 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
-import anthony.brenon.go4lunch.Repository.UsersRepository;
-import anthony.brenon.go4lunch.model.User;
+import anthony.brenon.go4lunch.Repository.WorkmateRepository;
+import anthony.brenon.go4lunch.model.Workmate;
 
 /**
  * Created by Lycast on 01/04/2022.
  */
-public class UserViewModel extends ViewModel {
+public class WorkmateViewModel extends ViewModel {
     private static final String LOG_INFO = "UserViewModel: ";
     private final String TAG = "my_logs";
 
-    private final UsersRepository usersRepository;
+    private final WorkmateRepository workmateRepository;
 
 
-    public UserViewModel() {
+    public WorkmateViewModel() {
         super();
-        usersRepository = new UsersRepository();
+        workmateRepository = new WorkmateRepository();
     }
 
 
-    public Task<User> createUser() {
-        FirebaseUser fbUser = usersRepository.getCurrentFirebaseUser();
+    public Task<Workmate> createWorkmateIntoDb() {
+        FirebaseUser fbUser = workmateRepository.getCurrentFirebaseUser();
         if (fbUser == null) {
             throw new NullPointerException("FirebaseUser is not defined");
         }
         String urlPicture = (fbUser.getPhotoUrl() != null) ? fbUser.getPhotoUrl().toString() : null;
         String username = fbUser.getDisplayName();
         String uid = fbUser.getUid();
-        return usersRepository.getUserData()
+        return workmateRepository.getWorkmateData()
                 .addOnSuccessListener(dbUser -> {
                     // User exist in database -> update user
                     dbUser.setUsername(username);
                     dbUser.setUid(uid);
                     dbUser.setUrlPicture(urlPicture);
-                    usersRepository.updateUser(dbUser);
+                    workmateRepository.updateWorkmateIntoDB(dbUser);
                 })
                 .addOnFailureListener(notExistException -> {
                     // User doesn't exist in database -> create user
-                    User userToCreate = new User(uid, username, urlPicture);
-                    usersRepository.createUser(userToCreate);
+                    Workmate workmateToCreate = new Workmate(uid, username, urlPicture);
+                    workmateRepository.createWorkmateIntoDB(workmateToCreate);
                 });
     }
 
 
-    public void updateUser(User userUpdate) {
-        usersRepository.getUserData()
+    public void updateWorkmate(Workmate workmateUpdate) {
+        workmateRepository.getWorkmateData()
                 .addOnSuccessListener(data -> {
-                            updateUser(userUpdate, data);
                             // User exist in database -> update user
-                            usersRepository.updateUser(userUpdate);
+                            workmateRepository.updateWorkmateIntoDB(workmateUpdate);
                         }
                 )
                 .addOnFailureListener(notExistException ->
@@ -68,19 +67,16 @@ public class UserViewModel extends ViewModel {
     }
 
 
-    public Task<User> getCurrentUserFirebase(){
-        return usersRepository.getUserData();
+    public LiveData<Workmate> getCurrentWorkmateData(){
+        return workmateRepository.getCurrentWorkmateData();
     }
 
 
-    private void updateUser(User userUpdate, User dbUser) {
-        userUpdate.setUsername(dbUser.getUsername());
-        userUpdate.setUid(dbUser.getUid());
-        userUpdate.setUrlPicture(dbUser.getUrlPicture());
+    public LiveData<List<Workmate>> getWorkmatesList() {
+        return workmateRepository.getWorkmatesListData();
     }
 
-
-    public LiveData<List<User>> getUsersList() {
-        return usersRepository.getUsersLiveData();
+    public LiveData<List<Workmate>> getWorkmateListForDetails(String placeID) {
+        return workmateRepository.getWorkmateListForDetails(placeID);
     }
 }

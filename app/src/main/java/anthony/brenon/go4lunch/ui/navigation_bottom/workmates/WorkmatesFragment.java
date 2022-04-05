@@ -13,16 +13,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import anthony.brenon.go4lunch.databinding.FragmentWorkmatesBinding;
+import anthony.brenon.go4lunch.model.Workmate;
 import anthony.brenon.go4lunch.ui.adapter.WorkmatesAdapter;
-import anthony.brenon.go4lunch.viewmodel.UserViewModel;
+import anthony.brenon.go4lunch.viewmodel.WorkmateViewModel;
 
 
 public class WorkmatesFragment extends Fragment {
     private final String TAG = "my_logs";
 
     private FragmentWorkmatesBinding binding;
-    UserViewModel userViewModel;
-    private final WorkmatesAdapter adapter = new WorkmatesAdapter();
+    WorkmateViewModel workmateViewModel;
+    private final WorkmatesAdapter adapter = new WorkmatesAdapter(true);
+    private Workmate currentWorkmate;
 
 
     @Override
@@ -40,10 +42,7 @@ public class WorkmatesFragment extends Fragment {
         RecyclerView recyclerView = binding.workmatesRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(adapter);
-        userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
-        userViewModel.getUsersList().observe(getViewLifecycleOwner(), adapter::updateDataWorkmates);
-        adapter.setOnItemClickListener(placeID -> {
-            //TODO open restaurant details
-        });
+        workmateViewModel = new ViewModelProvider(requireActivity()).get(WorkmateViewModel.class);
+        workmateViewModel.getWorkmatesList().observe(this, adapter::updateDataWorkmates);
     }
 }
