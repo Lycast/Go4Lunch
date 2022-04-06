@@ -9,7 +9,9 @@ public class OpeningHours {
     private final String TAG = "my logs";
 
     @SerializedName("open_now")
-    private final boolean open_now;
+    private boolean open_now;
+
+    public OpeningHours() {}
 
     public OpeningHours(boolean open_now) {
         this.open_now = open_now;

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -41,7 +42,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     private static final int REQUEST_CALL = 123;
     private String placeId;
     private Workmate currentWorkmate;
-    private Restaurant restaurantDto;
+    private Restaurant restaurantDB;
     private final WorkmatesAdapter adapter = new WorkmatesAdapter(false);
 
 
@@ -74,7 +75,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
 
         // get restaurant dto
-        restaurantViewModel.getRestaurantDto(placeId).observe(this, restaurant -> this.restaurantDto = restaurant);
+        restaurantViewModel.getRestaurantDB(placeId).observe(this, restaurant -> this.restaurantDB = restaurant);
 
         // set all buttons listeners
         onClickListenerBtnWebsite();
@@ -86,7 +87,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
 
     private void populateDetailsRestaurant(String placeId) {
-        restaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
+        restaurantViewModel.getRestaurantDetailsApi(placeId).observe(this, restaurant -> {
             binding.tvDetailsName.setText(restaurant.getName());
             binding.tvDetailsAddress.setText(restaurant.getAddress());
             Glide.with(binding.ivDetailsRestaurant.getContext())
@@ -108,9 +109,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
     }
 
-    private void updateRecyclerList() {
-        workmateViewModel.getWorkmateListForDetails(placeId).observe(this, adapter::updateDataWorkmates);
-    }
+
 
 
     private void setLikeList() {
@@ -132,19 +131,20 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     private void setUserChoice() {
         if (currentWorkmate.getRestaurantChosenId().equals(placeId) || currentWorkmate.getRestaurantChosenId().equals("")) {
             // set new choice
-            List<String> userChoice = restaurantDto.getUsersChoice();
+            List<String> userChoice = restaurantDB.getUsersChoice();
 
-            if (restaurantDto.getUsersChoice().contains(currentWorkmate.getUid())) {
+            if (restaurantDB.getUsersChoice().contains(currentWorkmate.getUid())) {
                 userChoice.remove(currentWorkmate.getUid());
                 currentWorkmate.setRestaurantChosenId("");
                 currentWorkmate.setRestaurantChosenName("");
             } else {
                 userChoice.add(currentWorkmate.getUid());
-                currentWorkmate.setRestaurantChosenId(restaurantDto.getId());
-                currentWorkmate.setRestaurantChosenName(restaurantDto.getName());
+                currentWorkmate.setRestaurantChosenId(restaurantDB.getId());
+                currentWorkmate.setRestaurantChosenName(restaurantDB.getName());
             }
-            workmateViewModel.updateWorkmate(currentWorkmate);
-            restaurantViewModel.updateRestaurantDto(restaurantDto);
+            updateCurrentWorkmate();
+            updateCurrentRestaurant();
+            Log.d(TAG, LOG_INFO + "restaurantDto info: " + restaurantDB);
             setImageChoice();
         } else {
             // alert if user want to select 2 restaurants
@@ -154,7 +154,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
 
     private void makePhoneCall() {
-        restaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
+        restaurantViewModel.getRestaurantDetailsApi(placeId).observe(this, restaurant -> {
              if (restaurant.getPhoneNumber().trim().length() > 0) {
                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
@@ -181,13 +181,28 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
 
     private void setAlertDialog() {
-        restaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> new AlertDialog.Builder(this)
+        restaurantViewModel.getRestaurantDetailsApi(placeId).observe(this, restaurant -> new AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_phone_enabled)
                 .setTitle(" call")
                 .setMessage(restaurant.getName() + "  " + restaurant.getPhoneNumber() + " ?")
                 .setPositiveButton(android.R.string.yes, (dialog, which) -> makePhoneCall())
                 .setNegativeButton(android.R.string.no, null)
                 .show());
+    }
+
+
+    // UPDATES
+    private void updateCurrentWorkmate() {
+        workmateViewModel.updateWorkmate(currentWorkmate);
+    }
+
+    private void updateCurrentRestaurant() {
+        restaurantViewModel.updateRestaurantIntoDB(restaurantDB);
+    }
+
+
+    private void updateRecyclerList() {
+        workmateViewModel.getWorkmateListForDetails(placeId).observe(this, adapter::updateDataWorkmates);
     }
 
 
@@ -200,7 +215,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
 
     private void onClickListenerBtnCall() {
-        binding.btnCall.setOnClickListener(view -> restaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> setAlertDialog()));
+        binding.btnCall.setOnClickListener(view -> restaurantViewModel.getRestaurantDetailsApi(placeId).observe(this, restaurant -> setAlertDialog()));
     }
 
 
@@ -208,13 +223,13 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         binding.btnLike.setOnClickListener(view -> {
             setLikeList();
             setLikeImage();
-            workmateViewModel.updateWorkmate(currentWorkmate);
+            updateCurrentWorkmate();
         });
     }
 
 
     private void onClickListenerBtnWebsite() {
-        binding.btnWebsite.setOnClickListener(view -> restaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
+        binding.btnWebsite.setOnClickListener(view -> restaurantViewModel.getRestaurantDetailsApi(placeId).observe(this, restaurant -> {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(restaurant.getWebsite()));
             startActivity(browserIntent);
         }));
@@ -222,7 +237,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
 
     private void setEnableButton() {
-        restaurantViewModel.getRestaurantDetails(placeId).observe(this, restaurant -> {
+        restaurantViewModel.getRestaurantDetailsApi(placeId).observe(this, restaurant -> {
             if (restaurant.getWebsite() != null) {
                 binding.btnWebsite.setEnabled(true);
             }

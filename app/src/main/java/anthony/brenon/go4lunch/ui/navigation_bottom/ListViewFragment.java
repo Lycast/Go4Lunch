@@ -1,4 +1,4 @@
-package anthony.brenon.go4lunch.ui.navigation_bottom.list_view;
+package anthony.brenon.go4lunch.ui.navigation_bottom;
 
 
 import android.content.Intent;
@@ -14,23 +14,18 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import anthony.brenon.go4lunch.databinding.FragmentListViewBinding;
-import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.ui.DetailsRestaurantActivity;
 import anthony.brenon.go4lunch.ui.adapter.RestaurantsAdapter;
 import anthony.brenon.go4lunch.viewmodel.RestaurantViewModel;
-import anthony.brenon.go4lunch.viewmodel.SharedViewModel;
 
 public class ListViewFragment extends Fragment {
+    private final String TAG = "my_logs";
+    private final String LOG_INFO = "ListViewFragment ";
 
     private FragmentListViewBinding binding;
-    SharedViewModel sharedViewModel;
     RestaurantViewModel restaurantViewModel;
     private final RestaurantsAdapter adapter = new RestaurantsAdapter();
-    private List<Restaurant> restaurantsDB = new ArrayList<>();
 
 
     @Override
@@ -47,18 +42,22 @@ public class ListViewFragment extends Fragment {
         RecyclerView recyclerView = binding.restaurantsRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(adapter);
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         restaurantViewModel = new ViewModelProvider(requireActivity()).get(RestaurantViewModel.class);
 
-        restaurantViewModel.getRestaurantListDto().observe(this, restaurants -> restaurantsDB = restaurants);
-        sharedViewModel.getRestaurantsLiveData().observe(this, restaurants -> {
-            for (Restaurant restaurant : restaurants) {
-                for (Restaurant restaurant1 : restaurantsDB)
-                    if(restaurant.getId().equals(restaurant1.getId()))
-                        restaurant.setUsersChoice(restaurant1.getUsersChoice());
-            }
-            adapter.updateDataRestaurants(restaurants);
+        restaurantViewModel.getRestaurantsInstance().observe(this, restaurantsInstance-> {
+            //Log.d(TAG,LOG_INFO + "displayRestaurant" + restaurantsInstance);
+            adapter.updateDataRestaurants(restaurantsInstance);
         });
+
+//        restaurantViewModel.getRestaurantListDto().observe(this, restaurants -> restaurantsDB = restaurants);
+//        sharedViewModel.getNearbyRestaurantsApi().observe(this, restaurants -> {
+//            for (Restaurant restaurant : restaurants) {
+//                for (Restaurant restaurant1 : restaurantsDB)
+//                    if(restaurant.getId().equals(restaurant1.getId()))
+//                        restaurant.setUsersChoice(restaurant1.getUsersChoice());
+//            }
+//            adapter.updateDataRestaurants(restaurants);
+//        });
 
         adapter.setOnItemClickListener(placeId -> {
             Intent intent = new Intent(getActivity(), DetailsRestaurantActivity.class);

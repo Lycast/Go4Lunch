@@ -1,4 +1,4 @@
-package anthony.brenon.go4lunch.ui.navigation_bottom.workmates;
+package anthony.brenon.go4lunch.ui.navigation_bottom;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import anthony.brenon.go4lunch.databinding.FragmentWorkmatesBinding;
-import anthony.brenon.go4lunch.model.Workmate;
 import anthony.brenon.go4lunch.ui.adapter.WorkmatesAdapter;
 import anthony.brenon.go4lunch.viewmodel.WorkmateViewModel;
 
@@ -24,7 +23,6 @@ public class WorkmatesFragment extends Fragment {
     private FragmentWorkmatesBinding binding;
     WorkmateViewModel workmateViewModel;
     private final WorkmatesAdapter adapter = new WorkmatesAdapter(true);
-    private Workmate currentWorkmate;
 
 
     @Override

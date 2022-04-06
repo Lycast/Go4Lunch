@@ -3,6 +3,7 @@ package anthony.brenon.go4lunch.viewmodel;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.tasks.Task;
@@ -37,12 +38,14 @@ public class WorkmateViewModel extends ViewModel {
         String urlPicture = (fbUser.getPhotoUrl() != null) ? fbUser.getPhotoUrl().toString() : null;
         String username = fbUser.getDisplayName();
         String uid = fbUser.getUid();
+        String email = fbUser.getEmail();
         return workmateRepository.getWorkmateData()
                 .addOnSuccessListener(dbUser -> {
                     // User exist in database -> update user
                     dbUser.setUsername(username);
                     dbUser.setUid(uid);
                     dbUser.setUrlPicture(urlPicture);
+                    dbUser.setEmail(email);
                     workmateRepository.updateWorkmateIntoDB(dbUser);
                 })
                 .addOnFailureListener(notExistException -> {
@@ -77,6 +80,8 @@ public class WorkmateViewModel extends ViewModel {
     }
 
     public LiveData<List<Workmate>> getWorkmateListForDetails(String placeID) {
-        return workmateRepository.getWorkmateListForDetails(placeID);
+        MutableLiveData<List<Workmate>> workmateList = new MutableLiveData<>();
+        workmateList.setValue(workmateRepository.getWorkmateListForDetails(placeID));
+        return workmateList;
     }
 }

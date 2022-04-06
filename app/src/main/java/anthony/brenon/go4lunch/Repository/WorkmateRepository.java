@@ -14,7 +14,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import anthony.brenon.go4lunch.model.Workmate;
 
@@ -86,20 +85,18 @@ public class WorkmateRepository {
         return workmates;
     }
 
-    public LiveData<List<Workmate>> getWorkmateListForDetails(String placeID) {
+    public List<Workmate> getWorkmateListForDetails(String placeID) {
         String uid = getCurrentFirebaseUser().getUid();
-        MutableLiveData<List<Workmate>> workmates = new MutableLiveData<>();
+        List<Workmate> workmateList = new ArrayList<>();
         getWorkmatesCollection().get().addOnCompleteListener(queryDocumentSnapshots -> {
             List<DocumentSnapshot> documents = queryDocumentSnapshots.getResult().getDocuments();
-            List<Workmate> workmateList = new ArrayList<>();
             for (DocumentSnapshot document : documents) {
                 Workmate workmate = document.toObject(Workmate.class);
-                if (Objects.requireNonNull(workmate).getRestaurantChosenId().equals(placeID) && !workmate.getUid().equals(uid))
+                if (!workmate.getUid().equals(uid))
                     workmateList.add(workmate);
             }
-            workmates.setValue(workmateList);
         });
-        return workmates;
+        return workmateList;
     }
 
 

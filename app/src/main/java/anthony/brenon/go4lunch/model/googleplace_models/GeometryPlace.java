@@ -11,7 +11,9 @@ public class GeometryPlace {
     private final String TAG = "my logs";
 
     @SerializedName("location")
-    private final Location locationPlace;
+    private Location locationPlace;
+
+    public GeometryPlace() {}
 
     public GeometryPlace(Location locationPlace) {
         this.locationPlace = locationPlace;

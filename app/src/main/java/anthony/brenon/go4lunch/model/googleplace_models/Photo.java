@@ -11,6 +11,8 @@ public class Photo {
     @SerializedName("photo_reference")
     private String photoReference;
 
+    public Photo() {}
+
     // --GETTER--
     public String getPhotoReference() {
         return photoReference;

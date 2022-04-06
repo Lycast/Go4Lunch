@@ -65,19 +65,12 @@ public class Restaurant {
     // --GETTERS--
     public String getId() { return id; }
     public String getName() { return name; }
-    @Exclude
     public String getAddress() { return address; }
-    @Exclude
     public GeometryPlace getGeometryPlace() { return geometryPlace; }
-    @Exclude
     public List<Photo> getPhotosUrl() { return photosUrl; }
-    @Exclude
     public String getWebsite() { return website; }
-    @Exclude
     public String getPhoneNumber() { return phoneNumber; }
-    @Exclude
     public OpeningHours getOpeningHours() { return openingHours; }
-    @Exclude
     public float getRating() { return rating; }
     @Exclude
     public double getDistance() { return distance; }
@@ -123,6 +116,10 @@ public class Restaurant {
 
     @Override
     public String toString() {
-        return "(" + name + ")";
+        return "Restaurant{\n" +
+                ", name='" + name + '\'' +
+                ", usersChoice=" + usersChoice +
+                ", distance=" + distance +
+                '}';
     }
 }

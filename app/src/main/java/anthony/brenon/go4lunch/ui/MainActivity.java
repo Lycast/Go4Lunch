@@ -1,6 +1,12 @@
 package anthony.brenon.go4lunch.ui;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -12,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,21 +33,24 @@ import com.google.android.material.snackbar.Snackbar;
 
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityMainBinding;
-import anthony.brenon.go4lunch.model.Workmate;
-import anthony.brenon.go4lunch.ui.navigation_bottom.list_view.ListViewFragment;
-import anthony.brenon.go4lunch.ui.navigation_bottom.map.MapViewFragment;
-import anthony.brenon.go4lunch.ui.navigation_bottom.workmates.WorkmatesFragment;
+import anthony.brenon.go4lunch.model.Location;
+import anthony.brenon.go4lunch.ui.navigation_bottom.ListViewFragment;
+import anthony.brenon.go4lunch.ui.navigation_bottom.MapViewFragment;
+import anthony.brenon.go4lunch.ui.navigation_bottom.WorkmatesFragment;
+import anthony.brenon.go4lunch.viewmodel.RestaurantViewModel;
 import anthony.brenon.go4lunch.viewmodel.WorkmateViewModel;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements LocationListener {
     private final String TAG = "my_logs";
+    private final String LOG_INFO = "MainActivity ";
 
     private DrawerLayout drawer;
     private BottomNavigationView bottomNavMenu;
     private ActivityMainBinding binding;
     private WorkmateViewModel workmateViewModel;
-    private String chosenRestaurant;
-    private Workmate currentWorkmate;
+    private RestaurantViewModel restaurantViewModel;
+    private static final int PERMS_CALL_ID = 101;
+    private LocationManager locationManager;
 
 
     @Override
@@ -50,8 +60,9 @@ public class MainActivity extends AppCompatActivity{
         setContentView(binding.getRoot());
         // Init bottom navigation
         bottomNavMenu = binding.appBarMain.bottomNavigation;
-        // init user view model
+        // init view model
         workmateViewModel = new ViewModelProvider(this).get(WorkmateViewModel.class);
+        restaurantViewModel = new ViewModelProvider(this).get(RestaurantViewModel.class);
 
         // setup toolbar
         Toolbar toolbar = binding.appBarMain.toolbar;
@@ -64,6 +75,14 @@ public class MainActivity extends AppCompatActivity{
             Snackbar.make(view, "Replace action to open a chat", Snackbar.LENGTH_LONG).setAction("Action", null).show()
         );
         setupNavigationBottom();
+
+
+        // SETUP POSITION GPS
+        checkPermissions();
+        if(checkFineLocationPermission()) {
+            startLocationManager();
+        }
+
     }
 
 
@@ -76,6 +95,15 @@ public class MainActivity extends AppCompatActivity{
         setupDrawerUIWithUserData();
     }
 
+
+    @SuppressLint("MissingPermission")
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(locationManager != null) {
+            locationManager.removeUpdates(this);
+        }
+    }
 
     // Bind and listener navigation bottom
     private void setupNavigationBottom() {
@@ -188,4 +216,58 @@ public class MainActivity extends AppCompatActivity{
             } else Toast.makeText(this,"You need to have chosen a restaurant", Toast.LENGTH_SHORT).show();
         });
     }
+
+
+    // --------------------- POSITION GPS START ----------------------------- //
+
+    @SuppressLint("MissingPermission")
+    private void checkPermissions() {
+        //Log.d(TAG,LOG_INFO + "checkPermission");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            }, PERMS_CALL_ID);
+        }
+    }
+
+
+    @SuppressLint("MissingPermission")
+    private void startLocationManager() {
+        locationManager = (LocationManager) this.getSystemService( Context.LOCATION_SERVICE );
+        if (locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER)) {
+            locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 120000, 0, this);
+        }
+        if (locationManager.isProviderEnabled( LocationManager.PASSIVE_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 120000, 0, this);
+        }
+        if (locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 120000, 0, this);
+        }
+    }
+
+
+    private boolean checkFineLocationPermission() {
+        //Log.d(TAG,LOG_INFO + "checkFineLocationPermission");
+        String permission = Manifest.permission.ACCESS_FINE_LOCATION;
+        int res = this.checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
+
+
+    @Override
+    public void onLocationChanged(@NonNull android.location.Location location) {
+        //Log.d(TAG,LOG_INFO + "onLocationChanged");
+        Location locationUser = new Location(location.getLatitude(), location.getLongitude());
+        Log.d(TAG,LOG_INFO + "onLocationChanged locUser: " + locationUser);
+        restaurantViewModel.setLocationUser(locationUser);
+        restaurantViewModel.callNearbyRestaurantsApi();
+    }
+
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) { }
+
+    // --------------------- POSITION GPS END ----------------------------- //
 }

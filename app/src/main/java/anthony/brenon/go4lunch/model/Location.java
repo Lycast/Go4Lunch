@@ -11,6 +11,7 @@ public class Location {
     private Double lat;
     private Double lng;
 
+    public Location() {}
 
     public Location(Double lat, Double lng) {
         this.lat = lat;
