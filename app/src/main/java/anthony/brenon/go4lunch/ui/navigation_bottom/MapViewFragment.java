@@ -40,24 +40,20 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     public void onCreate(@Nullable Bundle savedInstanceState) {
         //Log.d(TAG,LOG_INFO + "onCreate");
         super.onCreate(savedInstanceState);
-        //checkPermissions();
-//        if (checkFineLocationPermission()) {
-//            //startLocationManager();
-//        }
         restaurantViewModel = new ViewModelProvider(requireActivity()).get(RestaurantViewModel.class);
     }
 
 
     @Override
     public void onMapReady(@NonNull final GoogleMap googleMap) {
-        Log.d(TAG,LOG_INFO + "onMapReady");
+        Log.d(TAG, LOG_INFO + "onMapReady");
         this.googleMap = googleMap;
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.style_map));
-            restaurantViewModel.getLatLngUser().observe(getViewLifecycleOwner(), pos-> {
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 15));
-                    getPositionButton();
-                    displayRestaurants();
-            });
+        restaurantViewModel.getLatLngLiveData().observe(getViewLifecycleOwner(), pos -> {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 15));
+            getPositionButton();
+            displayRestaurants();
+        });
 
     }
 
@@ -74,7 +70,6 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     public void onResume() {
         super.onResume();
         //Log.d(TAG,LOG_INFO + "onResume");
-        //displayRestaurants();
     }
 
 
@@ -96,98 +91,24 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
-//    private boolean checkFineLocationPermission() {
-//        //Log.d(TAG,LOG_INFO + "checkFineLocationPermission");
-//        String permission = Manifest.permission.ACCESS_FINE_LOCATION;
-//        int res = Objects.requireNonNull(getContext()).checkCallingOrSelfPermission(permission);
-//        return (res == PackageManager.PERMISSION_GRANTED);
-//    }
-
-//    // --------------------- POSITION GPS START ----------------------------- //
-//
-//    @SuppressLint("MissingPermission")
-//    private void checkPermissions() {
-//        //Log.d(TAG,LOG_INFO + "checkPermission");
-//        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-//                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), new String[]{
-//                    Manifest.permission.ACCESS_FINE_LOCATION,
-//                    Manifest.permission.ACCESS_COARSE_LOCATION
-//            }, PERMS_CALL_ID);
-//        }
-//    }
-//
-//
-//    @SuppressLint("MissingPermission")
-//    private void startLocationManager() {
-//        locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService( Context.LOCATION_SERVICE );
-//        if (locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER)) {
-//            locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 30000, 0, this);
-//        }
-//        if (locationManager.isProviderEnabled( LocationManager.PASSIVE_PROVIDER)) {
-//            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 30000, 0, this);
-//        }
-//        if (locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER)) {
-//            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 0, this);
-//        }
-//    }
-//
-//
-//    private boolean checkFineLocationPermission() {
-//        //Log.d(TAG,LOG_INFO + "checkFineLocationPermission");
-//        String permission = Manifest.permission.ACCESS_FINE_LOCATION;
-//        int res = Objects.requireNonNull(getContext()).checkCallingOrSelfPermission(permission);
-//        return (res == PackageManager.PERMISSION_GRANTED);
-//    }
-//
-//
-//    @Override
-//    public void onLocationChanged(@NonNull android.location.Location location) {
-//        //Log.d(TAG,LOG_INFO + "onLocationChanged");
-//        Location locationUser = new Location(location.getLatitude(), location.getLongitude());
-//        //Log.d(TAG,LOG_INFO + "onLocationChanged locUser: " + locationUser);
-//        restaurantViewModel.setLocationUser(locationUser);
-//    }
-//
-//
-//    @Override
-//    public void onStatusChanged(String provider, int status, Bundle extras) { }
-//
-//    // --------------------- POSITION GPS END ----------------------------- //
-
-
-//        String newStatus = "";
-//        switch (status) {
-//            case LocationProvider.OUT_OF_SERVICE:
-//                newStatus = "OUT_OF_SERVICE";
-//                break;
-//            case LocationProvider.TEMPORARILY_UNAVAILABLE:
-//                newStatus = "TEMPORARILY_UNAVAILABLE";
-//                break;
-//            case LocationProvider.AVAILABLE:
-//                newStatus = "AVAILABLE";
-//                break;
-//        }
-//        Log.i(TAG, "onStatusChanged " + newStatus);
-
     private void displayRestaurants() {
-        restaurantViewModel.getRestaurantsInstance().observe(this, restaurantsInstance -> {
+        restaurantViewModel.getLiveDataListRestaurants().observe(this, restaurantsInstance -> {
             //Log.d(TAG,LOG_INFO + "displayRestaurant" + restaurantsInstance);
-            for(Restaurant restaurant : restaurantsInstance) {
-                    if (restaurant.getUsersChoice().isEmpty()) {
-                        LatLng restaurantLocation = new LatLng(restaurant.getGeometryPlace().getLocationPlace().getLat(), restaurant.getGeometryPlace().getLocationPlace().getLng());
-                        googleMap.addMarker(new MarkerOptions()
-                                .icon(BitmapFromVector(getContext(), R.drawable.ic_marker))
-                                .position(restaurantLocation)
-                                .title(restaurant.getName()));
-                    } else {
-                        LatLng restaurantLocation = new LatLng(restaurant.getGeometryPlace().getLocationPlace().getLat(), restaurant.getGeometryPlace().getLocationPlace().getLng());
-                        googleMap.addMarker(new MarkerOptions()
-                                .icon(BitmapFromVector(getContext(), R.drawable.ic_marker_green))
-                                .position(restaurantLocation)
-                                .title(restaurant.getName()));
-                    }
+            for (Restaurant restaurant : restaurantsInstance) {
+                if (restaurant.getUsersChoice().isEmpty()) {
+                    LatLng restaurantLocation = new LatLng(restaurant.getGeometryPlace().getLocationPlace().getLat(), restaurant.getGeometryPlace().getLocationPlace().getLng());
+                    googleMap.addMarker(new MarkerOptions()
+                            .icon(BitmapFromVector(getContext(), R.drawable.ic_marker))
+                            .position(restaurantLocation)
+                            .title(restaurant.getName()));
+                } else {
+                    LatLng restaurantLocation = new LatLng(restaurant.getGeometryPlace().getLocationPlace().getLat(), restaurant.getGeometryPlace().getLocationPlace().getLng());
+                    googleMap.addMarker(new MarkerOptions()
+                            .icon(BitmapFromVector(getContext(), R.drawable.ic_marker_green))
+                            .position(restaurantLocation)
+                            .title(restaurant.getName()));
                 }
+            }
         });
     }
 

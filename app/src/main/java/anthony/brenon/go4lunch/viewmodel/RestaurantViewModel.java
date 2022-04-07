@@ -5,25 +5,24 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
 import anthony.brenon.go4lunch.Repository.RestaurantRepository;
 import anthony.brenon.go4lunch.model.Location;
 import anthony.brenon.go4lunch.model.Restaurant;
+import anthony.brenon.go4lunch.model.googleplace_models.PlaceResponse;
+import retrofit2.Callback;
 
 /**
  * Created by Lycast on 25/02/2022.
  */
 public class RestaurantViewModel extends ViewModel {
-    private final String TAG = "my_logs";
-    private final String LOG_INFO = "RestaurantViewModel ";
 
     private final RestaurantRepository restaurantRepository;
-    private LiveData<List<Restaurant>> restaurantsInstance;
-    private Location locationUser;
-
-
+    private final MutableLiveData<LatLng> latLngLiveData = new MutableLiveData<>();
+    private static Location locationUser;
 
     public RestaurantViewModel() {
         super();
@@ -31,48 +30,51 @@ public class RestaurantViewModel extends ViewModel {
     }
 
 
-    public MutableLiveData<Restaurant> getRestaurantDetailsApi(String placeId) {
-        return restaurantRepository.getRestaurantDetailsApi(placeId);
+    // GETS
+    public void getRestaurantDetailsApi(String placeId, Callback<PlaceResponse> callback) {
+        restaurantRepository.getDetailsRestaurantApi(placeId, callback);
+    }
+
+    public Task<Restaurant> getRestaurantFS(String placeId) {
+        return restaurantRepository.getRestaurantFS(placeId);
+    }
+
+    public LiveData<LatLng> getLatLngLiveData() {
+        return latLngLiveData;
+    }
+
+    public LiveData<List<Restaurant>> getLiveDataListRestaurants() {
+        return this.restaurantRepository.getLiveDataListRestaurant();
     }
 
 
-    public void updateRestaurantIntoDB(Restaurant restaurantUpdate) {
-        restaurantRepository.updateRestaurantIntoDB(restaurantUpdate);
-    }
-
-
-    //TODO change that
-    public LiveData<Restaurant> getRestaurantDB(String placeId) {
-        MutableLiveData<Restaurant> restaurantDB = new MutableLiveData<>();
-        restaurantRepository.getRestaurantDB(placeId).addOnSuccessListener(restaurantDB::setValue);
-        return restaurantDB;
-    }
-
-
-    public void callNearbyRestaurantsApi() {
-        restaurantsInstance = restaurantRepository.callNearbyRestaurantsApi(locationUser);
-    }
-
-    public LiveData<LatLng> getLatLngUser() {
-        MutableLiveData<LatLng> latLng = new MutableLiveData<>();
-        if(locationUser != null) {
+    // SETS
+    private void setLatLngUser(Location locationUser) {
+        if (locationUser != null) {
             LatLng latLng1 = new LatLng(locationUser.getLat(), locationUser.getLng());
-            latLng.setValue(latLng1);
+            latLngLiveData.setValue(latLng1);
         }
-        return latLng;
     }
-
-
-    public LiveData<List<Restaurant>> getRestaurantsInstance() {
-        return restaurantsInstance;
-    }
-
 
     public void setLocationUser(Location locationUser) {
-        this.locationUser = locationUser;
+        if(locationUser != null) {
+            this.callNearbyRestaurantsApi(locationUser);
+            this.setLatLngUser(locationUser);
+            this.locationUser = locationUser;
+        }
     }
 
-    public void setRestaurantsInstance(LiveData<List<Restaurant>> restaurantsInstance) {
-        this.restaurantsInstance = restaurantsInstance;
+
+    // CALLS
+    public void callNearbyRestaurantsApi(Location locationUser) {
+        restaurantRepository.callNearbyRestaurantsApi(locationUser);
+    }
+
+    public void callNearbyRestaurantsApi() {
+        callNearbyRestaurantsApi(locationUser);
+    }
+
+    public void updateRestaurantIntoFS(Restaurant restaurantUpdate) {
+        restaurantRepository.updateRestaurantIntoFS(restaurantUpdate).addOnSuccessListener((result) -> this.callNearbyRestaurantsApi(locationUser));
     }
 }

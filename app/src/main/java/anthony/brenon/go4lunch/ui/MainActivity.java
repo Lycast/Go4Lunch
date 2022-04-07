@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         // Bind and listener fab
         binding.appBarMain.fabChat.setOnClickListener(view ->
-            Snackbar.make(view, "Replace action to open a chat", Snackbar.LENGTH_LONG).setAction("Action", null).show()
+                Snackbar.make(view, "Replace action to open a chat", Snackbar.LENGTH_LONG).setAction("Action", null).show()
         );
         setupNavigationBottom();
 
@@ -81,8 +81,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         checkPermissions();
         if(checkFineLocationPermission()) {
             startLocationManager();
-        }
-
+        } else checkPermissions();
     }
 
 
@@ -93,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, mapsFragment).commit();
         bottomNavMenu.setSelectedItemId(R.id.page_1_map_view);
         setupDrawerUIWithUserData();
+        restaurantViewModel.callNearbyRestaurantsApi();
     }
 
 
@@ -175,17 +175,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     // Bind and listener drawer menu
     public void selectDrawerItem(MenuItem menuItem) {
         // Specify the fragment to show based on nav item clicked
-            int id = menuItem.getItemId(); {
-                if ( id == R.id.dv_your_lunch ) {
-                    openYourLunchDetails();
+        int id = menuItem.getItemId(); {
+            if ( id == R.id.dv_your_lunch ) {
+                openYourLunchDetails();
                 drawer.closeDrawer(GravityCompat.START);
-                } else if ( id == R.id.dv_settings) {
-                    Log.d(TAG, "settings");
-                    deselectBottomNav();
-                    drawer.closeDrawer(GravityCompat.START);
-                } else if ( id == R.id.dv_logout) {
-                    signOut();
-                }
+            } else if ( id == R.id.dv_settings) {
+                Log.d(TAG, "settings");
+                deselectBottomNav();
+                drawer.closeDrawer(GravityCompat.START);
+            } else if ( id == R.id.dv_logout) {
+                signOut();
+            }
         }
     }
 
@@ -219,7 +219,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
 
     // --------------------- POSITION GPS START ----------------------------- //
-
+    private boolean checkFineLocationPermission() {
+        //Log.d(TAG,LOG_INFO + "checkFineLocationPermission");
+        String permission = Manifest.permission.ACCESS_FINE_LOCATION;
+        int res = this.checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
+    
     @SuppressLint("MissingPermission")
     private void checkPermissions() {
         //Log.d(TAG,LOG_INFO + "checkPermission");
@@ -232,29 +238,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-
     @SuppressLint("MissingPermission")
     private void startLocationManager() {
         locationManager = (LocationManager) this.getSystemService( Context.LOCATION_SERVICE );
         if (locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER)) {
-            locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 120000, 0, this);
+            locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 120000, 50, this);
         }
         if (locationManager.isProviderEnabled( LocationManager.PASSIVE_PROVIDER)) {
-            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 120000, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 120000, 50, this);
         }
         if (locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER)) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 120000, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 120000, 50, this);
         }
     }
-
-
-    private boolean checkFineLocationPermission() {
-        //Log.d(TAG,LOG_INFO + "checkFineLocationPermission");
-        String permission = Manifest.permission.ACCESS_FINE_LOCATION;
-        int res = this.checkCallingOrSelfPermission(permission);
-        return (res == PackageManager.PERMISSION_GRANTED);
-    }
-
 
     @Override
     public void onLocationChanged(@NonNull android.location.Location location) {
@@ -262,12 +258,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         Location locationUser = new Location(location.getLatitude(), location.getLongitude());
         Log.d(TAG,LOG_INFO + "onLocationChanged locUser: " + locationUser);
         restaurantViewModel.setLocationUser(locationUser);
-        restaurantViewModel.callNearbyRestaurantsApi();
     }
-
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) { }
-
     // --------------------- POSITION GPS END ----------------------------- //
 }

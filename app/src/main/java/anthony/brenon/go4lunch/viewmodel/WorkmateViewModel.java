@@ -3,7 +3,6 @@ package anthony.brenon.go4lunch.viewmodel;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.tasks.Task;
@@ -30,6 +29,7 @@ public class WorkmateViewModel extends ViewModel {
     }
 
 
+    // UPDATES
     public Task<Workmate> createWorkmateIntoDb() {
         FirebaseUser fbUser = workmateRepository.getCurrentFirebaseUser();
         if (fbUser == null) {
@@ -46,21 +46,20 @@ public class WorkmateViewModel extends ViewModel {
                     dbUser.setUid(uid);
                     dbUser.setUrlPicture(urlPicture);
                     dbUser.setEmail(email);
-                    workmateRepository.updateWorkmateIntoDB(dbUser);
+                    workmateRepository.updateWorkmateIntoFS(dbUser);
                 })
                 .addOnFailureListener(notExistException -> {
                     // User doesn't exist in database -> create user
                     Workmate workmateToCreate = new Workmate(uid, username, urlPicture);
-                    workmateRepository.createWorkmateIntoDB(workmateToCreate);
+                    workmateRepository.createWorkmateIntoFS(workmateToCreate);
                 });
     }
-
 
     public void updateWorkmate(Workmate workmateUpdate) {
         workmateRepository.getWorkmateData()
                 .addOnSuccessListener(data -> {
                             // User exist in database -> update user
-                            workmateRepository.updateWorkmateIntoDB(workmateUpdate);
+                            workmateRepository.updateWorkmateIntoFS(workmateUpdate);
                         }
                 )
                 .addOnFailureListener(notExistException ->
@@ -70,18 +69,16 @@ public class WorkmateViewModel extends ViewModel {
     }
 
 
+    // GETS
     public LiveData<Workmate> getCurrentWorkmateData(){
         return workmateRepository.getCurrentWorkmateData();
     }
-
 
     public LiveData<List<Workmate>> getWorkmatesList() {
         return workmateRepository.getWorkmatesListData();
     }
 
-    public LiveData<List<Workmate>> getWorkmateListForDetails(String placeID) {
-        MutableLiveData<List<Workmate>> workmateList = new MutableLiveData<>();
-        workmateList.setValue(workmateRepository.getWorkmateListForDetails(placeID));
-        return workmateList;
+    public LiveData<List<Workmate>> getWorkmateListForDetails(List<String> workmateIds) {
+        return workmateRepository.getWorkmateListForDetails(workmateIds);
     }
 }

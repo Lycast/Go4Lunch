@@ -15,13 +15,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Go4Lunch">
         <activity
+            android:name=".ui.SettingsActivity"
+            android:exported="true" />
+        <activity
             android:name=".ui.DetailsRestaurantActivity"
             android:exported="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

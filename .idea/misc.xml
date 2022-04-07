@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/drawable-mdpi/ic_marker_dinner_green.xml" value="0.4322916666666667" />
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/drawable-mdpi/ic_marker_green.xml" value="0.4322916666666667" />
+        <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/drawable/ic_channel_foreground.xml" value="0.4322916666666667" />
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/drawable/ic_check_circle.xml" value="0.18020833333333333" />
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/drawable/ic_launcher_background.xml" value="0.42390194075587334" />
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/drawable/ic_location_on.xml" value="0.4322916666666667" />
@@ -21,6 +22,7 @@
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/drawable/ic_star_rate.xml" value="0.4322916666666667" />
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/layout/activity_details_restaurant.xml" value="0.3828571428571429" />
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.4119791666666667" />
+        <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/layout/activity_settings.xml" value="0.4119791666666667" />
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/layout/app_bar_main.xml" value="0.4119791666666667" />
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/layout/fragment_list_view.xml" value="0.3828571428571429" />
         <entry key="..\:/AndroidStudioProjects/1_MES PROJETS OpenClassRoom/Go4Lunch/app/src/main/res/layout/fragment_map_view.xml" value="0.34601449275362317" />

@@ -23,14 +23,19 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import java.util.List;
+import java.util.Objects;
 
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityDetailsRestaurantBinding;
 import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.model.Workmate;
+import anthony.brenon.go4lunch.model.googleplace_models.PlaceResponse;
 import anthony.brenon.go4lunch.ui.adapter.WorkmatesAdapter;
 import anthony.brenon.go4lunch.viewmodel.RestaurantViewModel;
 import anthony.brenon.go4lunch.viewmodel.WorkmateViewModel;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DetailsRestaurantActivity extends AppCompatActivity {
     private final String TAG = "my_logs";
@@ -63,41 +68,60 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             setLikeImage();
             setImageChoice();
         });
-        // setup recycler view
-        RecyclerView recyclerView = binding.detailsRecyclerView;
-        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
-        recyclerView.setAdapter(adapter);
 
         // populate restaurant data
-        if ( placeId != null) {
-            populateDetailsRestaurant(placeId);
-            updateRecyclerList();
+        if (placeId != null) {
+            getRestaurantDetails(placeId);
         }
 
-        // get restaurant dto
-        restaurantViewModel.getRestaurantDB(placeId).observe(this, restaurant -> this.restaurantDB = restaurant);
+        // setup recycler view
+        RecyclerView recyclerView = binding.detailsRecyclerView;
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(adapter);
 
         // set all buttons listeners
         onClickListenerBtnWebsite();
         onClickListenerBtnCall();
         onClickListenerBtnLike();
         onClickListenerFabChoice();
-        setEnableButton();
     }
 
+    private void getRestaurantDetails(final String placeId) {
 
-    private void populateDetailsRestaurant(String placeId) {
-        restaurantViewModel.getRestaurantDetailsApi(placeId).observe(this, restaurant -> {
-            binding.tvDetailsName.setText(restaurant.getName());
-            binding.tvDetailsAddress.setText(restaurant.getAddress());
-            Glide.with(binding.ivDetailsRestaurant.getContext())
-                    .load(restaurant.getPhoto(1000))
-                    .placeholder(R.drawable.ic_image_not_supported)
-                    .transform(new CenterCrop(), new RoundedCorners(8))
-                    .into(binding.ivDetailsRestaurant);
+        restaurantViewModel.getRestaurantFS(placeId).addOnSuccessListener(restaurant -> {
+
+            restaurantViewModel.getRestaurantDetailsApi(placeId, new Callback<PlaceResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<PlaceResponse> call, @NonNull Response<PlaceResponse> response) {
+                    //Log.d(TAG, LOG_INFO + "onResponse ");
+                    if (response.isSuccessful()) {
+
+                        restaurantDB = Objects.requireNonNull(response.body()).getResult();
+                        restaurantDB.setUsersChoice(restaurant.getUsersChoice());
+                        populateDetailsRestaurant(restaurantDB);
+                        setEnableButton(restaurantDB);
+                        updateRecyclerList(restaurantDB.getUsersChoice());
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<PlaceResponse> call, @NonNull Throwable t) {
+                    Log.d(TAG, LOG_INFO + " - getRestaurantDetails - onFailure: " + t.getMessage());
+                }
+            });
         });
     }
 
+
+    private void populateDetailsRestaurant(Restaurant restaurant) {
+        binding.tvDetailsName.setText(restaurant.getName());
+        binding.tvDetailsAddress.setText(restaurant.getAddress());
+        Glide.with(binding.ivDetailsRestaurant.getContext())
+                .load(restaurant.getPhoto(1000))
+                .placeholder(R.drawable.ic_image_not_supported)
+                .transform(new CenterCrop(), new RoundedCorners(8))
+                .into(binding.ivDetailsRestaurant);
+    }
 
     private void setLikeImage() {
         if (currentWorkmate.getRestaurantsLiked().contains(placeId)) {
@@ -109,9 +133,6 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
     }
 
-
-
-
     private void setLikeList() {
         List<String> restaurantsIds = currentWorkmate.getRestaurantsLiked();
         if (currentWorkmate.getRestaurantsLiked().contains(placeId))
@@ -120,13 +141,13 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         currentWorkmate.setRestaurantsLiked(restaurantsIds);
     }
 
-
     private void setImageChoice() {
         if (currentWorkmate.getRestaurantChosenId().equals(placeId)) {
-            binding.fabRestaurantChoice.setImageResource(R.drawable.ic_check_circle); }
-        else { binding.fabRestaurantChoice.setImageResource(R.drawable.ic_restaurant_menu); }
+            binding.fabRestaurantChoice.setImageResource(R.drawable.ic_check_circle);
+        } else {
+            binding.fabRestaurantChoice.setImageResource(R.drawable.ic_restaurant_menu);
+        }
     }
-
 
     private void setUserChoice() {
         if (currentWorkmate.getRestaurantChosenId().equals(placeId) || currentWorkmate.getRestaurantChosenId().equals("")) {
@@ -144,24 +165,82 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             }
             updateCurrentWorkmate();
             updateCurrentRestaurant();
-            Log.d(TAG, LOG_INFO + "restaurantDto info: " + restaurantDB);
             setImageChoice();
+            updateRecyclerList(restaurantDB.getUsersChoice());
         } else {
             // alert if user want to select 2 restaurants
             Toast.makeText(this, "Take can't chosen 2 restaurant", Toast.LENGTH_SHORT).show();
         }
     }
 
+    private void showAlertDialog() {
+        new AlertDialog.Builder(this)
+                .setIcon(R.drawable.ic_phone_enabled)
+                .setTitle(" call")
+                .setMessage(restaurantDB.getName() + "  " + restaurantDB.getPhoneNumber() + " ?")
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> makePhoneCall())
+                .setNegativeButton(android.R.string.no, null)
+                .show();
+    }
 
+    private void setEnableButton(Restaurant restaurant) {
+        if (restaurant.getWebsite() != null) {
+            binding.btnWebsite.setEnabled(true);
+        }
+        if (restaurant.getPhoneNumber() != null) {
+            binding.btnCall.setEnabled(true);
+        }
+    }
+
+    // should not be called if restaurantDb is null
     private void makePhoneCall() {
-        restaurantViewModel.getRestaurantDetailsApi(placeId).observe(this, restaurant -> {
-             if (restaurant.getPhoneNumber().trim().length() > 0) {
-               if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
-                } else {
-                    String dial = "tel:" + restaurant.getPhoneNumber();
-                    startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
-                }
+        if (restaurantDB != null && restaurantDB.getPhoneNumber().trim().length() > 0) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
+            } else {
+                String dial = "tel:" + restaurantDB.getPhoneNumber();
+                startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
+            }
+        }
+    }
+
+
+    // UPDATES
+    private void updateCurrentWorkmate() {
+        workmateViewModel.updateWorkmate(currentWorkmate);
+    }
+
+    private void updateCurrentRestaurant() {
+        restaurantViewModel.updateRestaurantIntoFS(restaurantDB);
+    }
+
+    private void updateRecyclerList(final List<String> workmateIds) {
+        workmateViewModel.getWorkmateListForDetails(workmateIds).observe(this, adapter::updateDataWorkmates);
+    }
+
+
+    // SET ON CLICK LISTENER METHODS
+    private void onClickListenerFabChoice() {
+        binding.fabRestaurantChoice.setOnClickListener(view -> setUserChoice());
+    }
+
+    private void onClickListenerBtnCall() {
+        binding.btnCall.setOnClickListener(view -> showAlertDialog());
+    }
+
+    private void onClickListenerBtnLike() {
+        binding.btnLike.setOnClickListener(view -> {
+            setLikeList();
+            setLikeImage();
+            updateCurrentWorkmate();
+        });
+    }
+
+    private void onClickListenerBtnWebsite() {
+        binding.btnWebsite.setOnClickListener(view -> {
+            if (restaurantDB != null) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(restaurantDB.getWebsite()));
+                startActivity(browserIntent);
             }
         });
     }
@@ -177,72 +256,5 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                 Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-
-    private void setAlertDialog() {
-        restaurantViewModel.getRestaurantDetailsApi(placeId).observe(this, restaurant -> new AlertDialog.Builder(this)
-                .setIcon(R.drawable.ic_phone_enabled)
-                .setTitle(" call")
-                .setMessage(restaurant.getName() + "  " + restaurant.getPhoneNumber() + " ?")
-                .setPositiveButton(android.R.string.yes, (dialog, which) -> makePhoneCall())
-                .setNegativeButton(android.R.string.no, null)
-                .show());
-    }
-
-
-    // UPDATES
-    private void updateCurrentWorkmate() {
-        workmateViewModel.updateWorkmate(currentWorkmate);
-    }
-
-    private void updateCurrentRestaurant() {
-        restaurantViewModel.updateRestaurantIntoDB(restaurantDB);
-    }
-
-
-    private void updateRecyclerList() {
-        workmateViewModel.getWorkmateListForDetails(placeId).observe(this, adapter::updateDataWorkmates);
-    }
-
-
-    // SET ON CLICK LISTENER METHODS
-    private void onClickListenerFabChoice() {
-        binding.fabRestaurantChoice.setOnClickListener(view -> {
-            setUserChoice();
-        });
-    }
-
-
-    private void onClickListenerBtnCall() {
-        binding.btnCall.setOnClickListener(view -> restaurantViewModel.getRestaurantDetailsApi(placeId).observe(this, restaurant -> setAlertDialog()));
-    }
-
-
-    private void onClickListenerBtnLike() {
-        binding.btnLike.setOnClickListener(view -> {
-            setLikeList();
-            setLikeImage();
-            updateCurrentWorkmate();
-        });
-    }
-
-
-    private void onClickListenerBtnWebsite() {
-        binding.btnWebsite.setOnClickListener(view -> restaurantViewModel.getRestaurantDetailsApi(placeId).observe(this, restaurant -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(restaurant.getWebsite()));
-            startActivity(browserIntent);
-        }));
-    }
-
-
-    private void setEnableButton() {
-        restaurantViewModel.getRestaurantDetailsApi(placeId).observe(this, restaurant -> {
-            if (restaurant.getWebsite() != null) {
-                binding.btnWebsite.setEnabled(true);
-            }
-            if (restaurant.getPhoneNumber() != null)
-                binding.btnCall.setEnabled(true);
-        });
     }
 }

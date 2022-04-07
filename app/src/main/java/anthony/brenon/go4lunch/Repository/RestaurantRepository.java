@@ -12,8 +12,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 import anthony.brenon.go4lunch.api.JsonPlaceHolderApi;
 import anthony.brenon.go4lunch.model.Location;
@@ -31,12 +32,9 @@ public class RestaurantRepository {
     private final String TAG = "my_logs";
     private final String LOG_INFO = "RestaurantRepository ";
 
-
     private static final String COLLECTION_RESTAURANTS = "restaurants";
-    private List<Restaurant> restaurants;
     private final JsonPlaceHolderApi jsonPlaceHolderApi;
-
-
+    private final MutableLiveData<List<Restaurant>> liveDataRestaurant = new MutableLiveData<>();
     //TODO put there variable into shared view model radius setting
     String radius = "2000";
 
@@ -46,75 +44,78 @@ public class RestaurantRepository {
     }
 
 
-    public MutableLiveData<Restaurant> getRestaurantDetailsApi(String place_id) {
-        MutableLiveData<Restaurant> restaurant = new MutableLiveData<>();
+    // GOOGLE API
+    public void getDetailsRestaurantApi(String place_id, Callback<PlaceResponse> callback) {
         Call<PlaceResponse> restaurantCall = jsonPlaceHolderApi.getApiDetailsResponse(place_id);
-        restaurantCall.enqueue(new Callback<PlaceResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<PlaceResponse> call, @NonNull Response<PlaceResponse> response) {
-                //Log.d(TAG, LOG_INFO + "onResponse ");
-                if (response.isSuccessful()) {
-                    restaurant.postValue(Objects.requireNonNull(response.body()).getResult());
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<PlaceResponse> call, @NonNull Throwable t) {
-                Log.d(TAG, LOG_INFO + "onFailure: " + t.getMessage());
-            }
-        });
-        return restaurant;
+        restaurantCall.enqueue(callback);
     }
 
+    public void callNearbyRestaurantsApi(final Location locationUser) {
+        if(locationUser != null) {
+            getListRestaurant().addOnSuccessListener(restaurants -> {
+                Call<PlaceNearbyResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
+                call.enqueue(new Callback<PlaceNearbyResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<PlaceNearbyResponse> call,
+                                           @NonNull Response<PlaceNearbyResponse> response) {
+                        if (response.isSuccessful()) {
+                            try {
 
-    public LiveData<List<Restaurant>> callNearbyRestaurantsApi(Location locationUser) {
-        MutableLiveData<List<Restaurant>> result = new MutableLiveData<>();
-        Call<PlaceNearbyResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
-        call.enqueue(new Callback<PlaceNearbyResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<PlaceNearbyResponse> call,
-                                   @NonNull Response<PlaceNearbyResponse> response) {
-                if (response.isSuccessful()) {
-                    restaurants = response.body().getResults();
-                    for (Restaurant restaurant : restaurants) {
-                        restaurant.setDistance(locationUser);
-
-                        for (Restaurant restaurant1 : restaurants) {
-                            getRestaurantDB(restaurant1.getId()).addOnSuccessListener(data ->
-                                    restaurant1.setUsersChoice(data.getUsersChoice()));
+                                List<Restaurant> fbRestaurants = response.body().getResults();
+                                Comparator<Restaurant> c = (u1, u2) -> {
+                                    return u1.getId().compareTo(u2.getId());
+                                };
+                                for (Restaurant restaurant : fbRestaurants) {
+                                    restaurant.setDistance(locationUser);
+                                    int indexRestaurant = Arrays.binarySearch(restaurants.toArray(new Restaurant[restaurants.size()]), restaurant, c);
+                                    restaurant.setUsersChoice(restaurants.get(indexRestaurant).getUsersChoice());
+                                }
+                                updateFirebase(fbRestaurants);
+                                liveDataRestaurant.postValue(fbRestaurants);
+                            } catch (Exception e) {
+                                call.cancel();
+                            }
                         }
                     }
-                    updateFirebase(restaurants);
-                    result.postValue(restaurants);
-                }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<PlaceNearbyResponse> call, @NonNull Throwable t) {
-                Log.d(TAG, LOG_INFO + "onFailure: " + t.getMessage());
-            }
-        });
-        return result;
+                    @Override
+                    public void onFailure(@NonNull Call<PlaceNearbyResponse> call, @NonNull Throwable t) {
+                        Log.d(TAG, LOG_INFO + "onFailure: " + t.getMessage());
+                    }
+                });
+            });
+        }
     }
 
 
-    public Task<Restaurant> getRestaurantDB(String placeId) {
+    // GETS
+    public LiveData<List<Restaurant>> getLiveDataListRestaurant(){
+        return liveDataRestaurant;
+    }
+
+    public Task<Restaurant> getRestaurantFS(String placeId) {
         return getRestaurantsCollection().document(placeId).get().continueWith(data ->
                 data.getResult().toObject(Restaurant.class));
     }
 
+    public Task<List<Restaurant>> getListRestaurant() {
+        return getRestaurantsCollection().get().continueWith(data ->
+                data.getResult().toObjects(Restaurant.class));
+    }
 
     private CollectionReference getRestaurantsCollection() {
         return FirebaseFirestore.getInstance().collection(COLLECTION_RESTAURANTS);
     }
 
-    public void updateRestaurantIntoDB(Restaurant restaurantUpdate) {
-        getRestaurantsCollection().document(restaurantUpdate.getId()).set(restaurantUpdate);
+
+    // UPDATE
+    public Task<Void> updateRestaurantIntoFS(Restaurant restaurantUpdate) {
+        return getRestaurantsCollection().document(restaurantUpdate.getId()).set(restaurantUpdate);
     }
 
     private void updateFirebase(List<Restaurant> restaurantList) {
         for (Restaurant restaurant : restaurantList) {
-            getRestaurantDB(restaurant.getId()).addOnSuccessListener(data -> {
+            getRestaurantFS(restaurant.getId()).addOnSuccessListener(data -> {
                 if (data == null) {
                     getRestaurantsCollection().document(restaurant.getId()).set(restaurant);
                 } else if (data.getUsersChoice().size() > 0 && restaurant.getUsersChoice().isEmpty()) {

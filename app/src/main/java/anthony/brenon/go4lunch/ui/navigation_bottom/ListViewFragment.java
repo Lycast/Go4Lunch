@@ -44,7 +44,7 @@ public class ListViewFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         restaurantViewModel = new ViewModelProvider(requireActivity()).get(RestaurantViewModel.class);
 
-        restaurantViewModel.getRestaurantsInstance().observe(this, restaurantsInstance-> {
+        restaurantViewModel.getLiveDataListRestaurants().observe(this, restaurantsInstance-> {
             //Log.d(TAG,LOG_INFO + "displayRestaurant" + restaurantsInstance);
             adapter.updateDataRestaurants(restaurantsInstance);
         });
