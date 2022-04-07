@@ -1,6 +1,7 @@
 package anthony.brenon.go4lunch.ui.adapter;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +23,6 @@ import anthony.brenon.go4lunch.model.Restaurant;
  * Created by Lycast on 09/03/2022.
  */
 public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.RestaurantsViewHolder> {
-    private final String TAG = "my_logs";
-    private final String LOG_INFO = "RestaurantAdapter ";
 
 
     public List<Restaurant> restaurants;
@@ -98,8 +97,13 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
             if (restaurant.getOpeningHours() != null)
                 if (restaurant.getOpeningHours().isOpen_now()) {
                     itemBinding.restaurantOpening.setText(R.string.isOpen);
-                } else itemBinding.restaurantOpening.setText(R.string.isClose);
+                    itemBinding.restaurantOpening.setTextColor(Color.parseColor("#139e2f"));
+                } else {
+                    itemBinding.restaurantOpening.setText(R.string.isClose);
+                    itemBinding.restaurantOpening.setTextColor(Color.parseColor("#a11912"));
+                }
         }
+
         @Override
         public void onClick(View v) {
             clickListener.onItemClick(restaurants.get(getAdapterPosition()).getId());

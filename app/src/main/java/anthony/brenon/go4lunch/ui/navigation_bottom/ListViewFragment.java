@@ -44,20 +44,7 @@ public class ListViewFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         restaurantViewModel = new ViewModelProvider(requireActivity()).get(RestaurantViewModel.class);
 
-        restaurantViewModel.getLiveDataListRestaurants().observe(this, restaurantsInstance-> {
-            //Log.d(TAG,LOG_INFO + "displayRestaurant" + restaurantsInstance);
-            adapter.updateDataRestaurants(restaurantsInstance);
-        });
-
-//        restaurantViewModel.getRestaurantListDto().observe(this, restaurants -> restaurantsDB = restaurants);
-//        sharedViewModel.getNearbyRestaurantsApi().observe(this, restaurants -> {
-//            for (Restaurant restaurant : restaurants) {
-//                for (Restaurant restaurant1 : restaurantsDB)
-//                    if(restaurant.getId().equals(restaurant1.getId()))
-//                        restaurant.setUsersChoice(restaurant1.getUsersChoice());
-//            }
-//            adapter.updateDataRestaurants(restaurants);
-//        });
+        restaurantViewModel.getLiveDataListRestaurants().observe(this, adapter::updateDataRestaurants);
 
         adapter.setOnItemClickListener(placeId -> {
             Intent intent = new Intent(getActivity(), DetailsRestaurantActivity.class);

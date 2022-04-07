@@ -220,15 +220,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     // --------------------- POSITION GPS START ----------------------------- //
     private boolean checkFineLocationPermission() {
-        //Log.d(TAG,LOG_INFO + "checkFineLocationPermission");
         String permission = Manifest.permission.ACCESS_FINE_LOCATION;
         int res = this.checkCallingOrSelfPermission(permission);
         return (res == PackageManager.PERMISSION_GRANTED);
     }
-    
+
     @SuppressLint("MissingPermission")
     private void checkPermissions() {
-        //Log.d(TAG,LOG_INFO + "checkPermission");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{
@@ -254,7 +252,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     @Override
     public void onLocationChanged(@NonNull android.location.Location location) {
-        //Log.d(TAG,LOG_INFO + "onLocationChanged");
         Location locationUser = new Location(location.getLatitude(), location.getLongitude());
         Log.d(TAG,LOG_INFO + "onLocationChanged locUser: " + locationUser);
         restaurantViewModel.setLocationUser(locationUser);

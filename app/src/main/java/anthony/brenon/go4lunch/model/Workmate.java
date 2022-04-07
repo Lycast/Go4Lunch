@@ -1,5 +1,7 @@
 package anthony.brenon.go4lunch.model;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +24,11 @@ public class Workmate {
     public Workmate() {}
 
 
-    public Workmate(String uid, String username, String urlPicture) {
+    public Workmate(String uid, String username, String urlPicture, String email) {
         this.setUid(uid);
         this.setUsername(username);
         this.setUrlPicture(urlPicture);
+        this.email = email;
     }
 
 
@@ -67,6 +70,7 @@ public class Workmate {
     }
 
 
+    @NonNull
     @Override
     public String toString() {
         return "User{" +

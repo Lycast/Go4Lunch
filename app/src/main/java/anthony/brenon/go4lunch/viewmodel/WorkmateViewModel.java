@@ -50,7 +50,7 @@ public class WorkmateViewModel extends ViewModel {
                 })
                 .addOnFailureListener(notExistException -> {
                     // User doesn't exist in database -> create user
-                    Workmate workmateToCreate = new Workmate(uid, username, urlPicture);
+                    Workmate workmateToCreate = new Workmate(uid, username, urlPicture, email);
                     workmateRepository.createWorkmateIntoFS(workmateToCreate);
                 });
     }

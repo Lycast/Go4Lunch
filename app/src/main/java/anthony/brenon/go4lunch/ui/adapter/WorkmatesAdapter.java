@@ -22,12 +22,10 @@ import anthony.brenon.go4lunch.model.Workmate;
  * Created by Lycast on 09/03/2022.
  */
 public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.WorkmatesViewHolder> {
-    private final String TAG = "my_logs";
-    private final String LOG_INFO = "WorkmatesAdapter ";
 
     public List<Workmate> workmates;
     ItemWorkmateBinding binding;
-    private boolean isListView;
+    private final boolean isListView;
 
 
     public WorkmatesAdapter(boolean isListView) {

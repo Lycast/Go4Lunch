@@ -93,7 +93,6 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             restaurantViewModel.getRestaurantDetailsApi(placeId, new Callback<PlaceResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<PlaceResponse> call, @NonNull Response<PlaceResponse> response) {
-                    //Log.d(TAG, LOG_INFO + "onResponse ");
                     if (response.isSuccessful()) {
 
                         restaurantDB = Objects.requireNonNull(response.body()).getResult();
@@ -125,11 +124,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     private void setLikeImage() {
         if (currentWorkmate.getRestaurantsLiked().contains(placeId)) {
-            //Log.d(TAG, LOG_INFO + "if is : " + currentUser.getRestaurantsLiked().contains(placeId));
             binding.imgLike.setVisibility(View.VISIBLE);
         } else {
             binding.imgLike.setVisibility(View.GONE);
-            //Log.d(TAG, LOG_INFO + "if is : " + currentUser.getRestaurantsLiked().contains(placeId));
         }
     }
 

@@ -24,11 +24,9 @@ public class WorkmateRepository {
     private final String TAG = "my_logs";
     private final String LOG_INFO = "WorkmateRepository ";
 
-
     private static final String COLLECTION_WORKMATES = "users";
     private final FirebaseAuth auth;
-    private MutableLiveData<List<Workmate>> listMutableLiveData = new MutableLiveData<>();
-
+    private final MutableLiveData<List<Workmate>> listMutableLiveData = new MutableLiveData<>();
 
 
     public WorkmateRepository() {
@@ -113,7 +111,6 @@ public class WorkmateRepository {
     private CollectionReference getWorkmatesCollection() {
         return FirebaseFirestore.getInstance().collection(COLLECTION_WORKMATES);
     }
-
 
     // GETS FireBaseUser
     public FirebaseUser getCurrentFirebaseUser() {
