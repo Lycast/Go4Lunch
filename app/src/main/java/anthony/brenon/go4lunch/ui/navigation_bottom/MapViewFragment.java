@@ -54,7 +54,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
             displayRestaurants();
         });
 
-        setOnClickListenerMarker();
+        setOnClickInfoWindowListenerMarker();
     }
 
 
@@ -64,16 +64,11 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         getMapAsync(this);
     }
 
-    private void setOnClickListenerMarker() {
+    private void setOnClickInfoWindowListenerMarker() {
         Intent intent = new Intent(requireActivity(), DetailsRestaurantActivity.class);
-
-        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
+        googleMap.setOnInfoWindowClickListener(marker -> {
                 intent.putExtra("place_id", marker.getTag().toString());
-                startActivity(intent);
-                return false;
-            }
+                MapViewFragment.this.startActivity(intent);
         });
     }
 
@@ -92,14 +87,14 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
                             .icon(BitmapFromVector(getContext(), R.drawable.ic_marker))
                             .position(restaurantLocation)
                             .title(restaurant.getName()));
-                    marker.setTag(restaurant.getId());
+                    if (marker != null) { marker.setTag(restaurant.getId()); }
                 } else {
                     LatLng restaurantLocation = new LatLng(restaurant.getGeometryPlace().getLocationPlace().getLat(), restaurant.getGeometryPlace().getLocationPlace().getLng());
                     Marker marker = googleMap.addMarker(new MarkerOptions()
                             .icon(BitmapFromVector(getContext(), R.drawable.ic_marker_green))
                             .position(restaurantLocation)
                             .title(restaurant.getName()));
-                    marker.setTag(restaurant.getId());
+                    if (marker != null) { marker.setTag(restaurant.getId()); }
                 }
             }
         });

@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,7 +50,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     private Workmate currentWorkmate;
     private Restaurant restaurantDB;
     private final WorkmatesAdapter adapter = new WorkmatesAdapter(false);
-
+    private final Observer<List<Workmate>> workmateObserver = adapter::updateDataWorkmates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         placeId = getIntent().getStringExtra("place_id");
 
         // set current user
-        workmateViewModel.getCurrentWorkmateData().observe(this, workmate -> {
+        workmateViewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
             this.currentWorkmate = workmate;
             setLikeImage();
             setImageChoice();
@@ -86,10 +87,20 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         onClickListenerFabChoice();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        workmateViewModel.getWorkmatesListLiveData().observe(this, workmateObserver);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        workmateViewModel.removeObserver(workmateObserver);
+    }
+
     private void getRestaurantDetails(final String placeId) {
-
         restaurantViewModel.getRestaurantFS(placeId).addOnSuccessListener(restaurant -> {
-
             restaurantViewModel.getRestaurantDetailsApi(placeId, new Callback<PlaceResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<PlaceResponse> call, @NonNull Response<PlaceResponse> response) {
@@ -99,7 +110,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                         restaurantDB.setUsersChoice(restaurant.getUsersChoice());
                         populateDetailsRestaurant(restaurantDB);
                         setEnableButton(restaurantDB);
-                        updateRecyclerList(restaurantDB.getUsersChoice());
+                        getWorkmatesData(restaurantDB.getUsersChoice());
                     }
                 }
 
@@ -163,7 +174,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             updateCurrentWorkmate();
             updateCurrentRestaurant();
             setImageChoice();
-            updateRecyclerList(restaurantDB.getUsersChoice());
+            getWorkmatesData(restaurantDB.getUsersChoice());
         } else {
             // alert if user want to select 2 restaurants
             Toast.makeText(this, "Take can't chosen 2 restaurant", Toast.LENGTH_SHORT).show();
@@ -211,10 +222,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         restaurantViewModel.updateRestaurantIntoFS(restaurantDB);
     }
 
-    private void updateRecyclerList(final List<String> workmateIds) {
-        workmateViewModel.getWorkmateListForDetails(workmateIds).observe(this, adapter::updateDataWorkmates);
+    private void getWorkmatesData(final List<String> workmateIds) {
+        workmateViewModel.getWorkmatesFromList(workmateIds);
     }
-
 
     // SET ON CLICK LISTENER METHODS
     private void onClickListenerFabChoice() {

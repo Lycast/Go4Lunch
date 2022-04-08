@@ -13,6 +13,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -35,8 +36,8 @@ public class RestaurantRepository {
     private static final String COLLECTION_RESTAURANTS = "restaurants";
     private final JsonPlaceHolderApi jsonPlaceHolderApi;
     private final MutableLiveData<List<Restaurant>> liveDataRestaurant = new MutableLiveData<>();
-    //TODO put there variable into shared view model radius setting
-    String radius = "2000";
+    //TODO put there variable into shared view model radius setting 100m - 3000m
+    String radius = "1000";
 
 
     public RestaurantRepository() {
@@ -52,7 +53,7 @@ public class RestaurantRepository {
 
     public void callNearbyRestaurantsApi(final Location locationUser) {
         if(locationUser != null) {
-            getListRestaurant().addOnSuccessListener(restaurants -> {
+            getListRestaurant().addOnSuccessListener(restaurantsDb -> {
                 Call<PlaceNearbyResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
                 call.enqueue(new Callback<PlaceNearbyResponse>() {
                     @Override
@@ -60,15 +61,18 @@ public class RestaurantRepository {
                                            @NonNull Response<PlaceNearbyResponse> response) {
                         if (response.isSuccessful()) {
                             try {
-
                                 List<Restaurant> fbRestaurants = response.body().getResults();
                                 Comparator<Restaurant> c = (u1, u2) -> {
                                     return u1.getId().compareTo(u2.getId());
                                 };
                                 for (Restaurant restaurant : fbRestaurants) {
                                     restaurant.setDistance(locationUser);
-                                    int indexRestaurant = Arrays.binarySearch(restaurants.toArray(new Restaurant[restaurants.size()]), restaurant, c);
-                                    restaurant.setUsersChoice(restaurants.get(indexRestaurant).getUsersChoice());
+                                    int indexRestaurant = Arrays.binarySearch(restaurantsDb.toArray(new Restaurant[restaurantsDb.size()]), restaurant, c);
+                                    if(indexRestaurant >= 0) {
+                                        restaurant.setUsersChoice(restaurantsDb.get(indexRestaurant).getUsersChoice());
+                                    } else {
+                                        restaurant.setUsersChoice(Collections.emptyList());
+                                    }
                                 }
                                 updateFirebase(fbRestaurants);
                                 liveDataRestaurant.postValue(fbRestaurants);

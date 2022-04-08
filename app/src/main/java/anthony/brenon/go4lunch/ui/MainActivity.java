@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,7 +26,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -41,8 +39,10 @@ import anthony.brenon.go4lunch.viewmodel.RestaurantViewModel;
 import anthony.brenon.go4lunch.viewmodel.WorkmateViewModel;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
-    private final String TAG = "my_logs";
-    private final String LOG_INFO = "MainActivity ";
+
+    private final MapViewFragment mapsFragment = new MapViewFragment();
+    private final ListViewFragment listViewFragment = new ListViewFragment();
+    private final WorkmatesFragment workmatesFragment = new WorkmatesFragment();
 
     private DrawerLayout drawer;
     private BottomNavigationView bottomNavMenu;
@@ -76,21 +76,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         );
         setupNavigationBottom();
 
-
-        // SETUP POSITION GPS
-        checkPermissions();
-        if(checkFineLocationPermission()) {
-            startLocationManager();
-        } else checkPermissions();
+        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, mapsFragment).commit();
+        bottomNavMenu.setSelectedItemId(R.id.page_1_map_view);
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        final MapViewFragment mapsFragment = new MapViewFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, mapsFragment).commit();
-        bottomNavMenu.setSelectedItemId(R.id.page_1_map_view);
+        // SETUP POSITION GPS
+        checkPermissions();
+        if(checkFineLocationPermission()) {
+            startLocationManager();
+        } else checkPermissions();
+
         setupDrawerUIWithUserData();
         restaurantViewModel.callNearbyRestaurantsApi();
     }
@@ -107,24 +106,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     // Bind and listener navigation bottom
     private void setupNavigationBottom() {
-        bottomNavMenu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            final MapViewFragment mapsFragment = new MapViewFragment();
-            final ListViewFragment listViewFragment = new ListViewFragment();
-            final WorkmatesFragment workmatesFragment = new WorkmatesFragment();
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.page_1_map_view) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, mapsFragment).commit();
-                    return true;
-                } else if (id == R.id.page_2_list_view) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, listViewFragment).commit();
-                    return true;
-                } else if (id == R.id.page_3_workmates) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, workmatesFragment).commit();
-                    return true;
-                } else return id == R.id.page_4_invisible;
-            }
+        bottomNavMenu.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.page_1_map_view) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, mapsFragment).commit();
+                return true;
+            } else if (id == R.id.page_2_list_view) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, listViewFragment).commit();
+                return true;
+            } else if (id == R.id.page_3_workmates) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, workmatesFragment).commit();
+                return true;
+            } else return id == R.id.page_4_invisible;
         });
     }
 
@@ -154,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         NavigationView nvDrawer = binding.navView;
         setupDrawerContent(nvDrawer);
         View hView = nvDrawer.getHeaderView(0);
-        workmateViewModel.getCurrentWorkmateData().observe(this, workmate -> {
+        workmateViewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
             if (workmate != null) {
                 ImageView imageUser = hView.findViewById(R.id.imageUser);
                 TextView firstName = hView.findViewById(R.id.firstName);
@@ -180,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 openYourLunchDetails();
                 drawer.closeDrawer(GravityCompat.START);
             } else if ( id == R.id.dv_settings) {
-                Log.d(TAG, "settings");
                 deselectBottomNav();
                 drawer.closeDrawer(GravityCompat.START);
             } else if ( id == R.id.dv_logout) {
@@ -208,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
 
     private void openYourLunchDetails() {
-        workmateViewModel.getCurrentWorkmateData().observe(this, workmate -> {
+        workmateViewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
             if(!workmate.getRestaurantChosenId().equals("")) {
                 Intent intent = new Intent(this, DetailsRestaurantActivity.class);
                 intent.putExtra("place_id", workmate.getRestaurantChosenId());
@@ -253,7 +245,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onLocationChanged(@NonNull android.location.Location location) {
         Location locationUser = new Location(location.getLatitude(), location.getLongitude());
-        Log.d(TAG,LOG_INFO + "onLocationChanged locUser: " + locationUser);
         restaurantViewModel.setLocationUser(locationUser);
     }
 

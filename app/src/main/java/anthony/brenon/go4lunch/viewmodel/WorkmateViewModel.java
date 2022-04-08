@@ -3,6 +3,7 @@ package anthony.brenon.go4lunch.viewmodel;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.tasks.Task;
@@ -21,7 +22,6 @@ public class WorkmateViewModel extends ViewModel {
     private final String TAG = "my_logs";
 
     private final WorkmateRepository workmateRepository;
-
 
     public WorkmateViewModel() {
         super();
@@ -70,15 +70,23 @@ public class WorkmateViewModel extends ViewModel {
 
 
     // GETS
-    public LiveData<Workmate> getCurrentWorkmateData(){
-        return workmateRepository.getCurrentWorkmateData();
+    public Task<Workmate> getCurrentWorkmateData(){
+        return workmateRepository.getWorkmateData();
+    }
+
+    public LiveData<List<Workmate>> getWorkmatesListLiveData(){
+        return workmateRepository.getListMutableLiveData();
     }
 
     public LiveData<List<Workmate>> getWorkmatesList() {
         return workmateRepository.getWorkmatesListData();
     }
 
-    public LiveData<List<Workmate>> getWorkmateListForDetails(List<String> workmateIds) {
-        return workmateRepository.getWorkmateListForDetails(workmateIds);
+    public void getWorkmatesFromList(List<String> workmateIds) {
+        workmateRepository.getWorkmatesFromList(workmateIds);
+    }
+
+    public void removeObserver(Observer<List<Workmate>> observer){
+        workmateRepository.removeObserver(observer);
     }
 }

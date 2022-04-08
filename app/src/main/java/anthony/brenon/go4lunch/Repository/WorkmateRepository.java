@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -13,6 +14,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import anthony.brenon.go4lunch.model.Workmate;
@@ -28,11 +31,9 @@ public class WorkmateRepository {
     private final FirebaseAuth auth;
     private final MutableLiveData<List<Workmate>> listMutableLiveData = new MutableLiveData<>();
 
-
     public WorkmateRepository() {
         auth = FirebaseAuth.getInstance();
     }
-
 
     // Update User in Firestore
     public void updateWorkmateIntoFS(Workmate workmateUpdate) {
@@ -41,7 +42,6 @@ public class WorkmateRepository {
                 .set(workmateUpdate)
                 .addOnFailureListener(updateUserException -> Log.e(TAG, LOG_INFO + updateUserException.getMessage()));
     }
-
 
     // Create User in Firestore
     public void createWorkmateIntoFS(Workmate workmateToCreate) {
@@ -53,21 +53,26 @@ public class WorkmateRepository {
                 );
     }
 
-
     // GETS to FireStore
-    public LiveData<List<Workmate>> getWorkmateListForDetails(List<String> workmateIds) {
-        List<Workmate> workmateList = new ArrayList<>();
+    public void getWorkmatesFromList(List<String> workmateIds) {
         getListWorkmate().addOnSuccessListener(workmates -> {
-            for (Workmate workmate : workmates) {
-                String workmateFSId = workmate.getUid();
-                for (String workmateId : workmateIds) {
-                    if(workmateId.equals(workmateFSId)) {
-                        workmateList.add(workmate);
-                    }
+            Comparator<Workmate> c = (u1, u2) -> {
+                return u1.getUid().compareTo(u2.getUid());
+            };
+            List<Workmate> workmateList = new ArrayList<>();
+            for (String workmateId : workmateIds) {
+                Workmate a = new Workmate();
+                a.setUid(workmateId);
+                int indexWorkmate = Arrays.binarySearch(workmates.toArray(new Workmate[workmates.size()]), a, c);
+                if(indexWorkmate >= 0) {
+                    workmateList.add(workmates.get(indexWorkmate));
                 }
             }
-            listMutableLiveData.setValue(workmateList);
+            listMutableLiveData.postValue(workmateList);
         });
+    }
+
+    public MutableLiveData<List<Workmate>> getListMutableLiveData(){
         return listMutableLiveData;
     }
 
@@ -79,13 +84,6 @@ public class WorkmateRepository {
     public Task<List<Workmate>> getListWorkmate() {
         return getWorkmatesCollection().get().continueWith(data ->
                 data.getResult().toObjects(Workmate.class));
-    }
-
-    public LiveData<Workmate> getCurrentWorkmateData() {
-        MutableLiveData<Workmate> workmateMutableLiveData = new MutableLiveData<>();
-        getFirebaseUserData().addOnSuccessListener(workmate1 ->
-                workmateMutableLiveData.setValue(workmate1.toObject(Workmate.class)));
-        return workmateMutableLiveData;
     }
 
     public LiveData<List<Workmate>> getWorkmatesListData() {
@@ -103,13 +101,9 @@ public class WorkmateRepository {
                     workmateList.add(workmate);
             }
 
-         workmates.setValue(workmateList);
+            workmates.postValue(workmateList);
         });
         return workmates;
-    }
-
-    private CollectionReference getWorkmatesCollection() {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_WORKMATES);
     }
 
     // GETS FireBaseUser
@@ -117,11 +111,16 @@ public class WorkmateRepository {
         return auth.getCurrentUser();
     }
 
+    public void removeObserver(Observer<List<Workmate>> observer){
+        this.listMutableLiveData.removeObserver(observer);
+    }
+
+    private CollectionReference getWorkmatesCollection() {
+        return FirebaseFirestore.getInstance().collection(COLLECTION_WORKMATES);
+    }
+
     private Task<DocumentSnapshot> getFirebaseUserData() {
         String uid = getCurrentFirebaseUser().getUid();
         return getWorkmatesCollection().document(uid).get();
     }
 }
-
-
-
