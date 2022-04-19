@@ -29,7 +29,6 @@ public class RestaurantViewModel extends ViewModel {
         restaurantRepository = new RestaurantRepository();
     }
 
-
     // GETS
     public void getRestaurantDetailsApi(String placeId, Callback<PlaceResponse> callback) {
         restaurantRepository.getDetailsRestaurantApi(placeId, callback);
@@ -67,6 +66,7 @@ public class RestaurantViewModel extends ViewModel {
 
     // CALLS
     public void callNearbyRestaurantsApi(Location locationUser) {
+        if(locationUser != null)
         restaurantRepository.callNearbyRestaurantsApi(locationUser);
     }
 

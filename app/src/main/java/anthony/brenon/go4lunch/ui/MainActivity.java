@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -25,10 +27,21 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.common.api.Status;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.Arrays;
+import java.util.List;
+
+import anthony.brenon.go4lunch.BuildConfig;
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityMainBinding;
 import anthony.brenon.go4lunch.model.Location;
@@ -40,6 +53,9 @@ import anthony.brenon.go4lunch.viewmodel.WorkmateViewModel;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
+    private final static int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private static final int PERMS_CALL_ID = 101;
+
     private final MapViewFragment mapsFragment = new MapViewFragment();
     private final ListViewFragment listViewFragment = new ListViewFragment();
     private final WorkmatesFragment workmatesFragment = new WorkmatesFragment();
@@ -49,8 +65,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private ActivityMainBinding binding;
     private WorkmateViewModel workmateViewModel;
     private RestaurantViewModel restaurantViewModel;
-    private static final int PERMS_CALL_ID = 101;
     private LocationManager locationManager;
+    //TypeFilter types = new TypeFilter("Restaurant");
 
 
     @Override
@@ -78,13 +94,36 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, mapsFragment).commit();
         bottomNavMenu.setSelectedItemId(R.id.page_1_map_view);
+
+
+
+        onClickResearch();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i("TAG", "Place: " + place.getName() + ", " + place.getId());
+                Intent intent = new Intent(this, DetailsRestaurantActivity.class);
+                intent.putExtra("place_id", place.getId());
+                startActivity(intent);
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i("TAG", status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // SETUP POSITION GPS
+        // check position gps is enable
         checkPermissions();
         if(checkFineLocationPermission()) {
             startLocationManager();
@@ -94,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         restaurantViewModel.callNearbyRestaurantsApi();
     }
 
-
     @SuppressLint("MissingPermission")
     @Override
     protected void onPause() {
@@ -102,6 +140,24 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         if(locationManager != null) {
             locationManager.removeUpdates(this);
         }
+    }
+
+    // Btn research
+    private void onClickResearch() {
+        binding.appBarMain.btnResearchToolbar.setOnClickListener(view -> {
+            if(!Places.isInitialized()) {
+                Places.initialize(this, BuildConfig.MAPS_API_KEY);
+            } else {
+                List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+
+                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                        .setHint(getString(R.string.autocomplete_hint))
+                        .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                        .setCountry("FR")
+                        .build(this);
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+            }
+        });
     }
 
     // Bind and listener navigation bottom
@@ -121,7 +177,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         });
     }
 
-
     // Content of drawer menu
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
@@ -130,7 +185,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     return true;
                 });
     }
-
 
     // Open/close drawer
     @Override
@@ -141,7 +195,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     private void setupDrawerUIWithUserData(){
         NavigationView nvDrawer = binding.navView;
@@ -164,7 +217,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         });
     }
 
-
     // Bind and listener drawer menu
     public void selectDrawerItem(MenuItem menuItem) {
         // Specify the fragment to show based on nav item clicked
@@ -181,7 +233,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-
     // Logout application
     private void signOut(){
         AuthUI.getInstance().signOut(this).addOnSuccessListener(unused -> {
@@ -190,7 +241,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             finish();
         });
     }
-
 
     // deselect bottom navigation
     private void deselectBottomNav(){

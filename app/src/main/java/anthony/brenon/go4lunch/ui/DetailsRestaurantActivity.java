@@ -48,7 +48,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     private static final int REQUEST_CALL = 123;
     private String placeId;
     private Workmate currentWorkmate;
-    private Restaurant restaurantDB;
+    private Restaurant currentRestaurant;
     private final WorkmatesAdapter adapter = new WorkmatesAdapter(false);
     private final Observer<List<Workmate>> workmateObserver = adapter::updateDataWorkmates;
 
@@ -62,6 +62,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
         // set placeId
         placeId = getIntent().getStringExtra("place_id");
+        Log.d(TAG, LOG_INFO + "place_id: " + placeId);
 
         // set current user
         workmateViewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
@@ -101,16 +102,22 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     private void getRestaurantDetails(final String placeId) {
         restaurantViewModel.getRestaurantFS(placeId).addOnSuccessListener(restaurant -> {
+
             restaurantViewModel.getRestaurantDetailsApi(placeId, new Callback<PlaceResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<PlaceResponse> call, @NonNull Response<PlaceResponse> response) {
                     if (response.isSuccessful()) {
 
-                        restaurantDB = Objects.requireNonNull(response.body()).getResult();
-                        restaurantDB.setUsersChoice(restaurant.getUsersChoice());
-                        populateDetailsRestaurant(restaurantDB);
-                        setEnableButton(restaurantDB);
-                        getWorkmatesData(restaurantDB.getUsersChoice());
+                        currentRestaurant = Objects.requireNonNull(response.body()).getResult();
+
+                        if(restaurant == null)
+                            restaurantViewModel.updateRestaurantIntoFS(currentRestaurant);
+                        if(restaurant != null)
+                            currentRestaurant.setUsersChoice(restaurant.getUsersChoice());
+
+                        populateDetailsRestaurant(currentRestaurant);
+                        setEnableButton(currentRestaurant);
+                        getWorkmatesData(currentRestaurant.getUsersChoice());
                     }
                 }
 
@@ -158,26 +165,31 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     }
 
     private void setUserChoice() {
+        // Check if current user have chosen this restaurant or if current user don't have choice else he can't chosen this restaurant
         if (currentWorkmate.getRestaurantChosenId().equals(placeId) || currentWorkmate.getRestaurantChosenId().equals("")) {
-            // set new choice
-            List<String> userChoice = restaurantDB.getUsersChoice();
 
-            if (restaurantDB.getUsersChoice().contains(currentWorkmate.getUid())) {
-                userChoice.remove(currentWorkmate.getUid());
+            List<String> usersChoice = currentRestaurant.getUsersChoice();
+
+
+            // if current user have chosen this restaurant, remove restaurant choice else add this restaurant choice
+            if (currentRestaurant.getUsersChoice().contains(currentWorkmate.getUid())) {
+                usersChoice.remove(currentWorkmate.getUid());
                 currentWorkmate.setRestaurantChosenId("");
                 currentWorkmate.setRestaurantChosenName("");
             } else {
-                userChoice.add(currentWorkmate.getUid());
-                currentWorkmate.setRestaurantChosenId(restaurantDB.getId());
-                currentWorkmate.setRestaurantChosenName(restaurantDB.getName());
+                usersChoice.add(currentWorkmate.getUid());
+                currentWorkmate.setRestaurantChosenId(currentRestaurant.getId());
+                currentWorkmate.setRestaurantChosenName(currentRestaurant.getName());
             }
+            // update view and data
+            currentRestaurant.setUsersChoice(usersChoice);
             updateCurrentWorkmate();
             updateCurrentRestaurant();
             setImageChoice();
-            getWorkmatesData(restaurantDB.getUsersChoice());
+            getWorkmatesData(currentRestaurant.getUsersChoice());
         } else {
             // alert if user want to select 2 restaurants
-            Toast.makeText(this, "Take can't chosen 2 restaurant", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "You can't chosen 2 restaurant", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -185,7 +197,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_phone_enabled)
                 .setTitle(" call")
-                .setMessage(restaurantDB.getName() + "  " + restaurantDB.getPhoneNumber() + " ?")
+                .setMessage(currentRestaurant.getName() + "  " + currentRestaurant.getPhoneNumber() + " ?")
                 .setPositiveButton(android.R.string.yes, (dialog, which) -> makePhoneCall())
                 .setNegativeButton(android.R.string.no, null)
                 .show();
@@ -202,11 +214,11 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     // should not be called if restaurantDb is null
     private void makePhoneCall() {
-        if (restaurantDB != null && restaurantDB.getPhoneNumber().trim().length() > 0) {
+        if (currentRestaurant != null && currentRestaurant.getPhoneNumber().trim().length() > 0) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
             } else {
-                String dial = "tel:" + restaurantDB.getPhoneNumber();
+                String dial = "tel:" + currentRestaurant.getPhoneNumber();
                 startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
             }
         }
@@ -219,7 +231,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     }
 
     private void updateCurrentRestaurant() {
-        restaurantViewModel.updateRestaurantIntoFS(restaurantDB);
+        restaurantViewModel.updateRestaurantIntoFS(currentRestaurant);
     }
 
     private void getWorkmatesData(final List<String> workmateIds) {
@@ -245,8 +257,8 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     private void onClickListenerBtnWebsite() {
         binding.btnWebsite.setOnClickListener(view -> {
-            if (restaurantDB != null) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(restaurantDB.getWebsite()));
+            if (currentRestaurant != null) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentRestaurant.getWebsite()));
                 startActivity(browserIntent);
             }
         });

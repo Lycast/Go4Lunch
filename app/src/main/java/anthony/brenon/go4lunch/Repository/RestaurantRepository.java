@@ -52,48 +52,48 @@ public class RestaurantRepository {
     }
 
     public void callNearbyRestaurantsApi(final Location locationUser) {
-        if(locationUser != null) {
-            getListRestaurant().addOnSuccessListener(restaurantsDb -> {
-                Call<PlaceNearbyResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
-                call.enqueue(new Callback<PlaceNearbyResponse>() {
-                    @Override
-                    public void onResponse(@NonNull Call<PlaceNearbyResponse> call,
-                                           @NonNull Response<PlaceNearbyResponse> response) {
-                        if (response.isSuccessful()) {
-                            try {
-                                List<Restaurant> fbRestaurants = response.body().getResults();
-                                Comparator<Restaurant> c = (u1, u2) -> {
-                                    return u1.getId().compareTo(u2.getId());
-                                };
-                                for (Restaurant restaurant : fbRestaurants) {
-                                    restaurant.setDistance(locationUser);
-                                    int indexRestaurant = Arrays.binarySearch(restaurantsDb.toArray(new Restaurant[restaurantsDb.size()]), restaurant, c);
-                                    if(indexRestaurant >= 0) {
-                                        restaurant.setUsersChoice(restaurantsDb.get(indexRestaurant).getUsersChoice());
-                                    } else {
-                                        restaurant.setUsersChoice(Collections.emptyList());
-                                    }
+        getListRestaurant().addOnSuccessListener(restaurantsDb -> {
+
+            Call<PlaceNearbyResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
+            call.enqueue(new Callback<PlaceNearbyResponse>() {
+
+                @Override
+                public void onResponse(@NonNull Call<PlaceNearbyResponse> call,
+                                       @NonNull Response<PlaceNearbyResponse> response) {
+                    if (response.isSuccessful()) {
+                        try {
+                            List<Restaurant> restaurantsAPI = response.body().getResults();
+                            Comparator<Restaurant> c = (u1, u2) -> {
+                                return u1.getId().compareTo(u2.getId());
+                            };
+                            for (Restaurant restaurant : restaurantsAPI) {
+                                restaurant.setDistance(locationUser);
+
+                                int indexRestaurant = Arrays.binarySearch(restaurantsDb.toArray(new Restaurant[restaurantsDb.size()]), restaurant, c);
+                                if (indexRestaurant >= 0) {
+                                    restaurant.setUsersChoice(restaurantsDb.get(indexRestaurant).getUsersChoice());
+                                } else {
+                                    restaurant.setUsersChoice(Collections.emptyList());
                                 }
-                                updateFirebase(fbRestaurants);
-                                liveDataRestaurant.postValue(fbRestaurants);
-                            } catch (Exception e) {
-                                call.cancel();
                             }
+                            updateFirebase(restaurantsAPI);
+                            liveDataRestaurant.postValue(restaurantsAPI);
+                        } catch (Exception e) {
+                            call.cancel();
+                            Log.d(TAG, LOG_INFO + "call cancel exception: " + e.getMessage());
                         }
                     }
+                }
 
-                    @Override
-                    public void onFailure(@NonNull Call<PlaceNearbyResponse> call, @NonNull Throwable t) {
-                        Log.d(TAG, LOG_INFO + "onFailure: " + t.getMessage());
-                    }
-                });
+                @Override
+                public void onFailure(@NonNull Call<PlaceNearbyResponse> call, @NonNull Throwable t) {
+                    Log.d(TAG, LOG_INFO + "onFailure: " + t.getMessage());
+                }
             });
-        }
+        });
     }
 
-
-    // GETS
-    public LiveData<List<Restaurant>> getLiveDataListRestaurant(){
+    public LiveData<List<Restaurant>> getLiveDataListRestaurant() {
         return liveDataRestaurant;
     }
 

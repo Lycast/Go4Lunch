@@ -28,6 +28,16 @@ public class WorkmateViewModel extends ViewModel {
         workmateRepository = new WorkmateRepository();
     }
 
+    //TODO implements
+    public void researchWorkmatePrediction(String name) {
+        // launch the research in the list of workmate
+    }
+
+    //TODO implements
+    public void getWorkmatePrediction() {
+        // return workmates prediction repository
+    }
+
 
     // UPDATES
     public Task<Workmate> createWorkmateIntoDb() {
