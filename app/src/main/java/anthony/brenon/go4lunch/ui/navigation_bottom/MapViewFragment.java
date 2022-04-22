@@ -28,19 +28,19 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.ui.DetailsRestaurantActivity;
-import anthony.brenon.go4lunch.viewmodel.RestaurantViewModel;
+import anthony.brenon.go4lunch.viewmodel.MainActivityViewModel;
 
 public class MapViewFragment extends SupportMapFragment implements OnMapReadyCallback {
 
     private GoogleMap googleMap;
-    private RestaurantViewModel restaurantViewModel;
+    private MainActivityViewModel viewModel;
 
 
     @SuppressLint("MissingPermission")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        restaurantViewModel = new ViewModelProvider(requireActivity()).get(RestaurantViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
     }
 
 
@@ -48,7 +48,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     public void onMapReady(@NonNull final GoogleMap googleMap) {
         this.googleMap = googleMap;
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.style_map));
-        restaurantViewModel.getLatLngLiveData().observe(getViewLifecycleOwner(), pos -> {
+        viewModel.getLatLngLiveData().observe(getViewLifecycleOwner(), pos -> {
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 15));
             getPositionButton();
             displayRestaurants();
@@ -79,12 +79,12 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     }
 
     private void displayRestaurants() {
-        restaurantViewModel.getLiveDataListRestaurants().observe(this, restaurantsInstance -> {
+        viewModel.getLiveDataListRestaurants().observe(this, restaurantsInstance -> {
             for (Restaurant restaurant : restaurantsInstance) {
                 if (restaurant.getUsersChoice().isEmpty()) {
                     LatLng restaurantLocation = new LatLng(restaurant.getGeometryPlace().getLocationPlace().getLat(), restaurant.getGeometryPlace().getLocationPlace().getLng());
                     Marker marker = googleMap.addMarker(new MarkerOptions()
-                            .icon(BitmapFromVector(getContext(), R.drawable.ic_marker))
+                            .icon(BitmapFromVector(getContext(), R.drawable.ic_marker_orange))
                             .position(restaurantLocation)
                             .title(restaurant.getName()));
                     if (marker != null) { marker.setTag(restaurant.getId()); }

@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityAuthBinding;
-import anthony.brenon.go4lunch.viewmodel.WorkmateViewModel;
+import anthony.brenon.go4lunch.viewmodel.MainActivityViewModel;
 
 public class AuthActivity extends AppCompatActivity {
     private final String TAG = "my_logs";
@@ -27,15 +27,15 @@ public class AuthActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
     private ActivityAuthBinding binding;
-    private WorkmateViewModel workmateViewModel;
-    FirebaseAuth auth = FirebaseAuth.getInstance();
+    private MainActivityViewModel viewModel;
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAuthBinding.inflate(getLayoutInflater());
-        workmateViewModel = new ViewModelProvider(this).get(WorkmateViewModel.class);
+        viewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
         initUserSession();
     }
 
@@ -53,7 +53,7 @@ public class AuthActivity extends AppCompatActivity {
             // SUCCESS
             if (resultCode == RESULT_OK) {
                 showSnackBar(getString(R.string.connection_succeed));
-                workmateViewModel.createWorkmateIntoDb().addOnSuccessListener(user -> startMainActivity());
+                viewModel.createWorkmateIntoDb().addOnSuccessListener(user -> startMainActivity());
             } else {
                 // ERRORS
                 if (response == null) {
@@ -110,7 +110,7 @@ public class AuthActivity extends AppCompatActivity {
 
     private void initUserSession() {
         if (auth.getCurrentUser() != null) {
-            workmateViewModel.createWorkmateIntoDb().addOnSuccessListener(user -> startMainActivity());
+            viewModel.createWorkmateIntoDb().addOnSuccessListener(user -> startMainActivity());
         } else {
             customLayoutAuth();
         }

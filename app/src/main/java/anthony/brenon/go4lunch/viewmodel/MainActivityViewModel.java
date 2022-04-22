@@ -1,45 +1,70 @@
 package anthony.brenon.go4lunch.viewmodel;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
+import anthony.brenon.go4lunch.Repository.RestaurantRepository;
 import anthony.brenon.go4lunch.Repository.WorkmateRepository;
+import anthony.brenon.go4lunch.model.Location;
+import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.model.Workmate;
 
 /**
- * Created by Lycast on 01/04/2022.
+ * Created by Lycast on 22/04/2022.
  */
-public class WorkmateViewModel extends ViewModel {
-    private static final String LOG_INFO = "UserViewModel: ";
-    private final String TAG = "my_logs";
+public class MainActivityViewModel extends ViewModel {
 
+    private final RestaurantRepository restaurantRepository;
     private final WorkmateRepository workmateRepository;
+    private final MutableLiveData<LatLng> latLngLiveData = new MutableLiveData<>();
+    private static Location locationUser;
 
-    public WorkmateViewModel() {
+    public MainActivityViewModel() {
         super();
+        restaurantRepository = new RestaurantRepository();
         workmateRepository = new WorkmateRepository();
     }
 
-    //TODO implements
-    public void researchWorkmatePrediction(String name) {
-        // launch the research in the list of workmate
+
+    public LiveData<LatLng> getLatLngLiveData() {
+        return latLngLiveData;
     }
 
-    //TODO implements
-    public void getWorkmatePrediction() {
-        // return workmates prediction repository
+    public LiveData<List<Restaurant>> getLiveDataListRestaurants() {
+        return this.restaurantRepository.getLiveDataListRestaurant();
     }
 
+    private void setLatLngUser(Location locationUser) {
+        if (locationUser != null) {
+            LatLng latLng1 = new LatLng(locationUser.getLat(), locationUser.getLng());
+            latLngLiveData.postValue(latLng1);
+        }
+    }
 
-    // UPDATES
+    public void setLocationUser(Location locationUser) {
+        if(locationUser != null) {
+            this.callNearbyRestaurantsApi(locationUser);
+            this.setLatLngUser(locationUser);
+            this.locationUser = locationUser;
+        }
+    }
+
+    public void callNearbyRestaurantsApi(Location locationUser) {
+        if(locationUser != null)
+            restaurantRepository.callNearbyRestaurantsApi(locationUser);
+    }
+
+    public void callNearbyRestaurantsApi() {
+        callNearbyRestaurantsApi(locationUser);
+    }
+
     public Task<Workmate> createWorkmateIntoDb() {
         FirebaseUser fbUser = workmateRepository.getCurrentFirebaseUser();
         if (fbUser == null) {
@@ -65,38 +90,11 @@ public class WorkmateViewModel extends ViewModel {
                 });
     }
 
-    public void updateWorkmate(Workmate workmateUpdate) {
-        workmateRepository.getWorkmateData()
-                .addOnSuccessListener(data -> {
-                            // User exist in database -> update user
-                            workmateRepository.updateWorkmateIntoFS(workmateUpdate);
-                        }
-                )
-                .addOnFailureListener(notExistException ->
-                        // User doesn't exist in database -> create user
-                        Log.e(TAG, LOG_INFO + notExistException.getMessage())
-                );
-    }
-
-
-    // GETS
     public Task<Workmate> getCurrentWorkmateData(){
         return workmateRepository.getWorkmateData();
     }
 
-    public LiveData<List<Workmate>> getWorkmatesListLiveData(){
-        return workmateRepository.getListMutableLiveData();
-    }
-
     public LiveData<List<Workmate>> getWorkmatesList() {
         return workmateRepository.getWorkmatesListData();
-    }
-
-    public void getWorkmatesFromList(List<String> workmateIds) {
-        workmateRepository.getWorkmatesFromList(workmateIds);
-    }
-
-    public void removeObserver(Observer<List<Workmate>> observer){
-        workmateRepository.removeObserver(observer);
     }
 }

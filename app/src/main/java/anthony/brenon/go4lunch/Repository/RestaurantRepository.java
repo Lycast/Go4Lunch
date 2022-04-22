@@ -36,7 +36,7 @@ public class RestaurantRepository {
     private static final String COLLECTION_RESTAURANTS = "restaurants";
     private final JsonPlaceHolderApi jsonPlaceHolderApi;
     private final MutableLiveData<List<Restaurant>> liveDataRestaurant = new MutableLiveData<>();
-    //TODO put there variable into shared view model radius setting 100m - 3000m
+    //TODO put there variable into shared view model radius setting 50m - 10000m
     String radius = "1000";
 
 

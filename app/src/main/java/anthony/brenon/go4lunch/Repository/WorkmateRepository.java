@@ -100,7 +100,6 @@ public class WorkmateRepository {
                 if(!workmate.getUid().equals(uid))
                     workmateList.add(workmate);
             }
-
             workmates.postValue(workmateList);
         });
         return workmates;

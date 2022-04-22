@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,6 +23,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -36,7 +38,6 @@ import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,8 +49,7 @@ import anthony.brenon.go4lunch.model.Location;
 import anthony.brenon.go4lunch.ui.navigation_bottom.ListViewFragment;
 import anthony.brenon.go4lunch.ui.navigation_bottom.MapViewFragment;
 import anthony.brenon.go4lunch.ui.navigation_bottom.WorkmatesFragment;
-import anthony.brenon.go4lunch.viewmodel.RestaurantViewModel;
-import anthony.brenon.go4lunch.viewmodel.WorkmateViewModel;
+import anthony.brenon.go4lunch.viewmodel.MainActivityViewModel;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
@@ -63,10 +63,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private DrawerLayout drawer;
     private BottomNavigationView bottomNavMenu;
     private ActivityMainBinding binding;
-    private WorkmateViewModel workmateViewModel;
-    private RestaurantViewModel restaurantViewModel;
+    private MainActivityViewModel viewModel;
     private LocationManager locationManager;
-    //TypeFilter types = new TypeFilter("Restaurant");
+    private int menuPosition;
+    private Toolbar toolbar;
 
 
     @Override
@@ -77,29 +77,43 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // Init bottom navigation
         bottomNavMenu = binding.appBarMain.bottomNavigation;
         // init view model
-        workmateViewModel = new ViewModelProvider(this).get(WorkmateViewModel.class);
-        restaurantViewModel = new ViewModelProvider(this).get(RestaurantViewModel.class);
+        viewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
         // setup toolbar
-        Toolbar toolbar = binding.appBarMain.toolbar;
-        setSupportActionBar(toolbar);
+        toolbar = binding.appBarMain.toolbar;
         // bind drawer
         drawer = binding.drawerLayout;
 
-        // Bind and listener fab
-        binding.appBarMain.fabChat.setOnClickListener(view ->
-                Snackbar.make(view, "Replace action to open a chat", Snackbar.LENGTH_LONG).setAction("Action", null).show()
-        );
-        setupNavigationBottom();
+        onNavigationBottom();
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, mapsFragment).commit();
+        populateBottomMenu(mapsFragment, 0, R.string.main_toolbar_title_hungry);
         bottomNavMenu.setSelectedItemId(R.id.page_1_map_view);
 
-
-
-        onClickResearch();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // check position gps is enable
+        checkPermissions();
+        if(checkFineLocationPermission()) {
+            startLocationManager();
+        } else checkPermissions();
+
+        setupDrawerUIWithUserData();
+        viewModel.callNearbyRestaurantsApi();
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(locationManager != null) {
+            locationManager.removeUpdates(this);
+        }
+    }
+
+    // research
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
@@ -113,69 +127,30 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 Status status = Autocomplete.getStatusFromIntent(data);
                 Log.i("TAG", status.getStatusMessage());
             } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
+                Log.i("TAG", "The user canceled the operation");
             }
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // check position gps is enable
-        checkPermissions();
-        if(checkFineLocationPermission()) {
-            startLocationManager();
-        } else checkPermissions();
+    private void autoCompleteLauncher() {
+        if(!Places.isInitialized()) {
+            Places.initialize(this, BuildConfig.MAPS_API_KEY);
+        } else {
+            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
 
-        setupDrawerUIWithUserData();
-        restaurantViewModel.callNearbyRestaurantsApi();
-    }
-
-    @SuppressLint("MissingPermission")
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if(locationManager != null) {
-            locationManager.removeUpdates(this);
+            Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                    .setHint(getString(R.string.autocomplete_hint))
+                    .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                    .setCountry("FR")
+                    .build(this);
+            startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
         }
     }
 
-    // Btn research
-    private void onClickResearch() {
-        binding.appBarMain.btnResearchToolbar.setOnClickListener(view -> {
-            if(!Places.isInitialized()) {
-                Places.initialize(this, BuildConfig.MAPS_API_KEY);
-            } else {
-                List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
 
-                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
-                        .setHint(getString(R.string.autocomplete_hint))
-                        .setTypeFilter(TypeFilter.ESTABLISHMENT)
-                        .setCountry("FR")
-                        .build(this);
-                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
-            }
-        });
-    }
-
-    // Bind and listener navigation bottom
-    private void setupNavigationBottom() {
-        bottomNavMenu.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.page_1_map_view) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, mapsFragment).commit();
-                return true;
-            } else if (id == R.id.page_2_list_view) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, listViewFragment).commit();
-                return true;
-            } else if (id == R.id.page_3_workmates) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, workmatesFragment).commit();
-                return true;
-            } else return id == R.id.page_4_invisible;
-        });
-    }
+//----------------------------------------------- NAVIGATION VIEW START -----------------------------------------------//
 
     // Content of drawer menu
     private void setupDrawerContent(NavigationView navigationView) {
@@ -186,35 +161,43 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 });
     }
 
-    // Open/close drawer
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            drawer.openDrawer(GravityCompat.START);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    public boolean onCreateOptionsMenu(Menu menu) {
+            switch (menuPosition) {
+                case 0:
+                    getMenuInflater().inflate(R.menu.main_toolbar_map, menu);
+                    break;
+                case 1:
+                    getMenuInflater().inflate(R.menu.main_toolbar_listview, menu);
+                    break;
+                case 2:
+                    getMenuInflater().inflate(R.menu.main_toolbar_workmate, menu);
+                    break;
+            }
+            invalidateOptionsMenu();
+        return true;
     }
 
-    private void setupDrawerUIWithUserData(){
-        NavigationView nvDrawer = binding.navView;
-        setupDrawerContent(nvDrawer);
-        View hView = nvDrawer.getHeaderView(0);
-        workmateViewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
-            if (workmate != null) {
-                ImageView imageUser = hView.findViewById(R.id.imageUser);
-                TextView firstName = hView.findViewById(R.id.firstName);
-                TextView addressMail = hView.findViewById(R.id.addressMail);
-                if (workmate.getUrlPicture() != null) {
-                    Glide.with(this)
-                            .load(workmate.getUrlPicture())
-                            .apply(RequestOptions.circleCropTransform())
-                            .into(imageUser);
-                }
-                firstName.setText(workmate.getUsername());
-                addressMail.setText(workmate.getEmail());
-            }
+    private void onNavigationBottom() {
+        bottomNavMenu.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.page_1_map_view) {
+                populateBottomMenu(mapsFragment, 0, R.string.main_toolbar_title_hungry);
+                return true;
+            } else if (id == R.id.page_2_list_view) {
+                populateBottomMenu(listViewFragment, 1, R.string.main_toolbar_title_hungry);
+                return true;
+            } else if (id == R.id.page_3_workmates) {
+                populateBottomMenu(workmatesFragment, 2, R.string.main_toolbar_title_workmates);
+                return true;
+            } else return false;
         });
+    }
+
+    private void populateBottomMenu(Fragment fragment, int menuPos, int title) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_content_main, fragment).commit();
+        menuPosition = menuPos;
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(title);
     }
 
     // Bind and listener drawer menu
@@ -225,12 +208,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 openYourLunchDetails();
                 drawer.closeDrawer(GravityCompat.START);
             } else if ( id == R.id.dv_settings) {
-                deselectBottomNav();
                 drawer.closeDrawer(GravityCompat.START);
             } else if ( id == R.id.dv_logout) {
                 signOut();
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            drawer.openDrawer(GravityCompat.START);
+            return true;
+        }  else if (item.getItemId() == R.id.restaurant_search) {
+            autoCompleteLauncher();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // Logout application
@@ -241,26 +234,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             finish();
         });
     }
-
-    // deselect bottom navigation
-    private void deselectBottomNav(){
-        // select and invisible item
-        bottomNavMenu.setSelectedItemId(R.id.page_4_invisible);
-    }
+//----------------------------------------------- NAVIGATION VIEW END -----------------------------------------------//
 
 
-    private void openYourLunchDetails() {
-        workmateViewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
-            if(!workmate.getRestaurantChosenId().equals("")) {
-                Intent intent = new Intent(this, DetailsRestaurantActivity.class);
-                intent.putExtra("place_id", workmate.getRestaurantChosenId());
-                startActivity(intent);
-            } else Toast.makeText(this,"You need to have chosen a restaurant", Toast.LENGTH_SHORT).show();
-        });
-    }
-
-
-    // --------------------- POSITION GPS START ----------------------------- //
+//----------------------------------------------- POSITION GPS START -----------------------------------------------//
     private boolean checkFineLocationPermission() {
         String permission = Manifest.permission.ACCESS_FINE_LOCATION;
         int res = this.checkCallingOrSelfPermission(permission);
@@ -295,10 +272,43 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onLocationChanged(@NonNull android.location.Location location) {
         Location locationUser = new Location(location.getLatitude(), location.getLongitude());
-        restaurantViewModel.setLocationUser(locationUser);
+        viewModel.setLocationUser(locationUser);
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) { }
-    // --------------------- POSITION GPS END ----------------------------- //
+
+//----------------------------------------------- POSITION GPS END -----------------------------------------------//
+
+
+    private void setupDrawerUIWithUserData(){
+        NavigationView nvDrawer = binding.navView;
+        setupDrawerContent(nvDrawer);
+        View hView = nvDrawer.getHeaderView(0);
+        viewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
+            if (workmate != null) {
+                ImageView imageUser = hView.findViewById(R.id.imageUser);
+                TextView firstName = hView.findViewById(R.id.firstName);
+                TextView addressMail = hView.findViewById(R.id.addressMail);
+                if (workmate.getUrlPicture() != null) {
+                    Glide.with(this)
+                            .load(workmate.getUrlPicture())
+                            .apply(RequestOptions.circleCropTransform())
+                            .into(imageUser);
+                }
+                firstName.setText(workmate.getUsername());
+                addressMail.setText(workmate.getEmail());
+            }
+        });
+    }
+
+    private void openYourLunchDetails() {
+        viewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
+            if(!workmate.getRestaurantChosenId().equals("")) {
+                Intent intent = new Intent(this, DetailsRestaurantActivity.class);
+                intent.putExtra("place_id", workmate.getRestaurantChosenId());
+                startActivity(intent);
+            } else Toast.makeText(this,"You need to have chosen a restaurant", Toast.LENGTH_SHORT).show();
+        });
+    }
 }

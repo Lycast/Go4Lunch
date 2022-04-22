@@ -16,8 +16,5 @@
         android:enabled="true"
         android:icon="@drawable/ic_menu_workmates"
         android:title="@string/menu_workmates"/>
-    <item
-        android:id="@+id/page_4_invisible"
-        android:visible="false"/>
 
 </menu>

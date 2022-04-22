@@ -14,14 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import anthony.brenon.go4lunch.databinding.FragmentWorkmatesBinding;
 import anthony.brenon.go4lunch.ui.adapter.WorkmatesAdapter;
-import anthony.brenon.go4lunch.viewmodel.WorkmateViewModel;
+import anthony.brenon.go4lunch.viewmodel.MainActivityViewModel;
 
 
 public class WorkmatesFragment extends Fragment {
     private final String TAG = "my_logs";
 
     private FragmentWorkmatesBinding binding;
-    WorkmateViewModel workmateViewModel;
     private final WorkmatesAdapter adapter = new WorkmatesAdapter(true);
 
 
@@ -40,7 +39,7 @@ public class WorkmatesFragment extends Fragment {
         RecyclerView recyclerView = binding.workmatesRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(adapter);
-        workmateViewModel = new ViewModelProvider(requireActivity()).get(WorkmateViewModel.class);
-        workmateViewModel.getWorkmatesList().observe(this, adapter::updateDataWorkmates);
+        MainActivityViewModel viewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
+        viewModel.getWorkmatesList().observe(this, adapter::updateDataWorkmates);
     }
 }

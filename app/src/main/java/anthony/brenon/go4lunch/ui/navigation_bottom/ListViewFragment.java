@@ -17,14 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import anthony.brenon.go4lunch.databinding.FragmentListViewBinding;
 import anthony.brenon.go4lunch.ui.DetailsRestaurantActivity;
 import anthony.brenon.go4lunch.ui.adapter.RestaurantsAdapter;
-import anthony.brenon.go4lunch.viewmodel.RestaurantViewModel;
+import anthony.brenon.go4lunch.viewmodel.MainActivityViewModel;
 
 public class ListViewFragment extends Fragment {
-    private final String TAG = "my_logs";
-    private final String LOG_INFO = "ListViewFragment ";
 
     private FragmentListViewBinding binding;
-    RestaurantViewModel restaurantViewModel;
     private final RestaurantsAdapter adapter = new RestaurantsAdapter();
 
 
@@ -42,9 +39,9 @@ public class ListViewFragment extends Fragment {
         RecyclerView recyclerView = binding.restaurantsRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(adapter);
-        restaurantViewModel = new ViewModelProvider(requireActivity()).get(RestaurantViewModel.class);
+        MainActivityViewModel viewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
 
-        restaurantViewModel.getLiveDataListRestaurants().observe(this, adapter::updateDataRestaurants);
+        viewModel.getLiveDataListRestaurants().observe(this, adapter::updateDataRestaurants);
 
         adapter.setOnItemClickListener(placeId -> {
             Intent intent = new Intent(getActivity(), DetailsRestaurantActivity.class);
