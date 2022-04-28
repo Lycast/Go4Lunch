@@ -38,7 +38,7 @@ public class MainActivityViewModel extends ViewModel {
     }
 
     public LiveData<List<Restaurant>> getLiveDataListRestaurants() {
-        return this.restaurantRepository.getLiveDataListRestaurant();
+        return restaurantRepository.getLiveDataListRestaurant();
     }
 
     private void setLatLngUser(Location locationUser) {
@@ -56,6 +56,7 @@ public class MainActivityViewModel extends ViewModel {
         }
     }
 
+    //TODO double call to the api change for only one call into mainActivity when onResume
     public void callNearbyRestaurantsApi(Location locationUser) {
         if(locationUser != null)
             restaurantRepository.callNearbyRestaurantsApi(locationUser);
@@ -97,4 +98,6 @@ public class MainActivityViewModel extends ViewModel {
     public LiveData<List<Workmate>> getWorkmatesList() {
         return workmateRepository.getWorkmatesListData();
     }
+
+    public void sortMethodRestaurantsList(int sortOption) { restaurantRepository.sortMethodRestaurantsList(sortOption); }
 }

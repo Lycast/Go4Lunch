@@ -14,24 +14,20 @@
         app:showAsAction="ifRoom" >
         <menu>
             <item
-                android:id="@+id/action_sort_by_distance"
+                android:id="@+id/sort_by_distance"
                 android:title="@string/sort_by_distance"
                 app:showAsAction="never|withText" />
             <item
-                android:id="@+id/action_sort_by_rating"
+                android:id="@+id/sort_by_rating"
                 android:title="@string/sort_by_rating"
                 app:showAsAction="never|withText" />
             <item
-                android:id="@+id/action_sort_by_workmates"
+                android:id="@+id/sort_by_workmates"
                 android:title="@string/sort_by_number_of_workmates"
                 app:showAsAction="never|withText" />
             <item
-                android:id="@+id/action_sort_by_opening_hour"
+                android:id="@+id/sort_by_opening"
                 android:title="@string/sort_by_opening_hours"
-                app:showAsAction="never|withText" />
-            <item
-                android:id="@+id/action_sort_reset"
-                android:title="@string/sort_reset"
                 app:showAsAction="never|withText" />
         </menu>
     </item>

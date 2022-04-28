@@ -41,7 +41,7 @@
     <!--item restaurant-->
     <string name="name_not_found">Name not found</string>
     <string name="address_not_found">Address not found</string>
-    <string name="workmates_by_default">(0)</string>
+    <string name="workmates_by_default">()</string>
     <string name="isOpen">Open</string>
     <string name="isClose">Close</string>
     <string name="Not_specified">Not specified</string>
@@ -57,14 +57,14 @@
     <string name="like">LIKE</string>
     <string name="website">WEBSITE</string>
     <string name="autocomplete_hint">Search restaurants</string>
-    <string name="sort_by_distance">Distance</string>
-    <string name="sort_by_rating">Rating</string>
-    <string name="sort_by_number_of_workmates">Workmates</string>
-    <string name="sort_by_opening_hours">Opening</string>
+    <string name="sort_by_distance">By distance</string>
+    <string name="sort_by_rating">By rating</string>
+    <string name="sort_by_number_of_workmates">By workmates</string>
+    <string name="sort_by_opening_hours">By opening</string>
     <string name="sort">sort</string>
     <string name="action_search">research</string>
-    <string name="sort_reset">sort reset</string>
-    <string name="main_toolbar_title_hungry">I\'M HUNGRY!</string>
+    <string name="sort_reset">By default</string>
+    <string name="main_toolbar_title_hungry">I\'m hungry!</string>
     <string name="main_toolbar_title_workmates">Available workmates</string>
 
 </resources>

@@ -1,9 +1,12 @@
 package anthony.brenon.go4lunch.model;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.firestore.Exclude;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import anthony.brenon.go4lunch.BuildConfig;
@@ -36,7 +39,7 @@ public class Restaurant {
     @SerializedName("rating")
     private float rating = 0;
     private List<String> usersChoice;
-    private double distance;
+    private int distance;
 
 
     public Restaurant() {}
@@ -47,7 +50,7 @@ public class Restaurant {
     }
 
     public Restaurant(String id, String name, String address, GeometryPlace geometryPlace, List<Photo> photosUrl, String website,
-                      String phoneNumber, OpeningHours openingHours, float rating, double distance, List<String> usersChoice, int numberWorkmateChoice) {
+                      String phoneNumber, OpeningHours openingHours, float rating, int distance, List<String> usersChoice, int numberWorkmateChoice) {
         this.setId(id);
         this.setName(name);
         this.setAddress(address);
@@ -92,7 +95,7 @@ public class Restaurant {
     public void setAddress(String address) { this.address = address; }
     public void setGeometryPlace(GeometryPlace geometryPlace) { this.geometryPlace = geometryPlace; }
     public void setPhotosUrl(List<Photo> photosUrl) { this.photosUrl = photosUrl; }
-    public void setDistance(double distance) { this.distance = distance; }
+    public void setDistance(int distance) { this.distance = distance; }
     public void setWebsite(String website) { this.website = website; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
     public void setOpeningHours(OpeningHours openingHours) { this.openingHours = openingHours; }
@@ -107,7 +110,7 @@ public class Restaurant {
         android.location.Location user = new android.location.Location("User");
         user.setLatitude(locationUser.getLat());
         user.setLongitude(locationUser.getLng());
-        setDistance(user.distanceTo(place));
+        setDistance((int) user.distanceTo(place));
     }
 
 
@@ -124,9 +127,42 @@ public class Restaurant {
     @Override
     public String toString() {
         return "Restaurant{\n" +
-                ", name='" + name + '\'' +
-                ", usersChoice=" + usersChoice +
-                ", distance=" + distance +
+                name + ", " +
+                distance + ", " +
+                rating + ", " +
+                usersChoice.size() + " " +
+                openingHours + ", " +
                 '}';
+    }
+
+    /**
+     * Comparator to sort
+     */
+    public static class RestaurantDistanceComp implements Comparator<Restaurant> {
+        @Override
+        public int compare(Restaurant left, Restaurant right) {
+            return left.distance - right.distance;
+        }
+    }
+
+    public static class RestaurantRatingComp implements Comparator<Restaurant> {
+        @Override
+        public int compare(Restaurant left, Restaurant right) {
+            return Float.compare(right.rating, left.rating);
+        }
+    }
+
+    public static class RestaurantWorkmatesComp implements Comparator<Restaurant> {
+        @Override
+        public int compare(Restaurant left, Restaurant right) {
+            return right.usersChoice.size() - left.usersChoice.size();
+        }
+    }
+
+    public static class RestaurantOpeningComp implements Comparator<Restaurant> {
+        @Override
+        public int compare(@NonNull Restaurant left,@NonNull Restaurant right) {
+            return Boolean.compare(left.openingHours.isOpen_now(), right.openingHours.isOpen_now());
+        }
     }
 }

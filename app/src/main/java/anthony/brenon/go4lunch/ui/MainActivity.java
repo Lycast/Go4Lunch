@@ -41,6 +41,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import anthony.brenon.go4lunch.BuildConfig;
 import anthony.brenon.go4lunch.R;
@@ -49,6 +50,7 @@ import anthony.brenon.go4lunch.model.Location;
 import anthony.brenon.go4lunch.ui.navigation_bottom.ListViewFragment;
 import anthony.brenon.go4lunch.ui.navigation_bottom.MapViewFragment;
 import anthony.brenon.go4lunch.ui.navigation_bottom.WorkmatesFragment;
+import anthony.brenon.go4lunch.utils.SortMethod;
 import anthony.brenon.go4lunch.viewmodel.MainActivityViewModel;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
@@ -74,21 +76,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        // Init bottom navigation
+
         bottomNavMenu = binding.appBarMain.bottomNavigation;
-        // init view model
         viewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
-
-        // setup toolbar
         toolbar = binding.appBarMain.toolbar;
-        // bind drawer
         drawer = binding.drawerLayout;
-
-        onNavigationBottom();
 
         populateBottomMenu(mapsFragment, 0, R.string.main_toolbar_title_hungry);
         bottomNavMenu.setSelectedItemId(R.id.page_1_map_view);
 
+        onNavigationBottom();
     }
 
     @Override
@@ -118,13 +115,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
+                Place place = Autocomplete.getPlaceFromIntent(Objects.requireNonNull(data));
                 Log.i("TAG", "Place: " + place.getName() + ", " + place.getId());
                 Intent intent = new Intent(this, DetailsRestaurantActivity.class);
                 intent.putExtra("place_id", place.getId());
                 startActivity(intent);
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                Status status = Autocomplete.getStatusFromIntent(data);
+                Status status = Autocomplete.getStatusFromIntent(Objects.requireNonNull(data));
                 Log.i("TAG", status.getStatusMessage());
             } else if (resultCode == RESULT_CANCELED) {
                 Log.i("TAG", "The user canceled the operation");
@@ -149,9 +146,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-
 //----------------------------------------------- NAVIGATION VIEW START -----------------------------------------------//
-
     // Content of drawer menu
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
@@ -217,11 +212,24 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
             drawer.openDrawer(GravityCompat.START);
-            return true;
-        }  else if (item.getItemId() == R.id.restaurant_search) {
+        } else if (id == R.id.restaurant_search) {
+            Log.d("my_logs", " -onOptionsItemSelected- restaurant_search");
             autoCompleteLauncher();
+        } else if (id == R.id.sort_by_distance) {
+            viewModel.sortMethodRestaurantsList(SortMethod.BY_DISTANCE);
+            Log.d("my_logs", " -onOptionsItemSelected- BY_DISTANCE");
+        } else if (id == R.id.sort_by_rating) {
+            viewModel.sortMethodRestaurantsList(SortMethod.BY_RATING);
+            Log.d("my_logs", " -onOptionsItemSelected- BY_RATING");
+        } else if (id == R.id.sort_by_workmates) {
+                viewModel.sortMethodRestaurantsList(SortMethod.BY_WORKMATES);
+            Log.d("my_logs", " -onOptionsItemSelected- BY_WORKMATES");
+        } else if (id == R.id.sort_by_opening) {
+            viewModel.sortMethodRestaurantsList(SortMethod.BY_OPENING);
+            Log.d("my_logs", " -onOptionsItemSelected- BY_OPENING");
         }
         return super.onOptionsItemSelected(item);
     }
@@ -235,7 +243,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         });
     }
 //----------------------------------------------- NAVIGATION VIEW END -----------------------------------------------//
-
 
 //----------------------------------------------- POSITION GPS START -----------------------------------------------//
     private boolean checkFineLocationPermission() {
@@ -277,9 +284,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) { }
-
 //----------------------------------------------- POSITION GPS END -----------------------------------------------//
-
 
     private void setupDrawerUIWithUserData(){
         NavigationView nvDrawer = binding.navView;
