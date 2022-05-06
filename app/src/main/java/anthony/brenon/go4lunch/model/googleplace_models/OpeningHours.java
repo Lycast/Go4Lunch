@@ -16,7 +16,5 @@ public class OpeningHours {
         this.open_now = open_now;
     }
 
-    public boolean isOpen_now() {
-        return open_now;
-    }
+    public boolean isOpen_now() { return open_now; }
 }

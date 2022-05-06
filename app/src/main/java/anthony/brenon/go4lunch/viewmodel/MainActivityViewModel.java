@@ -95,9 +95,23 @@ public class MainActivityViewModel extends ViewModel {
         return workmateRepository.getWorkmateData();
     }
 
+    // list for workmates list view
     public LiveData<List<Workmate>> getWorkmatesList() {
         return workmateRepository.getWorkmatesListData();
     }
 
+    // list for notification
+    public void getWorkmatesFromList(List<String> workmateIds) {
+        workmateRepository.getWorkmatesFromList(workmateIds);
+    }
+
+    public LiveData<List<Workmate>> getWorkmatesLiveData(){
+        return workmateRepository.getWorkmatesLiveData();
+    }
+
     public void sortMethodRestaurantsList(int sortOption) { restaurantRepository.sortMethodRestaurantsList(sortOption); }
+
+    public Task<Restaurant> getRestaurantFS(String placeId) {
+        return restaurantRepository.getRestaurantFS(placeId);
+    }
 }

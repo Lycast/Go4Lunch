@@ -63,8 +63,8 @@ public class DetailsActivityViewModel extends ViewModel {
         return workmateRepository.getWorkmateData();
     }
 
-    public LiveData<List<Workmate>> getWorkmatesListLiveData(){
-        return workmateRepository.getListMutableLiveData();
+    public LiveData<List<Workmate>> getWorkmatesLiveData(){
+        return workmateRepository.getWorkmatesLiveData();
     }
 
     public void getWorkmatesFromList(List<String> workmateIds) {

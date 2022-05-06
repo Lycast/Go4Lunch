@@ -38,8 +38,9 @@ public class RestaurantRepository {
 
     private static final String COLLECTION_RESTAURANTS = "restaurants";
     private final JsonPlaceHolderApi jsonPlaceHolderApi;
-    private MutableLiveData<List<Restaurant>> liveDataRestaurant = new MutableLiveData<>();
+    private final MutableLiveData<List<Restaurant>> liveDataRestaurant = new MutableLiveData<>();
     private List<Restaurant> restaurantList = new ArrayList<>();
+    private List<Restaurant> restaurantListFiltered = new ArrayList<>();
     //TODO put there variable into shared view model radius setting 100m - 3000m
     String radius = "1000";
 
@@ -75,8 +76,10 @@ public class RestaurantRepository {
                                     int indexRestaurant = Arrays.binarySearch(restaurantsDb.toArray(new Restaurant[restaurantsDb.size()]), restaurant, c);
                                     if(indexRestaurant >= 0) {
                                         restaurant.setUsersChoice(restaurantsDb.get(indexRestaurant).getUsersChoice());
+                                        //restaurant.setUsersChoiceName(restaurantsDb.get(indexRestaurant).getUsersChoiceName());
                                     } else {
                                         restaurant.setUsersChoice(Collections.emptyList());
+                                        //restaurant.setUsersChoiceName(Collections.emptyList());
                                     }
                                 }
                                 updateFirebase(fbRestaurants);
@@ -131,6 +134,7 @@ public class RestaurantRepository {
                     getRestaurantsCollection().document(restaurant.getId()).set(restaurant);
                 } else if (data.getUsersChoice().size() > 0 && restaurant.getUsersChoice().isEmpty()) {
                     restaurant.setUsersChoice(data.getUsersChoice());
+                    //restaurant.setUsersChoiceName(data.getUsersChoice());
                 }
                 getRestaurantsCollection().document(restaurant.getId()).set(restaurant);
             });
@@ -141,20 +145,30 @@ public class RestaurantRepository {
         switch (sortOption) {
             case SortMethod.BY_DISTANCE:
                 Collections.sort(restaurantList, new Restaurant.RestaurantDistanceComp());
+                liveDataRestaurant.postValue(restaurantList);
                 break;
             case SortMethod.BY_RATING:
                 Collections.sort(restaurantList, new Restaurant.RestaurantRatingComp());
+                liveDataRestaurant.postValue(restaurantList);
                 break;
             case SortMethod.BY_WORKMATES:
                 Collections.sort(restaurantList, new Restaurant.RestaurantWorkmatesComp());
+                liveDataRestaurant.postValue(restaurantList);
                 break;
             case SortMethod.BY_OPENING:
-                //Collections.sort(restaurantList, new Restaurant.RestaurantOpeningComp());
+                Collections.sort(getRestaurantListWithOpeningTime(), new Restaurant.RestaurantOpeningComp());
+                liveDataRestaurant.postValue(restaurantListFiltered);
                 break;
-            default:
-                return;
         }
-        liveDataRestaurant.postValue(restaurantList);
-        Log.d("my_logs", " -sortMethodRestaurantsList- " + restaurantList.toString());
+    }
+
+    private List<Restaurant> getRestaurantListWithOpeningTime() {
+        restaurantListFiltered = new ArrayList<>();
+        for (Restaurant restaurant : restaurantList) {
+            if (restaurant.getOpeningHours() != null) {
+                restaurantListFiltered.add(restaurant);
+            }
+        }
+        return restaurantListFiltered;
     }
 }

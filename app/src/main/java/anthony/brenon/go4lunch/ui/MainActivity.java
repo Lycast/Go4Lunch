@@ -2,11 +2,14 @@ package anthony.brenon.go4lunch.ui;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -39,7 +42,9 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,9 +52,11 @@ import anthony.brenon.go4lunch.BuildConfig;
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityMainBinding;
 import anthony.brenon.go4lunch.model.Location;
+import anthony.brenon.go4lunch.model.Workmate;
 import anthony.brenon.go4lunch.ui.navigation_bottom.ListViewFragment;
 import anthony.brenon.go4lunch.ui.navigation_bottom.MapViewFragment;
 import anthony.brenon.go4lunch.ui.navigation_bottom.WorkmatesFragment;
+import anthony.brenon.go4lunch.utils.ReminderNotification;
 import anthony.brenon.go4lunch.utils.SortMethod;
 import anthony.brenon.go4lunch.viewmodel.MainActivityViewModel;
 
@@ -68,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private MainActivityViewModel viewModel;
     private LocationManager locationManager;
     private int menuPosition;
+    private boolean notification = true;
     private Toolbar toolbar;
 
 
@@ -99,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         setupDrawerUIWithUserData();
         viewModel.callNearbyRestaurantsApi();
+        populateNotification();
     }
 
     @SuppressLint("MissingPermission")
@@ -145,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
         }
     }
+
 
 //----------------------------------------------- NAVIGATION VIEW START -----------------------------------------------//
     // Content of drawer menu
@@ -216,20 +226,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         if (id == android.R.id.home) {
             drawer.openDrawer(GravityCompat.START);
         } else if (id == R.id.restaurant_search) {
-            Log.d("my_logs", " -onOptionsItemSelected- restaurant_search");
             autoCompleteLauncher();
         } else if (id == R.id.sort_by_distance) {
             viewModel.sortMethodRestaurantsList(SortMethod.BY_DISTANCE);
-            Log.d("my_logs", " -onOptionsItemSelected- BY_DISTANCE");
         } else if (id == R.id.sort_by_rating) {
             viewModel.sortMethodRestaurantsList(SortMethod.BY_RATING);
-            Log.d("my_logs", " -onOptionsItemSelected- BY_RATING");
         } else if (id == R.id.sort_by_workmates) {
                 viewModel.sortMethodRestaurantsList(SortMethod.BY_WORKMATES);
-            Log.d("my_logs", " -onOptionsItemSelected- BY_WORKMATES");
         } else if (id == R.id.sort_by_opening) {
             viewModel.sortMethodRestaurantsList(SortMethod.BY_OPENING);
-            Log.d("my_logs", " -onOptionsItemSelected- BY_OPENING");
         }
         return super.onOptionsItemSelected(item);
     }
@@ -243,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         });
     }
 //----------------------------------------------- NAVIGATION VIEW END -----------------------------------------------//
+
 
 //----------------------------------------------- POSITION GPS START -----------------------------------------------//
     private boolean checkFineLocationPermission() {
@@ -286,6 +292,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void onStatusChanged(String provider, int status, Bundle extras) { }
 //----------------------------------------------- POSITION GPS END -----------------------------------------------//
 
+
     private void setupDrawerUIWithUserData(){
         NavigationView nvDrawer = binding.navView;
         setupDrawerContent(nvDrawer);
@@ -315,5 +322,46 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 startActivity(intent);
             } else Toast.makeText(this,"You need to have chosen a restaurant", Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void populateNotification() {
+        viewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
+            String restaurantId = workmate.getRestaurantChosenId();
+            List<String> workmatesName = new ArrayList<>();
+            viewModel.getRestaurantFS(restaurantId).addOnSuccessListener(restaurant -> {
+                viewModel.getWorkmatesFromList(restaurant.getUsersChoice());
+                viewModel.getWorkmatesLiveData().observe(this, workmates -> {
+
+                    for (Workmate workmate1 : workmates) {
+                        if (!workmate1.getUsername().equals(workmate.getUsername()))
+                            workmatesName.add(workmate1.getUsername()); }
+
+                    Context context = getApplicationContext();
+                    Intent intent = new Intent(this, ReminderNotification.class);
+                    intent.putExtra("place_name", workmate.getRestaurantChosenName());
+                    intent.putExtra("place_address", restaurant.getAddress());
+                    intent.putStringArrayListExtra("workmates_list", (ArrayList<String>) workmatesName);
+
+                    initNotification(context, intent);
+                });
+            });
+        });
+    }
+
+    private void initNotification(Context context, Intent intent) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        int flag;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flag = PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT;
+        } else { flag = PendingIntent.FLAG_UPDATE_CURRENT; }
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, flag);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR, 12);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000 * 60 * 60 * 24, pendingIntent);
     }
 }

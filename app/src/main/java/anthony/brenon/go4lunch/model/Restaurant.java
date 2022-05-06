@@ -39,6 +39,7 @@ public class Restaurant {
     @SerializedName("rating")
     private float rating = 0;
     private List<String> usersChoice;
+    private List<String> usersChoiceName;
     private int distance;
 
 
@@ -50,7 +51,7 @@ public class Restaurant {
     }
 
     public Restaurant(String id, String name, String address, GeometryPlace geometryPlace, List<Photo> photosUrl, String website,
-                      String phoneNumber, OpeningHours openingHours, float rating, int distance, List<String> usersChoice, int numberWorkmateChoice) {
+                      String phoneNumber, OpeningHours openingHours, float rating, int distance, List<String> usersChoice, List<String> usersChoiceName) {
         this.setId(id);
         this.setName(name);
         this.setAddress(address);
@@ -62,13 +63,13 @@ public class Restaurant {
         this.setRating(rating);
         this.setDistance(distance);
         this.setUsersChoice(usersChoice);
+        this.setUsersChoiceName(usersChoiceName);
     }
 
 
     // --GETTERS--
     public String getId() { return id; }
     public String getName() { return name; }
-    @Exclude
     public String getAddress() { return address; }
     @Exclude
     public GeometryPlace getGeometryPlace() { return geometryPlace; }
@@ -87,6 +88,9 @@ public class Restaurant {
     public List<String> getUsersChoice() {
         if (usersChoice == null) return new ArrayList<>();
         else return usersChoice;}
+    public List<String> getUsersChoiceName() {
+        if (usersChoiceName == null) return new ArrayList<>();
+        else return usersChoiceName;}
 
 
     // --SETTERS--
@@ -101,6 +105,7 @@ public class Restaurant {
     public void setOpeningHours(OpeningHours openingHours) { this.openingHours = openingHours; }
     public void setRating(float rating) { this.rating = rating; }
     public void setUsersChoice(List<String> usersChoice) {this.usersChoice = usersChoice;}
+    public void setUsersChoiceName(List<String> usersChoiceName) {this.usersChoiceName = usersChoiceName;}
 
 
     public void setDistance(Location locationUser) {
@@ -128,6 +133,7 @@ public class Restaurant {
     public String toString() {
         return "Restaurant{\n" +
                 name + ", " +
+                address + ", " +
                 distance + ", " +
                 rating + ", " +
                 usersChoice.size() + " " +
@@ -162,7 +168,7 @@ public class Restaurant {
     public static class RestaurantOpeningComp implements Comparator<Restaurant> {
         @Override
         public int compare(@NonNull Restaurant left,@NonNull Restaurant right) {
-            return Boolean.compare(left.openingHours.isOpen_now(), right.openingHours.isOpen_now());
+            return Boolean.compare(right.openingHours.isOpen_now(), left.openingHours.isOpen_now());
         }
     }
 }

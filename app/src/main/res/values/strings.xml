@@ -66,5 +66,9 @@
     <string name="sort_reset">By default</string>
     <string name="main_toolbar_title_hungry">I\'m hungry!</string>
     <string name="main_toolbar_title_workmates">Available workmates</string>
+    <string name="notification_channel_id">notification channel id</string>
+    <string name="notification_channel_title">notification channel title</string>
+    <string name="notification_channel_description">notification channel description</string>
+    <string name="restaurant_choice">restaurant choice</string>
 
 </resources>

@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -63,7 +62,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         // set current user
         viewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
             this.currentWorkmate = workmate;
-            setLikeImage();
+            setLikeIcon();
             setImageChoice();
         });
 
@@ -87,7 +86,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        viewModel.getWorkmatesListLiveData().observe(this, workmateObserver);
+        viewModel.getWorkmatesLiveData().observe(this, workmateObserver);
     }
 
     @Override
@@ -121,10 +120,10 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }));
     }
 
-
     private void populateDetailsRestaurant(Restaurant restaurant) {
         binding.tvDetailsName.setText(restaurant.getName());
         binding.tvDetailsAddress.setText(restaurant.getAddress());
+        binding.restaurantDetailsRatingBar.setRating(restaurant.getRating());
         Glide.with(binding.ivDetailsRestaurant.getContext())
                 .load(restaurant.getPhoto(1000))
                 .placeholder(R.drawable.ic_image_not_supported)
@@ -132,11 +131,11 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                 .into(binding.ivDetailsRestaurant);
     }
 
-    private void setLikeImage() {
+    private void setLikeIcon() {
         if (currentWorkmate.getRestaurantsLiked().contains(placeId)) {
-            binding.imgLike.setVisibility(View.VISIBLE);
+            binding.btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star_border, 0, 0);
         } else {
-            binding.imgLike.setVisibility(View.GONE);
+            binding.btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star, 0, 0);
         }
     }
 
@@ -238,7 +237,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     private void onClickListenerBtnLike() {
         binding.btnLike.setOnClickListener(view -> {
             setLikeList();
-            setLikeImage();
+            setLikeIcon();
             updateCurrentWorkmate();
         });
     }
@@ -251,7 +250,6 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             }
         });
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

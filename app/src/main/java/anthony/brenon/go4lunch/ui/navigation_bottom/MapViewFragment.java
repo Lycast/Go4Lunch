@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.ui.DetailsRestaurantActivity;
+import anthony.brenon.go4lunch.utils.SortMethod;
 import anthony.brenon.go4lunch.viewmodel.MainActivityViewModel;
 
 public class MapViewFragment extends SupportMapFragment implements OnMapReadyCallback {
@@ -57,7 +58,6 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
         setOnClickInfoWindowListenerMarker();
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -79,6 +79,7 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     }
 
     private void displayRestaurants() {
+        viewModel.sortMethodRestaurantsList(SortMethod.BY_DISTANCE);
         viewModel.getLiveDataListRestaurants().observe(this, restaurantsInstance -> {
             for (Restaurant restaurant : restaurantsInstance) {
                 if (restaurant.getUsersChoice().isEmpty()) {

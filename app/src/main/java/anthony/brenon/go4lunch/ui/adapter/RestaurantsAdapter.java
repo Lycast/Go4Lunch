@@ -39,7 +39,6 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         notifyDataSetChanged();
     }
 
-
     @NonNull
     @Override
     public RestaurantsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -47,12 +46,10 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         return new RestaurantsViewHolder(binding);
     }
 
-
     @Override
     public void onBindViewHolder(@NonNull RestaurantsViewHolder restaurantViewHolder, int position) {
         restaurantViewHolder.bind(restaurants.get(position));
     }
-
 
     @Override
     public int getItemCount() {
@@ -61,11 +58,9 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
         return 0;
     }
 
-
     public void setOnItemClickListener(ClickListener clickListener) {
         RestaurantsAdapter.clickListener = clickListener;
     }
-
 
     public interface ClickListener {
         void onItemClick(String placeId);
@@ -94,14 +89,15 @@ public class RestaurantsAdapter extends RecyclerView.Adapter<RestaurantsAdapter.
                     .into(itemBinding.restaurantImage);
             itemBinding.restaurantRatingBar.setRating(restaurant.getRating());
             itemBinding.restaurantDistance.setText(String.format("%sm", (int) restaurant.getDistance()));
-            if (restaurant.getOpeningHours() != null)
-                if (restaurant.getOpeningHours().isOpen_now()) {
+            if (restaurant.getOpeningHours() != null) {
+                 if (restaurant.getOpeningHours().isOpen_now()) {
                     itemBinding.restaurantOpening.setText(R.string.isOpen);
                     itemBinding.restaurantOpening.setTextColor(Color.parseColor("#139e2f"));
                 } else {
                     itemBinding.restaurantOpening.setText(R.string.isClose);
                     itemBinding.restaurantOpening.setTextColor(Color.parseColor("#a11912"));
                 }
+            } else { itemBinding.restaurantOpening.setText(""); }
         }
 
         @Override

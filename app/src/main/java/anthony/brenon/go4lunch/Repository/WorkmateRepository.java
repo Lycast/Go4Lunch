@@ -72,7 +72,8 @@ public class WorkmateRepository {
         });
     }
 
-    public MutableLiveData<List<Workmate>> getListMutableLiveData(){
+    // workmates list for details recycler view
+    public MutableLiveData<List<Workmate>> getWorkmatesLiveData(){
         return listMutableLiveData;
     }
 
