@@ -16,7 +16,7 @@
 
     <!-- fb login -->
     <string name="facebook_application_id" translatable="false">460021055576210</string>
-    <string name="fb_login_protocol_scheme">fb460021055576210</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb460021055576210</string>
 
     <!-- LOGIN -->
     <string name="catch_phrase">Find a nice restaurant and invite your co-worker for lunch!</string>
@@ -29,28 +29,30 @@
     <string name="menu_workmates">Workmates</string>
 
     <!--fab description-->
-    <string name="content_description">CHAT</string>
-
     <string name="connection_succeed">connection is successful</string>
-    <string name="error_authentication_canceled">error authentication canceled</string>
-    <string name="error_no_internet">error no internet</string>
-    <string name="error_unknown_error">unknown error</string>
-    <string name="title_activity_maps">MapsActivity</string>
     <string name="search_text">search</string>
+
+    <string name="error_authentication_canceled" translatable="false">error authentication canceled</string>
+    <string name="error_no_internet" translatable="false">error no internet</string>
+    <string name="error_unknown_error" translatable="false">unknown error</string>
+    <string name="title_activity_maps" translatable="false">MapsActivity</string>
+    <string name="content_description" translatable="false">CHAT</string>
 
     <!--item restaurant-->
     <string name="name_not_found">Name not found</string>
     <string name="address_not_found">Address not found</string>
-    <string name="workmates_by_default">()</string>
     <string name="isOpen">Open</string>
     <string name="isClose">Close</string>
     <string name="Not_specified">Not specified</string>
 
+    <string name="workmates_by_default" translatable="false">()</string>
+
     <!--item workmate-->
-    <string name="populate_tv_user">&#160;%1s (%2s)</string>
     <string name="have_chosen">have chosen</string>
     <string name="has_not_decided_yet">&#160;has not decided yet</string>
     <string name="is_joining">&#160;is joining</string>
+
+    <string name="populate_tv_user" translatable="false">&#160;%1s (%2s)</string>
 
     <!--details restaurant-->
     <string name="call">CALL</string>
@@ -63,12 +65,22 @@
     <string name="sort_by_opening_hours">By opening</string>
     <string name="sort">sort</string>
     <string name="action_search">research</string>
-    <string name="sort_reset">By default</string>
     <string name="main_toolbar_title_hungry">I\'m hungry!</string>
-    <string name="main_toolbar_title_workmates">Available workmates</string>
-    <string name="notification_channel_id">notification channel id</string>
-    <string name="notification_channel_title">notification channel title</string>
-    <string name="notification_channel_description">notification channel description</string>
     <string name="restaurant_choice">restaurant choice</string>
+    <string name="main_toolbar_title_workmates">Available workmates</string>
+
+    <string name="sort_reset" translatable="false">By default</string>
+    <string name="notification_channel_id" translatable="false">notification channel id</string>
+    <string name="notification_channel_title" translatable="false">notification channel title</string>
+    <string name="notification_channel_description" translatable="false">notification channel description</string>
+
+    <string name="toast_error_restaurant_chosen">You did not choose a restaurant</string>
+    <string name="notification_text">"Here are the workmates who will eat with you : "</string>
+    <string name="radius_of_research_meter">Radius of research (meter)</string>
+    <string name="notification">Notification</string>
+    <string name="delete_account">DELETE ACCOUNT</string>
+    <string name="alert_message_delete_account">You want to delete your account, are you sure ?</string>
+    <string name="dialog_delete_account">Delete Account</string>
+    <string name="title_call">&#160;Call</string>
 
 </resources>

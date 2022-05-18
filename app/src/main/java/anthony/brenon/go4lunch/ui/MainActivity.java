@@ -62,8 +62,9 @@ import anthony.brenon.go4lunch.viewmodel.MainActivityViewModel;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
-    private final static int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
     private static final int PERMS_CALL_ID = 101;
+    private static final String TAG = "DEBUG_LOG";
 
     private final MapViewFragment mapsFragment = new MapViewFragment();
     private final ListViewFragment listViewFragment = new ListViewFragment();
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private MainActivityViewModel viewModel;
     private LocationManager locationManager;
     private int menuPosition;
-    private boolean notification = true;
+    private boolean enableNotification;
     private Toolbar toolbar;
 
 
@@ -94,6 +95,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         bottomNavMenu.setSelectedItemId(R.id.page_1_map_view);
 
         onNavigationBottom();
+
+        viewModel.getCurrentWorkmateData().addOnSuccessListener(workmate ->
+                enableNotification = workmate.isEnableNotification());
     }
 
     @Override
@@ -125,15 +129,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(Objects.requireNonNull(data));
-                Log.i("TAG", "Place: " + place.getName() + ", " + place.getId());
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
                 Intent intent = new Intent(this, DetailsRestaurantActivity.class);
                 intent.putExtra("place_id", place.getId());
                 startActivity(intent);
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 Status status = Autocomplete.getStatusFromIntent(Objects.requireNonNull(data));
-                Log.i("TAG", status.getStatusMessage());
+                Log.i(TAG, status.getStatusMessage());
             } else if (resultCode == RESULT_CANCELED) {
-                Log.i("TAG", "The user canceled the operation");
+                Log.i(TAG, "The user canceled the operation");
             }
             return;
         }
@@ -213,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 openYourLunchDetails();
                 drawer.closeDrawer(GravityCompat.START);
             } else if ( id == R.id.dv_settings) {
+                openSettingsActivity();
                 drawer.closeDrawer(GravityCompat.START);
             } else if ( id == R.id.dv_logout) {
                 signOut();
@@ -320,32 +325,43 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 Intent intent = new Intent(this, DetailsRestaurantActivity.class);
                 intent.putExtra("place_id", workmate.getRestaurantChosenId());
                 startActivity(intent);
-            } else Toast.makeText(this,"You need to have chosen a restaurant", Toast.LENGTH_SHORT).show();
+            } else Toast.makeText(this, R.string.toast_error_restaurant_chosen, Toast.LENGTH_SHORT).show();
         });
     }
 
+    private void openSettingsActivity() {
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+    }
+
     private void populateNotification() {
-        viewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
-            String restaurantId = workmate.getRestaurantChosenId();
-            List<String> workmatesName = new ArrayList<>();
-            viewModel.getRestaurantFS(restaurantId).addOnSuccessListener(restaurant -> {
-                viewModel.getWorkmatesFromList(restaurant.getUsersChoice());
-                viewModel.getWorkmatesLiveData().observe(this, workmates -> {
+        if (enableNotification) {
+            viewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
+                String restaurantId = workmate.getRestaurantChosenId();
+                ArrayList<String> workmatesName = new ArrayList<>();
+                if (restaurantId != null && !restaurantId.equals("")) {
+                    viewModel.getRestaurantFS(restaurantId).addOnSuccessListener(restaurant -> {
+                        viewModel.getWorkmatesFromList(restaurant.getUsersChoice());
+                        viewModel.getWorkmatesLiveData().observe(this, workmates -> {
+                            workmatesName.clear();
+                            for (Workmate workmate1 : workmates) {
+                                if (!workmate1.getUsername().equals(workmate.getUsername()))
+                                    workmatesName.add(workmate1.getUsername());
+                            }
 
-                    for (Workmate workmate1 : workmates) {
-                        if (!workmate1.getUsername().equals(workmate.getUsername()))
-                            workmatesName.add(workmate1.getUsername()); }
+                            Context context = getApplicationContext();
+                            Intent intent = new Intent(this, ReminderNotification.class);
+                            intent.putExtra("place_name", workmate.getRestaurantChosenName());
+                            intent.putExtra("place_address", restaurant.getAddress());
+                            intent.putStringArrayListExtra("workmates_list", workmatesName);
 
-                    Context context = getApplicationContext();
-                    Intent intent = new Intent(this, ReminderNotification.class);
-                    intent.putExtra("place_name", workmate.getRestaurantChosenName());
-                    intent.putExtra("place_address", restaurant.getAddress());
-                    intent.putStringArrayListExtra("workmates_list", (ArrayList<String>) workmatesName);
+                            initNotification(context, intent);
 
-                    initNotification(context, intent);
-                });
+                        });
+                    });
+                }
             });
-        });
+        }
     }
 
     private void initNotification(Context context, Intent intent) {

@@ -14,8 +14,8 @@ public class Location {
     public Location() {}
 
     public Location(Double lat, Double lng) {
-        this.lat = lat;
-        this.lng = lng;
+        this.setLat(lat);
+        this.setLng(lng);
     }
 
 

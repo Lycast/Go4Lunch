@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -32,6 +33,8 @@ import anthony.brenon.go4lunch.utils.SortMethod;
 import anthony.brenon.go4lunch.viewmodel.MainActivityViewModel;
 
 public class MapViewFragment extends SupportMapFragment implements OnMapReadyCallback {
+
+    private static final String TAG = "DEBUG_LOG";
 
     private GoogleMap googleMap;
     private MainActivityViewModel viewModel;
@@ -62,6 +65,8 @@ public class MapViewFragment extends SupportMapFragment implements OnMapReadyCal
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getMapAsync(this);
+
+        Log.d(TAG, "listView -onViewCreated-");
     }
 
     private void setOnClickInfoWindowListenerMarker() {

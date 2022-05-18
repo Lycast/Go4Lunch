@@ -1,6 +1,7 @@
 package anthony.brenon.go4lunch.ui.navigation_bottom;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,7 @@ import anthony.brenon.go4lunch.viewmodel.MainActivityViewModel;
 
 
 public class WorkmatesFragment extends Fragment {
-    private final String TAG = "my_logs";
+    private static final String TAG = "DEBUG_LOG";
 
     private FragmentWorkmatesBinding binding;
     private final WorkmatesAdapter adapter = new WorkmatesAdapter(true);
@@ -36,10 +37,11 @@ public class WorkmatesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d(TAG, "listView -onViewCreated-");
         RecyclerView recyclerView = binding.workmatesRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(adapter);
         MainActivityViewModel viewModel = new ViewModelProvider(requireActivity()).get(MainActivityViewModel.class);
-        viewModel.getWorkmatesList().observe(this, adapter::updateDataWorkmates);
+        viewModel.getWorkmatesDatabase().observe(getViewLifecycleOwner(), adapter::updateDataWorkmates);
     }
 }

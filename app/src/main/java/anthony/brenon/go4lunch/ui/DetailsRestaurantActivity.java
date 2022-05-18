@@ -132,7 +132,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     }
 
     private void setLikeIcon() {
-        if (currentWorkmate.getRestaurantsLiked().contains(placeId)) {
+        if (!currentWorkmate.getRestaurantsLiked().contains(placeId)) {
             binding.btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star_border, 0, 0);
         } else {
             binding.btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star, 0, 0);
@@ -183,7 +183,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     private void showAlertDialog() {
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_phone_enabled)
-                .setTitle(" call")
+                .setTitle(R.string.title_call)
                 .setMessage(currentRestaurant.getName() + "  " + currentRestaurant.getPhoneNumber() + " ?")
                 .setPositiveButton(android.R.string.yes, (dialog, which) -> makePhoneCall())
                 .setNegativeButton(android.R.string.no, null)

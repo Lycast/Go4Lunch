@@ -25,6 +25,7 @@ public class MainActivityViewModel extends ViewModel {
     private final WorkmateRepository workmateRepository;
     private final MutableLiveData<LatLng> latLngLiveData = new MutableLiveData<>();
     private static Location locationUser;
+    private String radius;
 
     public MainActivityViewModel() {
         super();
@@ -38,7 +39,7 @@ public class MainActivityViewModel extends ViewModel {
     }
 
     public LiveData<List<Restaurant>> getLiveDataListRestaurants() {
-        return restaurantRepository.getLiveDataListRestaurant();
+        return restaurantRepository.getLiveDataRestaurants();
     }
 
     private void setLatLngUser(Location locationUser) {
@@ -50,54 +51,58 @@ public class MainActivityViewModel extends ViewModel {
 
     public void setLocationUser(Location locationUser) {
         if(locationUser != null) {
-            this.callNearbyRestaurantsApi(locationUser);
             this.setLatLngUser(locationUser);
-            this.locationUser = locationUser;
+            MainActivityViewModel.locationUser = locationUser;
+            this.callNearbyRestaurantsApi(locationUser);
         }
     }
 
-    //TODO double call to the api change for only one call into mainActivity when onResume
     public void callNearbyRestaurantsApi(Location locationUser) {
         if(locationUser != null)
-            restaurantRepository.callNearbyRestaurantsApi(locationUser);
+            workmateRepository.getCurrentUserDatabase().addOnSuccessListener(workmate -> {
+                radius = workmate.getResearchRadius();
+                restaurantRepository.callNearbyRestaurantsApi(locationUser, radius);
+            });
     }
 
     public void callNearbyRestaurantsApi() {
         callNearbyRestaurantsApi(locationUser);
     }
 
-    public Task<Workmate> createWorkmateIntoDb() {
+    public Task<Workmate> updateCurrentUserDatabase() {
         FirebaseUser fbUser = workmateRepository.getCurrentFirebaseUser();
-        if (fbUser == null) {
-            throw new NullPointerException("FirebaseUser is not defined");
-        }
         String urlPicture = (fbUser.getPhotoUrl() != null) ? fbUser.getPhotoUrl().toString() : null;
         String username = fbUser.getDisplayName();
         String uid = fbUser.getUid();
         String email = fbUser.getEmail();
-        return workmateRepository.getWorkmateData()
+
+        return workmateRepository.getCurrentUserDatabase()
                 .addOnSuccessListener(dbUser -> {
-                    // User exist in database -> update user
-                    dbUser.setUsername(username);
-                    dbUser.setUid(uid);
-                    dbUser.setUrlPicture(urlPicture);
-                    dbUser.setEmail(email);
-                    workmateRepository.updateWorkmateIntoFS(dbUser);
-                })
-                .addOnFailureListener(notExistException -> {
-                    // User doesn't exist in database -> create user
-                    Workmate workmateToCreate = new Workmate(uid, username, urlPicture, email);
-                    workmateRepository.createWorkmateIntoFS(workmateToCreate);
+                    if (dbUser != null) {
+                        // User exist in database -> update user
+                        dbUser.setUsername(username);
+                        dbUser.setUid(uid);
+                        dbUser.setUrlPicture(urlPicture);
+                        dbUser.setEmail(email);
+                        workmateRepository.updateCurrentUserDatabase(dbUser);
+                    } else {
+                        Workmate workmateToCreate = new Workmate(uid, username, urlPicture, email, false, "500");
+                        workmateRepository.updateCurrentUserDatabase(workmateToCreate);
+                    }
                 });
     }
 
     public Task<Workmate> getCurrentWorkmateData(){
-        return workmateRepository.getWorkmateData();
+        return workmateRepository.getCurrentUserDatabase();
+    }
+
+    public Boolean isCurrentUserLogged() {
+        return (workmateRepository.getCurrentUserId() != null);
     }
 
     // list for workmates list view
-    public LiveData<List<Workmate>> getWorkmatesList() {
-        return workmateRepository.getWorkmatesListData();
+    public LiveData<List<Workmate>> getWorkmatesDatabase() {
+        return workmateRepository.getWorkmatesDatabase();
     }
 
     // list for notification
@@ -112,6 +117,6 @@ public class MainActivityViewModel extends ViewModel {
     public void sortMethodRestaurantsList(int sortOption) { restaurantRepository.sortMethodRestaurantsList(sortOption); }
 
     public Task<Restaurant> getRestaurantFS(String placeId) {
-        return restaurantRepository.getRestaurantFS(placeId);
+        return restaurantRepository.getRestaurantDatabase(placeId);
     }
 }

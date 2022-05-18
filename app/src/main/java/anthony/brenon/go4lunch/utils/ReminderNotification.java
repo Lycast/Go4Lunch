@@ -24,13 +24,13 @@ public class ReminderNotification extends BroadcastReceiver {
 
         List<String> workmates = intent.getStringArrayListExtra("workmates_list");
         StringBuilder sb = new StringBuilder();
-        sb.append("Here are the workmates who will eat with you : ");
+        sb.append(context.getString(R.string.notification_text));
         sb.append("\n");
         for (String workmateName : workmates) {
             sb.append(workmateName);
             sb.append("\n");
         }
-        
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "NotifyChan")
                 .setSmallIcon(R.drawable.logo)
                 .setContentTitle(intent.getStringExtra("place_name"))

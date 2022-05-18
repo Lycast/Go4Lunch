@@ -21,8 +21,6 @@ import retrofit2.Callback;
  * Created by Lycast on 22/04/2022.
  */
 public class DetailsActivityViewModel extends ViewModel {
-    private static final String LOG_INFO = "MainViewModel: ";
-    private final String TAG = "my_logs";
 
     private final RestaurantRepository restaurantRepository;
     private final WorkmateRepository workmateRepository;
@@ -35,32 +33,32 @@ public class DetailsActivityViewModel extends ViewModel {
 
 
     public void getRestaurantDetailsApi(String placeId, Callback<PlaceResponse> callback) {
-        restaurantRepository.getDetailsRestaurantApi(placeId, callback);
+        restaurantRepository.callDetailsRestaurantApi(placeId, callback);
     }
 
     public Task<Restaurant> getRestaurantFS(String placeId) {
-        return restaurantRepository.getRestaurantFS(placeId);
+        return restaurantRepository.getRestaurantDatabase(placeId);
     }
 
     public void updateRestaurantIntoFS(Restaurant restaurantUpdate) {
-        restaurantRepository.updateRestaurantIntoFS(restaurantUpdate);
+        restaurantRepository.updateRestaurantDatabase(restaurantUpdate);
     }
 
     public void updateWorkmate(Workmate workmateUpdate) {
-        workmateRepository.getWorkmateData()
+        workmateRepository.getCurrentUserDatabase()
                 .addOnSuccessListener(data -> {
                             // User exist in database -> update user
-                            workmateRepository.updateWorkmateIntoFS(workmateUpdate);
+                            workmateRepository.updateCurrentUserDatabase(workmateUpdate);
                         }
                 )
                 .addOnFailureListener(notExistException ->
                         // User doesn't exist in database -> create user
-                        Log.e(TAG, LOG_INFO + notExistException.getMessage())
+                        Log.e("TAG", "updateWorkmate :" + notExistException.getMessage())
                 );
     }
 
     public Task<Workmate> getCurrentWorkmateData(){
-        return workmateRepository.getWorkmateData();
+        return workmateRepository.getCurrentUserDatabase();
     }
 
     public LiveData<List<Workmate>> getWorkmatesLiveData(){

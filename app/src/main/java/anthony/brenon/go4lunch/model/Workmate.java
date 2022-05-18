@@ -19,29 +19,21 @@ public class Workmate {
     private String restaurantChosenName;
     private String restaurantChosenId;
     private List<String> restaurantsLiked = new ArrayList<>();
+    private boolean enableNotification;
+    private String researchRadius;
 
 
     public Workmate() {}
 
 
-    public Workmate(String uid, String username, String urlPicture, String email) {
+    public Workmate(String uid, String username, String urlPicture, String email, boolean enableNotification, String researchRadius) {
         this.setUid(uid);
         this.setUsername(username);
         this.setUrlPicture(urlPicture);
         this.email = email;
+        this.enableNotification = enableNotification;
+        this.researchRadius = researchRadius;
     }
-
-
-    public Workmate(String uid, String username, String urlPicture, String email, String restaurantChosenName, String restaurantChosenId, List<String> restaurantsLiked) {
-        this.uid = uid;
-        this.username = username;
-        this.urlPicture = urlPicture;
-        this.email = email;
-        this.restaurantChosenName = restaurantChosenName;
-        this.restaurantChosenId = restaurantChosenId;
-        this.restaurantsLiked = restaurantsLiked;
-    }
-
 
     // GETTERS
     public String getUid() { return uid; }
@@ -55,7 +47,8 @@ public class Workmate {
         if (restaurantChosenId == null) return "";
         else return restaurantChosenId; }
     public List<String> getRestaurantsLiked() { return restaurantsLiked; }
-
+    public boolean isEnableNotification() { return enableNotification; }
+    public String getResearchRadius() { return researchRadius; }
 
     // SETTERS
     public void setUsername(String username) { this.username = username; }
@@ -68,7 +61,8 @@ public class Workmate {
         if (restaurantsLiked == null) this.restaurantsLiked = new ArrayList<>();
         else this.restaurantsLiked = restaurantsLiked;
     }
-
+    public void setEnableNotification(boolean enableNotification) { this.enableNotification = enableNotification; }
+    public void setResearchRadius(String researchRadius) { this.researchRadius = researchRadius; }
 
     @NonNull
     @Override

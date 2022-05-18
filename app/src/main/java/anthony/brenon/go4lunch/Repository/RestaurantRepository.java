@@ -33,7 +33,7 @@ import retrofit2.Response;
  * Created by Lycast on 24/02/2022.
  */
 public class RestaurantRepository {
-    private final String TAG = "my_logs";
+    private static final String TAG = "DEBUG_LOG";
     private final String LOG_INFO = "RestaurantRepository ";
 
     private static final String COLLECTION_RESTAURANTS = "restaurants";
@@ -41,8 +41,6 @@ public class RestaurantRepository {
     private final MutableLiveData<List<Restaurant>> liveDataRestaurant = new MutableLiveData<>();
     private List<Restaurant> restaurantList = new ArrayList<>();
     private List<Restaurant> restaurantListFiltered = new ArrayList<>();
-    //TODO put there variable into shared view model radius setting 100m - 3000m
-    String radius = "1000";
 
 
     public RestaurantRepository() {
@@ -51,15 +49,15 @@ public class RestaurantRepository {
 
 
     // GOOGLE API
-    public void getDetailsRestaurantApi(String place_id, Callback<PlaceResponse> callback) {
+    public void callDetailsRestaurantApi(String place_id, Callback<PlaceResponse> callback) {
         Call<PlaceResponse> restaurantCall = jsonPlaceHolderApi.getApiDetailsResponse(place_id);
         restaurantCall.enqueue(callback);
     }
 
-    public void callNearbyRestaurantsApi(final Location locationUser) {
+    public void callNearbyRestaurantsApi(final Location locationUser, String radius) {
         Log.d("my_logs", " -callNearbyRestaurantsApi- ");
         if(locationUser != null) {
-            getListRestaurant().addOnSuccessListener(restaurantsDb -> {
+            getRestaurantsDatabase().addOnSuccessListener(restaurantsDb -> {
                 Call<PlaceNearbyResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
                 call.enqueue(new Callback<PlaceNearbyResponse>() {
                     @Override
@@ -68,21 +66,17 @@ public class RestaurantRepository {
                         if (response.isSuccessful()) {
                             try {
                                 List<Restaurant> fbRestaurants = Objects.requireNonNull(response.body()).getResults();
-                                Comparator<Restaurant> c = (u1, u2) -> {
-                                    return u1.getId().compareTo(u2.getId());
-                                };
+                                Comparator<Restaurant> c = (u1, u2) -> u1.getId().compareTo(u2.getId());
                                 for (Restaurant restaurant : fbRestaurants) {
                                     restaurant.setDistance(locationUser);
                                     int indexRestaurant = Arrays.binarySearch(restaurantsDb.toArray(new Restaurant[restaurantsDb.size()]), restaurant, c);
                                     if(indexRestaurant >= 0) {
                                         restaurant.setUsersChoice(restaurantsDb.get(indexRestaurant).getUsersChoice());
-                                        //restaurant.setUsersChoiceName(restaurantsDb.get(indexRestaurant).getUsersChoiceName());
                                     } else {
                                         restaurant.setUsersChoice(Collections.emptyList());
-                                        //restaurant.setUsersChoiceName(Collections.emptyList());
                                     }
                                 }
-                                updateFirebase(fbRestaurants);
+                                updateRestaurantsDatabase(fbRestaurants);
                                 liveDataRestaurant.postValue(fbRestaurants);
                                 restaurantList = new ArrayList<>(fbRestaurants);
                             } catch (Exception e) {
@@ -102,17 +96,16 @@ public class RestaurantRepository {
 
 
     // GETS
-    public LiveData<List<Restaurant>> getLiveDataListRestaurant(){
-
+    public LiveData<List<Restaurant>> getLiveDataRestaurants(){
         return liveDataRestaurant;
     }
 
-    public Task<Restaurant> getRestaurantFS(String placeId) {
+    public Task<Restaurant> getRestaurantDatabase(String placeId) {
         return getRestaurantsCollection().document(placeId).get().continueWith(data ->
                 data.getResult().toObject(Restaurant.class));
     }
 
-    public Task<List<Restaurant>> getListRestaurant() {
+    public Task<List<Restaurant>> getRestaurantsDatabase() {
         return getRestaurantsCollection().get().continueWith(data ->
                 data.getResult().toObjects(Restaurant.class));
     }
@@ -123,18 +116,17 @@ public class RestaurantRepository {
 
 
     // UPDATE
-    public void updateRestaurantIntoFS(Restaurant restaurantUpdate) {
+    public void updateRestaurantDatabase(Restaurant restaurantUpdate) {
         getRestaurantsCollection().document(restaurantUpdate.getId()).set(restaurantUpdate);
     }
 
-    private void updateFirebase(List<Restaurant> restaurantList) {
+    private void updateRestaurantsDatabase(List<Restaurant> restaurantList) {
         for (Restaurant restaurant : restaurantList) {
-            getRestaurantFS(restaurant.getId()).addOnSuccessListener(data -> {
+            getRestaurantDatabase(restaurant.getId()).addOnSuccessListener(data -> {
                 if (data == null) {
                     getRestaurantsCollection().document(restaurant.getId()).set(restaurant);
                 } else if (data.getUsersChoice().size() > 0 && restaurant.getUsersChoice().isEmpty()) {
                     restaurant.setUsersChoice(data.getUsersChoice());
-                    //restaurant.setUsersChoiceName(data.getUsersChoice());
                 }
                 getRestaurantsCollection().document(restaurant.getId()).set(restaurant);
             });

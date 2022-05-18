@@ -13,10 +13,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/logo_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Go4Lunch">
+        android:theme="@style/Theme.Go4Lunch"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
-            android:name=".ui.navigation_drawer.SettingsActivity"
-            android:exported="true" />
+            android:name=".ui.SettingsActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.DetailsRestaurantActivity"
             android:exported="true" />
@@ -35,25 +36,22 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-
             </intent-filter>
         </activity>
 
-        <receiver android:name=".utils.ReminderNotification"/>
-
-        <!--<service android:name=".utils.ReminderNotification"
+        <receiver android:name=".utils.ReminderNotification" />
+        <!--
+<service android:name=".utils.ReminderNotification"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
-        </service>-->
-
+        </service>
+        -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/MainTheme" />
-
     </application>
 
 </manifest>
