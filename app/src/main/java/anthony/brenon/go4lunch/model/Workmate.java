@@ -35,6 +35,14 @@ public class Workmate {
         this.researchRadius = researchRadius;
     }
 
+    // constructor for tests
+    public Workmate(String uid, String username, String urlPicture, String email) {
+        this.setUid(uid);
+        this.setUsername(username);
+        this.setUrlPicture(urlPicture);
+        this.email = email;
+    }
+
     // GETTERS
     public String getUid() { return uid; }
     public String getUsername() { return username; }

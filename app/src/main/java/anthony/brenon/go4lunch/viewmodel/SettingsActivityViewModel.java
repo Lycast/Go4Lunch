@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.tasks.Task;
 
-import anthony.brenon.go4lunch.Repository.WorkmateRepository;
+import anthony.brenon.go4lunch.repository.WorkmateRepository;
 import anthony.brenon.go4lunch.model.Workmate;
 
 /**

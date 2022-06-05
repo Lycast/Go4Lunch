@@ -59,6 +59,15 @@ public class Restaurant {
         this.setUsersChoice(usersChoice);
     }
 
+    // constructor for tests
+    public Restaurant(String id, String name, String address, float rating, int distance, OpeningHours openingHours) {
+        this.setId(id);
+        this.setName(name);
+        this.setAddress(address);
+        this.setRating(rating);
+        this.setDistance(distance);
+        this.setOpeningHours(openingHours);
+    }
 
     // --GETTERS--
     public String getId() { return id; }

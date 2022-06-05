@@ -1,4 +1,4 @@
-package anthony.brenon.go4lunch.Repository;
+package anthony.brenon.go4lunch.repository;
 
 import static anthony.brenon.go4lunch.api.JsonPlaceHolderApi.retrofit;
 
@@ -22,7 +22,7 @@ import java.util.Objects;
 import anthony.brenon.go4lunch.api.JsonPlaceHolderApi;
 import anthony.brenon.go4lunch.model.Location;
 import anthony.brenon.go4lunch.model.Restaurant;
-import anthony.brenon.go4lunch.model.googleplace_models.PlaceNearbyResponse;
+import anthony.brenon.go4lunch.model.googleplace_models.PlacesNearbyResponse;
 import anthony.brenon.go4lunch.model.googleplace_models.PlaceResponse;
 import anthony.brenon.go4lunch.utils.SortMethod;
 import retrofit2.Call;
@@ -58,11 +58,11 @@ public class RestaurantRepository {
         Log.d("my_logs", " -callNearbyRestaurantsApi- ");
         if(locationUser != null) {
             getRestaurantsDatabase().addOnSuccessListener(restaurantsDb -> {
-                Call<PlaceNearbyResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
-                call.enqueue(new Callback<PlaceNearbyResponse>() {
+                Call<PlacesNearbyResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
+                call.enqueue(new Callback<PlacesNearbyResponse>() {
                     @Override
-                    public void onResponse(@NonNull Call<PlaceNearbyResponse> call,
-                                           @NonNull Response<PlaceNearbyResponse> response) {
+                    public void onResponse(@NonNull Call<PlacesNearbyResponse> call,
+                                           @NonNull Response<PlacesNearbyResponse> response) {
                         if (response.isSuccessful()) {
                             try {
                                 List<Restaurant> fbRestaurants = Objects.requireNonNull(response.body()).getResults();
@@ -86,7 +86,7 @@ public class RestaurantRepository {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<PlaceNearbyResponse> call, @NonNull Throwable t) {
+                    public void onFailure(@NonNull Call<PlacesNearbyResponse> call, @NonNull Throwable t) {
                         Log.d(TAG, LOG_INFO + "onFailure: " + t.getMessage());
                     }
                 });

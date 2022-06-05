@@ -10,8 +10,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
-import anthony.brenon.go4lunch.Repository.RestaurantRepository;
-import anthony.brenon.go4lunch.Repository.WorkmateRepository;
+import anthony.brenon.go4lunch.repository.RestaurantRepository;
+import anthony.brenon.go4lunch.repository.WorkmateRepository;
 import anthony.brenon.go4lunch.model.Location;
 import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.model.Workmate;

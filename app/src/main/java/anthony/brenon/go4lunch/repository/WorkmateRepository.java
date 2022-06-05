@@ -1,4 +1,4 @@
-package anthony.brenon.go4lunch.Repository;
+package anthony.brenon.go4lunch.repository;
 
 import android.util.Log;
 
@@ -42,7 +42,6 @@ public class WorkmateRepository {
 
     // Update User in Firestore
     public void updateCurrentUserDatabase(Workmate workmateUpdate) {
-        // getRestaurantsCollection().document(restaurant.getId()).set(restaurant);
         getWorkmatesCollection()
                 .document(workmateUpdate.getUid())
                 .set(workmateUpdate)
@@ -121,8 +120,6 @@ public class WorkmateRepository {
 
     private Task<DocumentSnapshot> getFirebaseUserData() {
         String uid = getCurrentFirebaseUser().getUid();
-        Log.d("my_logs", uid);
-        Log.d("my_logs", getWorkmatesCollection().document(uid).get().toString());
         return getWorkmatesCollection().document(uid).get();
     }
 
