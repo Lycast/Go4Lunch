@@ -41,25 +41,16 @@ public class Restaurant {
     private List<String> usersChoice;
     private int distance;
 
+    // Comparator
+    public static Comparator<Restaurant> compareDistance = (left, right) -> left.distance - right.distance;
+    public static Comparator<Restaurant> compareRating = (left, right) -> Float.compare(right.rating, left.rating);
+    public static Comparator<Restaurant> compareWorkmate = (left, right) -> right.usersChoice.size() - left.usersChoice.size();
+    public static Comparator<Restaurant> compareOpening = (left, right) -> Boolean.compare(right.openingHours.isOpen_now(), left.openingHours.isOpen_now());
 
-    public Restaurant() {}
 
-    public Restaurant(String id, String name, String address, GeometryPlace geometryPlace, List<Photo> photosUrl, String website,
-                      String phoneNumber, OpeningHours openingHours, float rating, int distance, List<String> usersChoice) {
-        this.setId(id);
-        this.setName(name);
-        this.setAddress(address);
-        this.setGeometryPlace(geometryPlace);
-        this.setPhotosUrl(photosUrl);
-        this.setWebsite(website);
-        this.setPhoneNumber(phoneNumber);
-        this.setOpeningHours(openingHours);
-        this.setRating(rating);
-        this.setDistance(distance);
-        this.setUsersChoice(usersChoice);
+    public Restaurant() {
     }
 
-    // constructor for tests
     public Restaurant(String id, String name, String address, float rating, int distance, OpeningHours openingHours) {
         this.setId(id);
         this.setName(name);
@@ -69,27 +60,73 @@ public class Restaurant {
         this.setOpeningHours(openingHours);
     }
 
+    public Restaurant(String id, String name, String address, float rating, int distance, OpeningHours openingHours,
+                      List<String> usersChoice) {
+        this(id, name, address, rating, distance, openingHours);
+        this.setUsersChoice(usersChoice);
+    }
+    public Restaurant(String id, String name, String address, float rating, int distance, OpeningHours openingHours,  List<String> usersChoice ,
+                      GeometryPlace geometryPlace, List<Photo> photosUrl, String website, String phoneNumber) {
+        this(id, name, address, rating, distance, openingHours, usersChoice);
+        this.setGeometryPlace(geometryPlace);
+        this.setPhotosUrl(photosUrl);
+        this.setWebsite(website);
+        this.setPhoneNumber(phoneNumber);
+    }
+
     // --GETTERS--
-    public String getId() { return id; }
-    public String getName() { return name; }
-    public String getAddress() { return address; }
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
     @Exclude
-    public GeometryPlace getGeometryPlace() { return geometryPlace; }
+    public GeometryPlace getGeometryPlace() {
+        return geometryPlace;
+    }
+
     @Exclude
-    public List<Photo> getPhotosUrl() { return photosUrl; }
+    public List<Photo> getPhotosUrl() {
+        return photosUrl;
+    }
+
     @Exclude
-    public String getWebsite() { return website; }
+    public String getWebsite() {
+        return website;
+    }
+
     @Exclude
-    public String getPhoneNumber() { return phoneNumber; }
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
     @Exclude
-    public OpeningHours getOpeningHours() { return openingHours; }
+    public OpeningHours getOpeningHours() {
+        return openingHours;
+    }
+
     @Exclude
-    public float getRating() { return rating; }
+    public float getRating() {
+        return rating;
+    }
+
     @Exclude
-    public double getDistance() { return distance; }
+    public double getDistance() {
+        return distance;
+    }
+
     public List<String> getUsersChoice() {
         if (usersChoice == null) return new ArrayList<>();
-        else return usersChoice;}
+        else return usersChoice;
+    }
+
     public String getPhoto(int size) {
         if (photosUrl != null && photosUrl.size() > 0) {
             return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + size
@@ -100,25 +137,60 @@ public class Restaurant {
     }
 
     // --SETTERS--
-    public void setId(String id) { this.id = id; }
-    public void setName(String name) { this.name = name; }
-    public void setAddress(String address) { this.address = address; }
-    public void setGeometryPlace(GeometryPlace geometryPlace) { this.geometryPlace = geometryPlace; }
-    public void setPhotosUrl(List<Photo> photosUrl) { this.photosUrl = photosUrl; }
-    public void setDistance(int distance) { this.distance = distance; }
-    public void setWebsite(String website) { this.website = website; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-    public void setOpeningHours(OpeningHours openingHours) { this.openingHours = openingHours; }
-    public void setRating(float rating) { this.rating = rating; }
-    public void setUsersChoice(List<String> usersChoice) {this.usersChoice = usersChoice;}
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setGeometryPlace(GeometryPlace geometryPlace) {
+        this.geometryPlace = geometryPlace;
+    }
+
+    public void setPhotosUrl(List<Photo> photosUrl) {
+        this.photosUrl = photosUrl;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setOpeningHours(OpeningHours openingHours) {
+        this.openingHours = openingHours;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public void setUsersChoice(List<String> usersChoice) {
+        this.usersChoice = usersChoice;
+    }
+
     public void setDistance(Location locationUser) {
-        android.location.Location place = new android.location.Location("Restaurant");
-        place.setLatitude(getGeometryPlace().getLocationPlace().getLat());
-        place.setLongitude(getGeometryPlace().getLocationPlace().getLng());
-        android.location.Location user = new android.location.Location("User");
-        user.setLatitude(locationUser.getLat());
-        user.setLongitude(locationUser.getLng());
-        setDistance((int) user.distanceTo(place));
+        if(getGeometryPlace() != null) {
+            android.location.Location place = new android.location.Location("Restaurant");
+            place.setLatitude(getGeometryPlace().getLocationPlace().getLat());
+            place.setLongitude(getGeometryPlace().getLocationPlace().getLng());
+            android.location.Location user = new android.location.Location("User");
+            user.setLatitude(locationUser.getLat());
+            user.setLongitude(locationUser.getLng());
+            setDistance((int) user.distanceTo(place));
+        }
     }
 
     @NonNull
@@ -132,36 +204,5 @@ public class Restaurant {
                 usersChoice.size() + " " +
                 openingHours + ", " +
                 '}';
-    }
-
-    /**
-     * Comparator to sort
-     */
-    public static class RestaurantDistanceComp implements Comparator<Restaurant> {
-        @Override
-        public int compare(Restaurant left, Restaurant right) {
-            return left.distance - right.distance;
-        }
-    }
-
-    public static class RestaurantRatingComp implements Comparator<Restaurant> {
-        @Override
-        public int compare(Restaurant left, Restaurant right) {
-            return Float.compare(right.rating, left.rating);
-        }
-    }
-
-    public static class RestaurantWorkmatesComp implements Comparator<Restaurant> {
-        @Override
-        public int compare(Restaurant left, Restaurant right) {
-            return right.usersChoice.size() - left.usersChoice.size();
-        }
-    }
-
-    public static class RestaurantOpeningComp implements Comparator<Restaurant> {
-        @Override
-        public int compare(@NonNull Restaurant left,@NonNull Restaurant right) {
-            return Boolean.compare(right.openingHours.isOpen_now(), left.openingHours.isOpen_now());
-        }
     }
 }

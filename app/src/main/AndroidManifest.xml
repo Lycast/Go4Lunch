@@ -13,8 +13,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/logo_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Go4Lunch"
-        android:dataExtractionRules="@xml/data_extraction_rules">
+        android:theme="@style/Theme.Go4Lunch">
         <activity
             android:name=".ui.SettingsActivity"
             android:exported="false" />
@@ -40,14 +39,6 @@
         </activity>
 
         <receiver android:name=".utils.ReminderNotification" />
-        <!--
-<service android:name=".utils.ReminderNotification"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-        -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

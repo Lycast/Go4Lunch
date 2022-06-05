@@ -66,16 +66,7 @@ public class RestaurantRepository {
                         if (response.isSuccessful()) {
                             try {
                                 List<Restaurant> fbRestaurants = Objects.requireNonNull(response.body()).getResults();
-                                Comparator<Restaurant> c = (u1, u2) -> u1.getId().compareTo(u2.getId());
-                                for (Restaurant restaurant : fbRestaurants) {
-                                    restaurant.setDistance(locationUser);
-                                    int indexRestaurant = Arrays.binarySearch(restaurantsDb.toArray(new Restaurant[restaurantsDb.size()]), restaurant, c);
-                                    if(indexRestaurant >= 0) {
-                                        restaurant.setUsersChoice(restaurantsDb.get(indexRestaurant).getUsersChoice());
-                                    } else {
-                                        restaurant.setUsersChoice(Collections.emptyList());
-                                    }
-                                }
+                                setUserChoiceToRestaurants(fbRestaurants, locationUser, restaurantsDb);
                                 updateRestaurantsDatabase(fbRestaurants);
                                 liveDataRestaurant.postValue(fbRestaurants);
                                 restaurantList = new ArrayList<>(fbRestaurants);
@@ -91,6 +82,19 @@ public class RestaurantRepository {
                     }
                 });
             });
+        }
+    }
+
+    public void setUserChoiceToRestaurants(List<Restaurant> fbRestaurants, Location locationUser, List<Restaurant> restaurantsDb) {
+        Comparator<Restaurant> c = (u1, u2) -> u1.getId().compareTo(u2.getId());
+        for (Restaurant restaurant : fbRestaurants) {
+            restaurant.setDistance(locationUser);
+            int indexRestaurant = Arrays.binarySearch(restaurantsDb.toArray(new Restaurant[restaurantsDb.size()]), restaurant, c);
+            if(indexRestaurant >= 0) {
+                restaurant.setUsersChoice(restaurantsDb.get(indexRestaurant).getUsersChoice());
+            } else {
+                restaurant.setUsersChoice(Collections.emptyList());
+            }
         }
     }
 
@@ -136,19 +140,19 @@ public class RestaurantRepository {
     public void sortMethodRestaurantsList(int sortOption) {
         switch (sortOption) {
             case SortMethod.BY_DISTANCE:
-                Collections.sort(restaurantList, new Restaurant.RestaurantDistanceComp());
+                Collections.sort(restaurantList, Restaurant.compareDistance);
                 liveDataRestaurant.postValue(restaurantList);
                 break;
             case SortMethod.BY_RATING:
-                Collections.sort(restaurantList, new Restaurant.RestaurantRatingComp());
+                Collections.sort(restaurantList, Restaurant.compareRating);
                 liveDataRestaurant.postValue(restaurantList);
                 break;
             case SortMethod.BY_WORKMATES:
-                Collections.sort(restaurantList, new Restaurant.RestaurantWorkmatesComp());
+                Collections.sort(restaurantList, Restaurant.compareWorkmate);
                 liveDataRestaurant.postValue(restaurantList);
                 break;
             case SortMethod.BY_OPENING:
-                Collections.sort(getRestaurantListWithOpeningTime(), new Restaurant.RestaurantOpeningComp());
+                Collections.sort(getRestaurantListWithOpeningTime(), Restaurant.compareOpening);
                 liveDataRestaurant.postValue(restaurantListFiltered);
                 break;
         }

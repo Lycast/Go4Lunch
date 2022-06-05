@@ -60,7 +60,6 @@ dependencies {
 
     //GLIDE
     implementation 'com.github.bumptech.glide:glide:4.12.0'
-    implementation 'com.google.firebase:firebase-messaging:23.0.4'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
     //GOOGLE MAPS
@@ -81,12 +80,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     testImplementation "androidx.test:core:1.4.0"
-    testImplementation "org.mockito:mockito-core:4.5.1"
-    testImplementation "io.mockk:mockk:3.9.7"
-    testImplementation "com.squareup.okhttp3:mockwebserver:4.9.0"
 
     //TEST
-    //robolectric
-    testImplementation 'org.robolectric:robolectric:4.6'
     testImplementation "androidx.arch.core:core-testing:2.1.0"
 }
