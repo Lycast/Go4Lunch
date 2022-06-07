@@ -25,6 +25,7 @@ public class RestaurantRepositoryTest {
 
     List<Restaurant> restaurants;
 
+
     @Before
     public void setup() {
         restaurants = new ArrayList<>();
@@ -48,7 +49,7 @@ public class RestaurantRepositoryTest {
         restaurantsWithUserChoice.add(new Restaurant("ID_2", "Le bon repas", "rue des belettes", 4, 1050, new OpeningHours(false), userChoiceR2));
         restaurantsWithUserChoice.add(new Restaurant("ID_3", "Le grand festin", "rue du jardin", 5, 450, new OpeningHours(true), userChoiceR3));
 
-        Location userLocation = new Location(1.5, 6.8);
+        Location userLocation = new Location(47.101574, -1.121140);
 
         // Call the tested method
         restaurantRepository.setUserChoiceToRestaurants(restaurants, userLocation, restaurantsWithUserChoice);

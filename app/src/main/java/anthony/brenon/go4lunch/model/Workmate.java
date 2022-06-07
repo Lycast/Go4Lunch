@@ -25,22 +25,17 @@ public class Workmate {
 
     public Workmate() {}
 
-
-    public Workmate(String uid, String username, String urlPicture, String email, boolean enableNotification, String researchRadius) {
-        this.setUid(uid);
-        this.setUsername(username);
-        this.setUrlPicture(urlPicture);
-        this.email = email;
-        this.enableNotification = enableNotification;
-        this.researchRadius = researchRadius;
-    }
-
-    // constructor for tests
     public Workmate(String uid, String username, String urlPicture, String email) {
         this.setUid(uid);
         this.setUsername(username);
         this.setUrlPicture(urlPicture);
         this.email = email;
+    }
+
+    public Workmate(String uid, String username, String urlPicture, String email, boolean enableNotification, String researchRadius) {
+        this(uid, username, urlPicture, email);
+        this.enableNotification = enableNotification;
+        this.researchRadius = researchRadius;
     }
 
     // GETTERS

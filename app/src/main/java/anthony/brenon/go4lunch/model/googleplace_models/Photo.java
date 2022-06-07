@@ -1,5 +1,7 @@
 package anthony.brenon.go4lunch.model.googleplace_models;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -14,6 +16,15 @@ public class Photo {
 
     // --GETTER--
     public String getPhotoReference() {
+        return photoReference;
+    }
+
+    // --SETTER--
+    public void setPhotoReference(String photoReference) { this.photoReference = photoReference; }
+
+    @NonNull
+    @Override
+    public String toString() {
         return photoReference;
     }
 }

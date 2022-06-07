@@ -186,9 +186,11 @@ public class Restaurant {
             android.location.Location place = new android.location.Location("Restaurant");
             place.setLatitude(getGeometryPlace().getLocationPlace().getLat());
             place.setLongitude(getGeometryPlace().getLocationPlace().getLng());
+
             android.location.Location user = new android.location.Location("User");
             user.setLatitude(locationUser.getLat());
             user.setLongitude(locationUser.getLng());
+
             setDistance((int) user.distanceTo(place));
         }
     }
