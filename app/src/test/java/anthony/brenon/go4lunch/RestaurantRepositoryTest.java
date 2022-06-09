@@ -41,10 +41,10 @@ public class RestaurantRepositoryTest {
         List<String> userChoiceR1 = new ArrayList<>();
         userChoiceR1.add("U1");
         List<String> userChoiceR2 = new ArrayList<>();
-        userChoiceR1.add("U3");
+        userChoiceR2.add("U3");
         List<String> userChoiceR3 = new ArrayList<>();
-        userChoiceR1.add("U1");
-        userChoiceR1.add("U2");
+        userChoiceR3.add("U1");
+        userChoiceR3.add("U2");
         restaurantsWithUserChoice.add(new Restaurant("ID_1", "Le petit dejeuner", "rue des peupliers", 2, 650, new OpeningHours(true), userChoiceR1));
         restaurantsWithUserChoice.add(new Restaurant("ID_2", "Le bon repas", "rue des belettes", 4, 1050, new OpeningHours(false), userChoiceR2));
         restaurantsWithUserChoice.add(new Restaurant("ID_3", "Le grand festin", "rue du jardin", 5, 450, new OpeningHours(true), userChoiceR3));
@@ -55,11 +55,11 @@ public class RestaurantRepositoryTest {
         restaurantRepository.setUserChoiceToRestaurants(restaurants, userLocation, restaurantsWithUserChoice);
 
         // Verify data
-        for(Restaurant restaurant : restaurants){
+        for (Restaurant restaurant : restaurants) {
             assertTrue(restaurant.getDistance() > 0);
             Restaurant userChoiceRestaurant;
-            int indexRestaurant = Arrays.binarySearch(restaurantsWithUserChoice.toArray(new Restaurant[restaurantsWithUserChoice.size()]), restaurant,  (u1, u2) -> u1.getId().compareTo(u2.getId()));
-            if(indexRestaurant >= 0) {
+            int indexRestaurant = Arrays.binarySearch(restaurantsWithUserChoice.toArray(new Restaurant[restaurantsWithUserChoice.size()]), restaurant, (u1, u2) -> u1.getId().compareTo(u2.getId()));
+            if (indexRestaurant >= 0) {
                 userChoiceRestaurant = restaurantsWithUserChoice.get(indexRestaurant);
                 assertArrayEquals(userChoiceRestaurant.getUsersChoice().toArray(), restaurant.getUsersChoice().toArray());
             } else {

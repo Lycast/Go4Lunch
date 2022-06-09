@@ -34,21 +34,19 @@ public class AuthActivity extends AppCompatActivity {
         initUserSession();
     }
 
-
     // Show Snack Bar with a message
     private void showSnackBar(String message) {
         Snackbar.make(binding.loginLayout, message, Snackbar.LENGTH_SHORT).show();
     }
 
-
-     //Method that handles response after SignIn Activity close
+    //Method that handles response after SignIn Activity close
     private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data) {
         IdpResponse response = IdpResponse.fromResultIntent(data);
         if (requestCode == RC_SIGN_IN) {
             // SUCCESS
             if (resultCode == RESULT_OK) {
                 showSnackBar(getString(R.string.connection_succeed));
-                        viewModel.updateCurrentUserDatabase().addOnSuccessListener(user -> startMainActivity());
+                viewModel.updateCurrentUserDatabase().addOnSuccessListener(user -> startMainActivity());
             } else {
                 // ERRORS
                 if (response == null) {
@@ -71,7 +69,6 @@ public class AuthActivity extends AppCompatActivity {
         this.handleResponseAfterSignIn(requestCode, resultCode, data);
     }
 
-
     // Create a custom layout for SignIn Activity
     private void customLayoutAuth() {
         setContentView(binding.getRoot());
@@ -93,7 +90,6 @@ public class AuthActivity extends AppCompatActivity {
                 RC_SIGN_IN);
     }
 
-
     // Start main activity and close this activity
     private void startMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
@@ -101,10 +97,9 @@ public class AuthActivity extends AppCompatActivity {
         finish();
     }
 
-
     private void initUserSession() {
         if (viewModel.isCurrentUserLogged()) {
-                    viewModel.updateCurrentUserDatabase().addOnSuccessListener(user -> startMainActivity());
+            viewModel.updateCurrentUserDatabase().addOnSuccessListener(user -> startMainActivity());
         } else {
             customLayoutAuth();
         }

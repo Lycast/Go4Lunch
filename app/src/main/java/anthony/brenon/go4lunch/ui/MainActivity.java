@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         super.onResume();
         // check position gps is enable
         checkPermissions();
-        if(checkFineLocationPermission()) {
+        if (checkFineLocationPermission()) {
             startLocationManager();
         } else checkPermissions();
 
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     protected void onPause() {
         super.onPause();
-        if(locationManager != null) {
+        if (locationManager != null) {
             locationManager.removeUpdates(this);
         }
     }
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     private void autoCompleteLauncher() {
-        if(!Places.isInitialized()) {
+        if (!Places.isInitialized()) {
             Places.initialize(this, BuildConfig.MAPS_API_KEY);
         } else {
             List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
@@ -159,8 +159,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-
-//----------------------------------------------- NAVIGATION VIEW START -----------------------------------------------//
     // Content of drawer menu
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
@@ -171,18 +169,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-            switch (menuPosition) {
-                case 0:
-                    getMenuInflater().inflate(R.menu.main_toolbar_map, menu);
-                    break;
-                case 1:
-                    getMenuInflater().inflate(R.menu.main_toolbar_listview, menu);
-                    break;
-                case 2:
-                    getMenuInflater().inflate(R.menu.main_toolbar_workmate, menu);
-                    break;
-            }
-            invalidateOptionsMenu();
+        switch (menuPosition) {
+            case 0:
+                getMenuInflater().inflate(R.menu.main_toolbar_map, menu);
+                break;
+            case 1:
+                getMenuInflater().inflate(R.menu.main_toolbar_listview, menu);
+                break;
+            case 2:
+                getMenuInflater().inflate(R.menu.main_toolbar_workmate, menu);
+                break;
+        }
+        invalidateOptionsMenu();
         return true;
     }
 
@@ -212,14 +210,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     // Bind and listener drawer menu
     public void selectDrawerItem(MenuItem menuItem) {
         // Specify the fragment to show based on nav item clicked
-        int id = menuItem.getItemId(); {
-            if ( id == R.id.dv_your_lunch ) {
+        int id = menuItem.getItemId();
+        {
+            if (id == R.id.dv_your_lunch) {
                 openYourLunchDetails();
                 drawer.closeDrawer(GravityCompat.START);
-            } else if ( id == R.id.dv_settings) {
+            } else if (id == R.id.dv_settings) {
                 openSettingsActivity();
                 drawer.closeDrawer(GravityCompat.START);
-            } else if ( id == R.id.dv_logout) {
+            } else if (id == R.id.dv_logout) {
                 signOut();
             }
         }
@@ -237,68 +236,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         } else if (id == R.id.sort_by_rating) {
             viewModel.sortMethodRestaurantsList(SortMethod.BY_RATING);
         } else if (id == R.id.sort_by_workmates) {
-                viewModel.sortMethodRestaurantsList(SortMethod.BY_WORKMATES);
+            viewModel.sortMethodRestaurantsList(SortMethod.BY_WORKMATES);
         } else if (id == R.id.sort_by_opening) {
             viewModel.sortMethodRestaurantsList(SortMethod.BY_OPENING);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    // Logout application
-    private void signOut(){
-        AuthUI.getInstance().signOut(this).addOnSuccessListener(unused -> {
-            Intent intent = new Intent(this, AuthActivity.class);
-            startActivity(intent);
-            finish();
-        });
-    }
-//----------------------------------------------- NAVIGATION VIEW END -----------------------------------------------//
-
-
-//----------------------------------------------- POSITION GPS START -----------------------------------------------//
-    private boolean checkFineLocationPermission() {
-        String permission = Manifest.permission.ACCESS_FINE_LOCATION;
-        int res = this.checkCallingOrSelfPermission(permission);
-        return (res == PackageManager.PERMISSION_GRANTED);
-    }
-
-    @SuppressLint("MissingPermission")
-    private void checkPermissions() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-            }, PERMS_CALL_ID);
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private void startLocationManager() {
-        locationManager = (LocationManager) this.getSystemService( Context.LOCATION_SERVICE );
-        if (locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER)) {
-            locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 120000, 50, this);
-        }
-        if (locationManager.isProviderEnabled( LocationManager.PASSIVE_PROVIDER)) {
-            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 120000, 50, this);
-        }
-        if (locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER)) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 120000, 50, this);
-        }
-    }
-
-    @Override
-    public void onLocationChanged(@NonNull android.location.Location location) {
-        Location locationUser = new Location(location.getLatitude(), location.getLongitude());
-        viewModel.setLocationUser(locationUser);
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) { }
-//----------------------------------------------- POSITION GPS END -----------------------------------------------//
-
-
-    private void setupDrawerUIWithUserData(){
+    private void setupDrawerUIWithUserData() {
         NavigationView nvDrawer = binding.navView;
         setupDrawerContent(nvDrawer);
         View hView = nvDrawer.getHeaderView(0);
@@ -319,21 +264,75 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         });
     }
 
+    // method linked at drawer menu choice
     private void openYourLunchDetails() {
         viewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
-            if(!workmate.getRestaurantChosenId().equals("")) {
+            if (!workmate.getRestaurantChosenId().equals("")) {
                 Intent intent = new Intent(this, DetailsRestaurantActivity.class);
                 intent.putExtra("place_id", workmate.getRestaurantChosenId());
                 startActivity(intent);
-            } else Toast.makeText(this, R.string.toast_error_restaurant_chosen, Toast.LENGTH_SHORT).show();
+            } else
+                Toast.makeText(this, R.string.toast_error_restaurant_chosen, Toast.LENGTH_SHORT).show();
         });
     }
 
     private void openSettingsActivity() {
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
+    // Logout application
+    private void signOut() {
+        AuthUI.getInstance().signOut(this).addOnSuccessListener(unused -> {
+            Intent intent = new Intent(this, AuthActivity.class);
+            startActivity(intent);
+            finish();
+        });
+    }
+
+    // get permission and setup position gps
+    private boolean checkFineLocationPermission() {
+        String permission = Manifest.permission.ACCESS_FINE_LOCATION;
+        int res = this.checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
+
+    @SuppressLint("MissingPermission")
+    private void checkPermissions() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            }, PERMS_CALL_ID);
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void startLocationManager() {
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 120000, 50, this);
+        }
+        if (locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 120000, 50, this);
+        }
+        if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 120000, 50, this);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull android.location.Location location) {
+        Location locationUser = new Location(location.getLatitude(), location.getLongitude());
+        viewModel.setLocationUser(locationUser);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
+
+    // setup alarm manager and initialization notification
     private void populateNotification() {
         if (enableNotification) {
             viewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
@@ -370,7 +369,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         int flag;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             flag = PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT;
-        } else { flag = PendingIntent.FLAG_UPDATE_CURRENT; }
+        } else {
+            flag = PendingIntent.FLAG_UPDATE_CURRENT;
+        }
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, flag);
 
         Calendar calendar = Calendar.getInstance();

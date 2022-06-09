@@ -37,7 +37,7 @@ public class ReminderNotification extends BroadcastReceiver {
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(intent.getStringExtra("place_address")
                                 + "\n\n"
-                                + sb ))
+                                + sb))
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
