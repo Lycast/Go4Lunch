@@ -31,6 +31,7 @@ import retrofit2.Response;
 
 /**
  * Created by Lycast on 24/02/2022.
+ * The repository layer of our MVVM architecture Who will get the necessary information from the restaurants
  */
 public class RestaurantRepository {
     private static final String TAG = "DEBUG_LOG";
@@ -42,18 +43,18 @@ public class RestaurantRepository {
     private List<Restaurant> restaurantList = new ArrayList<>();
     private List<Restaurant> restaurantListFiltered = new ArrayList<>();
 
-
     public RestaurantRepository() {
         jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
     }
 
-
     // GOOGLE API
+    // The restaurant details call to the google api which returns the details of a restaurant
     public void callDetailsRestaurantApi(String place_id, Callback<PlaceResponse> callback) {
         Call<PlaceResponse> restaurantCall = jsonPlaceHolderApi.getApiDetailsResponse(place_id);
         restaurantCall.enqueue(callback);
     }
 
+    // The call of nearby restaurants to the google api which returns all the restaurants in a perimeter
     public void callNearbyRestaurantsApi(final Location locationUser, String radius) {
         Log.d("my_logs", " -callNearbyRestaurantsApi- ");
         if(locationUser != null) {
@@ -66,6 +67,8 @@ public class RestaurantRepository {
                         if (response.isSuccessful()) {
                             try {
                                 List<Restaurant> fbRestaurants = Objects.requireNonNull(response.body()).getResults();
+                                // We are going to implement some attributes to the restaurants returned from our google api which are saved in our firebase
+                                // and then return our list as livedata
                                 setUserChoiceToRestaurants(fbRestaurants, locationUser, restaurantsDb);
                                 updateRestaurantsDatabase(fbRestaurants);
                                 liveDataRestaurant.postValue(fbRestaurants);
@@ -88,9 +91,11 @@ public class RestaurantRepository {
     public void setUserChoiceToRestaurants(List<Restaurant> fbRestaurants, Location locationUser, List<Restaurant> restaurantsDb) {
         Comparator<Restaurant> c = (u1, u2) -> u1.getId().compareTo(u2.getId());
         for (Restaurant restaurant : fbRestaurants) {
+            // We add the distance attribute to a restaurant
             restaurant.setDistance(locationUser);
             int indexRestaurant = Arrays.binarySearch(restaurantsDb.toArray(new Restaurant[restaurantsDb.size()]), restaurant, c);
             if(indexRestaurant >= 0) {
+                // We add the list of users who have chosen this restaurant
                 restaurant.setUsersChoice(restaurantsDb.get(indexRestaurant).getUsersChoice());
             } else {
                 restaurant.setUsersChoice(Collections.emptyList());
@@ -98,8 +103,21 @@ public class RestaurantRepository {
         }
     }
 
+    // Updating restaurants from a list
+    private void updateRestaurantsDatabase(List<Restaurant> restaurantList) {
+        for (Restaurant restaurant : restaurantList) {
+            getRestaurantDatabase(restaurant.getId()).addOnSuccessListener(data -> {
+                if (data == null) {
+                    getRestaurantsCollection().document(restaurant.getId()).set(restaurant);
+                } else if (data.getUsersChoice().size() > 0 && restaurant.getUsersChoice().isEmpty()) {
+                    restaurant.setUsersChoice(data.getUsersChoice());
+                }
+                getRestaurantsCollection().document(restaurant.getId()).set(restaurant);
+            });
+        }
+    }
 
-    // GETS
+    // The methods that will be called by our application
     public LiveData<List<Restaurant>> getLiveDataRestaurants(){
         return liveDataRestaurant;
     }
@@ -118,23 +136,8 @@ public class RestaurantRepository {
         return FirebaseFirestore.getInstance().collection(COLLECTION_RESTAURANTS);
     }
 
-
-    // UPDATE
     public void updateRestaurantDatabase(Restaurant restaurantUpdate) {
         getRestaurantsCollection().document(restaurantUpdate.getId()).set(restaurantUpdate);
-    }
-
-    private void updateRestaurantsDatabase(List<Restaurant> restaurantList) {
-        for (Restaurant restaurant : restaurantList) {
-            getRestaurantDatabase(restaurant.getId()).addOnSuccessListener(data -> {
-                if (data == null) {
-                    getRestaurantsCollection().document(restaurant.getId()).set(restaurant);
-                } else if (data.getUsersChoice().size() > 0 && restaurant.getUsersChoice().isEmpty()) {
-                    restaurant.setUsersChoice(data.getUsersChoice());
-                }
-                getRestaurantsCollection().document(restaurant.getId()).set(restaurant);
-            });
-        }
     }
 
     public void sortMethodRestaurantsList(int sortOption) {

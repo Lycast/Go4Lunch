@@ -86,6 +86,7 @@ public class MainActivityViewModel extends ViewModel {
                         dbUser.setEmail(email);
                         workmateRepository.updateCurrentUserDatabase(dbUser);
                     } else {
+                        // If the user does not exist -> we pass him some default parameters
                         Workmate workmateToCreate = new Workmate(uid, username, urlPicture, email, false, "500");
                         workmateRepository.updateCurrentUserDatabase(workmateToCreate);
                     }
@@ -100,12 +101,10 @@ public class MainActivityViewModel extends ViewModel {
         return (workmateRepository.getCurrentUserId() != null);
     }
 
-    // list for workmates list view
     public LiveData<List<Workmate>> getWorkmatesDatabase() {
         return workmateRepository.getWorkmatesDatabase();
     }
 
-    // list for notification
     public void getWorkmatesFromList(List<String> workmateIds) {
         workmateRepository.getWorkmatesFromList(workmateIds);
     }

@@ -12,17 +12,16 @@ import retrofit2.http.Query;
 
 /**
  * Created by Lycast on 24/02/2022.
+ * This is our interface that will allow us to communicate with our google api.
+ * We use Retrofit to make our calls
  */
 public interface JsonPlaceHolderApi {
-
 
     @GET("nearbysearch/json?type=restaurant&key=" + BuildConfig.MAPS_API_KEY)
     Call<PlacesNearbyResponse> getApiNearbyRestaurantResponse(@Query("location") String location, @Query("radius") String radius);
 
-
     @GET("details/json?key=" + BuildConfig.MAPS_API_KEY)
-    Call<PlaceResponse> getApiDetailsResponse(@Query("place_id") String place_id );
-
+    Call<PlaceResponse> getApiDetailsResponse(@Query("place_id") String place_id);
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("https://maps.googleapis.com/maps/api/place/")

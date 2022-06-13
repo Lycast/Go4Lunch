@@ -24,8 +24,8 @@ import anthony.brenon.go4lunch.model.Workmate;
 
 /**
  * Created by Lycast on 24/02/2022.
- * comment :
- * if your database is empty you need to create one restaurant with a attribute "id" so that the code reads correctly
+ * The repository layer of our MVVM architecture Who will get the necessary information from the workmates
+ * comment : if your database is empty you need to create one restaurant with a attribute "id" so that the code reads correctly
  */
 public class WorkmateRepository {
     private final String TAG = "my_logs";
@@ -39,8 +39,7 @@ public class WorkmateRepository {
         auth = FirebaseAuth.getInstance();
     }
 
-
-    // Update User in Firestore
+    // Update user in the Firestore
     public void updateCurrentUserDatabase(Workmate workmateUpdate) {
         getWorkmatesCollection()
                 .document(workmateUpdate.getUid())
@@ -48,7 +47,7 @@ public class WorkmateRepository {
                 .addOnFailureListener(updateUserException -> Log.e(TAG, LOG_INFO + updateUserException.getMessage()));
     }
 
-    // GETS to FireStore
+    // This method is called to retrieve a list of users from a list of user ids
     public void getWorkmatesFromList(List<String> workmateIds) {
         getListWorkmate().addOnSuccessListener(workmates -> {
             Comparator<Workmate> c = (u1, u2) -> u1.getUid().compareTo(u2.getUid());
@@ -57,7 +56,7 @@ public class WorkmateRepository {
                 Workmate a = new Workmate();
                 a.setUid(workmateId);
                 int indexWorkmate = Arrays.binarySearch(workmates.toArray(new Workmate[workmates.size()]), a, c);
-                if(indexWorkmate >= 0) {
+                if (indexWorkmate >= 0) {
                     workmateList.add(workmates.get(indexWorkmate));
                 }
             }
@@ -66,20 +65,17 @@ public class WorkmateRepository {
     }
 
     // workmates list for details recycler view
-    public MutableLiveData<List<Workmate>> getWorkmatesLiveData(){
+    public MutableLiveData<List<Workmate>> getWorkmatesLiveData() {
         return listMutableLiveData;
     }
 
+    // Retrieves information from the firebase of the currently logged in google user
     public Task<Workmate> getCurrentUserDatabase() {
         return getFirebaseUserData().continueWith(data ->
                 data.getResult().toObject(Workmate.class));
     }
 
-    public Task<List<Workmate>> getListWorkmate() {
-        return getWorkmatesCollection().get().continueWith(data ->
-                data.getResult().toObjects(Workmate.class));
-    }
-
+    // Retrieves the list of users without the currently logged in user for the "WorkmatesFragment"
     public LiveData<List<Workmate>> getWorkmatesDatabase() {
         String uid = getCurrentFirebaseUser().getUid();
         MutableLiveData<List<Workmate>> workmates = new MutableLiveData<>();
@@ -91,7 +87,7 @@ public class WorkmateRepository {
 
             for (DocumentSnapshot document : documents) {
                 Workmate workmate = document.toObject(Workmate.class);
-                if(!Objects.requireNonNull(workmate).getUid().equals(uid))
+                if (!Objects.requireNonNull(workmate).getUid().equals(uid))
                     workmateList.add(workmate);
             }
             workmates.postValue(workmateList);
@@ -99,7 +95,11 @@ public class WorkmateRepository {
         return workmates;
     }
 
-    // GETS FireBaseUser
+    public Task<List<Workmate>> getListWorkmate() {
+        return getWorkmatesCollection().get().continueWith(data ->
+                data.getResult().toObjects(Workmate.class));
+    }
+
     public FirebaseUser getCurrentFirebaseUser() {
         return auth.getCurrentUser();
     }
@@ -110,7 +110,7 @@ public class WorkmateRepository {
         return (user != null) ? user.getUid() : null;
     }
 
-    public void removeObserver(Observer<List<Workmate>> observer){
+    public void removeObserver(Observer<List<Workmate>> observer) {
         this.listMutableLiveData.removeObserver(observer);
     }
 
