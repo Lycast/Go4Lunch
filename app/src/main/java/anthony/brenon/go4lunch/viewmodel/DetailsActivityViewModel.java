@@ -36,11 +36,11 @@ public class DetailsActivityViewModel extends ViewModel {
         restaurantRepository.callDetailsRestaurantApi(placeId, callback);
     }
 
-    public Task<Restaurant> getRestaurantFS(String placeId) {
+    public Task<Restaurant> getRestaurantFirestore(String placeId) {
         return restaurantRepository.getRestaurantDatabase(placeId);
     }
 
-    public void updateRestaurantIntoFS(Restaurant restaurantUpdate) {
+    public void updateRestaurantIntoFirestore(Restaurant restaurantUpdate) {
         restaurantRepository.updateRestaurantDatabase(restaurantUpdate);
     }
 

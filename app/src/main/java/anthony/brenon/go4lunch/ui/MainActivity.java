@@ -124,6 +124,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     // research
+    private void autoCompleteLauncher() {
+        if (!Places.isInitialized()) {
+            Places.initialize(this, BuildConfig.MAPS_API_KEY);
+        } else {
+            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+
+            Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                    .setHint(getString(R.string.autocomplete_hint))
+                    .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                    .setCountry("FR")
+                    .build(this);
+            startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
@@ -144,21 +159,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void autoCompleteLauncher() {
-        if (!Places.isInitialized()) {
-            Places.initialize(this, BuildConfig.MAPS_API_KEY);
-        } else {
-            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
-
-            Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
-                    .setHint(getString(R.string.autocomplete_hint))
-                    .setTypeFilter(TypeFilter.ESTABLISHMENT)
-                    .setCountry("FR")
-                    .build(this);
-            startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
-        }
-    }
-
     // Content of drawer menu
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
@@ -166,6 +166,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     selectDrawerItem(menuItem);
                     return true;
                 });
+    }
+
+    // Bind and listener drawer menu
+    public void selectDrawerItem(MenuItem menuItem) {
+        // Specify the fragment to show based on nav item clicked
+        int id = menuItem.getItemId();
+        {
+            if (id == R.id.dv_your_lunch) {
+                openYourLunchDetails();
+                drawer.closeDrawer(GravityCompat.START);
+            } else if (id == R.id.dv_settings) {
+                openSettingsActivity();
+                drawer.closeDrawer(GravityCompat.START);
+            } else if (id == R.id.dv_logout) {
+                signOut();
+            }
+        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -184,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         return true;
     }
 
+    // configuration of the view according to the selection of the bottom navigation
     private void onNavigationBottom() {
         bottomNavMenu.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -205,23 +223,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         menuPosition = menuPos;
         setSupportActionBar(toolbar);
         toolbar.setTitle(title);
-    }
-
-    // Bind and listener drawer menu
-    public void selectDrawerItem(MenuItem menuItem) {
-        // Specify the fragment to show based on nav item clicked
-        int id = menuItem.getItemId();
-        {
-            if (id == R.id.dv_your_lunch) {
-                openYourLunchDetails();
-                drawer.closeDrawer(GravityCompat.START);
-            } else if (id == R.id.dv_settings) {
-                openSettingsActivity();
-                drawer.closeDrawer(GravityCompat.START);
-            } else if (id == R.id.dv_logout) {
-                signOut();
-            }
-        }
     }
 
     @Override
@@ -265,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     // method linked at drawer menu choice
+    // listener your lunch
     private void openYourLunchDetails() {
         viewModel.getCurrentWorkmateData().addOnSuccessListener(workmate -> {
             if (!workmate.getRestaurantChosenId().equals("")) {
@@ -276,12 +278,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         });
     }
 
+    // listener settings
     private void openSettingsActivity() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
-    // Logout application
+    // listener logout
     private void signOut() {
         AuthUI.getInstance().signOut(this).addOnSuccessListener(unused -> {
             Intent intent = new Intent(this, AuthActivity.class);

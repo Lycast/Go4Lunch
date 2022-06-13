@@ -47,7 +47,6 @@ public class Restaurant {
     public static Comparator<Restaurant> compareWorkmate = (left, right) -> right.usersChoice.size() - left.usersChoice.size();
     public static Comparator<Restaurant> compareOpening = (left, right) -> Boolean.compare(right.openingHours.isOpen_now(), left.openingHours.isOpen_now());
 
-
     public Restaurant() {
     }
 

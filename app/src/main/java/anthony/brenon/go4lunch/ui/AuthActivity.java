@@ -37,9 +37,25 @@ public class AuthActivity extends AppCompatActivity {
         initUserSession();
     }
 
-    // Show Snack Bar with a message
-    private void showSnackBar(String message) {
-        Snackbar.make(binding.loginLayout, message, Snackbar.LENGTH_SHORT).show();
+    // Create a custom layout for SignIn Activity
+    private void customLayoutAuth() {
+        setContentView(binding.getRoot());
+        AuthMethodPickerLayout customLayout = new AuthMethodPickerLayout
+                .Builder(R.layout.activity_auth)
+                .setGoogleButtonId(R.id.sign_in_google)
+                .setFacebookButtonId(R.id.sign_in_facebook)
+                .build();
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAuthMethodPickerLayout(customLayout)
+                        .setTheme(R.style.Theme_Go4Lunch)
+                        .setAvailableProviders(Arrays.asList(
+                                new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                new AuthUI.IdpConfig.FacebookBuilder().build()
+                        ))
+                        .build(),
+                RC_SIGN_IN);
     }
 
     //Method that handles response after SignIn Activity close
@@ -71,27 +87,6 @@ public class AuthActivity extends AppCompatActivity {
         this.handleResponseAfterSignIn(requestCode, resultCode, data);
     }
 
-    // Create a custom layout for SignIn Activity
-    private void customLayoutAuth() {
-        setContentView(binding.getRoot());
-        AuthMethodPickerLayout customLayout = new AuthMethodPickerLayout
-                .Builder(R.layout.activity_auth)
-                .setGoogleButtonId(R.id.sign_in_google)
-                .setFacebookButtonId(R.id.sign_in_facebook)
-                .build();
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAuthMethodPickerLayout(customLayout)
-                        .setTheme(R.style.Theme_Go4Lunch)
-                        .setAvailableProviders(Arrays.asList(
-                                new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                new AuthUI.IdpConfig.FacebookBuilder().build()
-                        ))
-                        .build(),
-                RC_SIGN_IN);
-    }
-
     // Start main activity and close this activity
     private void startMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
@@ -105,5 +100,10 @@ public class AuthActivity extends AppCompatActivity {
         } else {
             customLayoutAuth();
         }
+    }
+
+    // Show Snack Bar with a message
+    private void showSnackBar(String message) {
+        Snackbar.make(binding.loginLayout, message, Snackbar.LENGTH_SHORT).show();
     }
 }

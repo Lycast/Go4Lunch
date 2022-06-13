@@ -24,14 +24,12 @@ public class ListViewFragment extends Fragment {
     private FragmentListViewBinding binding;
     private final RestaurantsAdapter adapter = new RestaurantsAdapter();
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentListViewBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -43,6 +41,7 @@ public class ListViewFragment extends Fragment {
 
         viewModel.getLiveDataListRestaurants().observe(getViewLifecycleOwner(), adapter::updateDataRestaurants);
 
+        // Listens to open details activity when you click on an item
         adapter.setOnItemClickListener(placeId -> {
             Intent intent = new Intent(getActivity(), DetailsRestaurantActivity.class);
             intent.putExtra("place_id", placeId);

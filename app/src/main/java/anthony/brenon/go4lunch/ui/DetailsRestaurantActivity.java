@@ -101,16 +101,17 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     //The retrofit call of the google api to retrieve the detail of a restaurant from an id
     private void getRestaurantDetails(final String placeId) {
-        viewModel.getRestaurantFS(placeId).addOnSuccessListener(restaurant -> viewModel.getRestaurantDetailsApi(placeId, new Callback<PlaceResponse>() {
+        viewModel.getRestaurantFirestore(placeId).addOnSuccessListener(restaurant -> viewModel.getRestaurantDetailsApi(placeId, new Callback<PlaceResponse>() {
             @Override
             public void onResponse(@NonNull Call<PlaceResponse> call, @NonNull Response<PlaceResponse> response) {
                 if (response.isSuccessful()) {
                     currentRestaurant = Objects.requireNonNull(response.body()).getResult();
 
+                    // Added backup from firebase of the list of users who have chosen this restaurant
                     if (restaurant != null) {
                         currentRestaurant.setUsersChoice(restaurant.getUsersChoice());
                     }
-                    viewModel.updateRestaurantIntoFS(currentRestaurant);
+                    viewModel.updateRestaurantIntoFirestore(currentRestaurant);
 
                     populateDetailsRestaurant(currentRestaurant);
                     setEnableButton(currentRestaurant);
@@ -136,6 +137,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                 .into(binding.ivDetailsRestaurant);
     }
 
+    // Check if the user likes this restaurant and displays the corresponding image
     private void setLikeIcon() {
         if (!currentWorkmate.getRestaurantsLiked().contains(placeId)) {
             binding.btnLike.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_star_border, 0, 0);
@@ -144,6 +146,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
     }
 
+    // Saving in the database if the user likes or dislike this restaurant
     private void setLikeList() {
         List<String> restaurantsIds = currentWorkmate.getRestaurantsLiked();
         if (currentWorkmate.getRestaurantsLiked().contains(placeId))
@@ -195,15 +198,6 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void setEnableButton(Restaurant restaurant) {
-        if (restaurant.getWebsite() != null) {
-            binding.btnWebsite.setEnabled(true);
-        }
-        if (restaurant.getPhoneNumber() != null) {
-            binding.btnCall.setEnabled(true);
-        }
-    }
-
     // should not be called if restaurantDb is null
     private void makePhoneCall() {
         if (currentRestaurant != null && currentRestaurant.getPhoneNumber().trim().length() > 0) {
@@ -216,6 +210,28 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
     }
 
+    // request permission for make a call
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CALL) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                makePhoneCall();
+            } else {
+                Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // If we don't have a phone number or website for this restaurant, simply disable the corresponding button
+    private void setEnableButton(Restaurant restaurant) {
+        if (restaurant.getWebsite() != null) {
+            binding.btnWebsite.setEnabled(true);
+        }
+        if (restaurant.getPhoneNumber() != null) {
+            binding.btnCall.setEnabled(true);
+        }
+    }
 
     // UPDATES
     private void updateCurrentWorkmate() {
@@ -223,7 +239,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     }
 
     private void updateCurrentRestaurant() {
-        viewModel.updateRestaurantIntoFS(currentRestaurant);
+        viewModel.updateRestaurantIntoFirestore(currentRestaurant);
     }
 
     private void getWorkmatesData(final List<String> workmateIds) {
@@ -254,18 +270,5 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                 startActivity(browserIntent);
             }
         });
-    }
-
-    // request permission for make a call
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CALL) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                makePhoneCall();
-            } else {
-                Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 }
