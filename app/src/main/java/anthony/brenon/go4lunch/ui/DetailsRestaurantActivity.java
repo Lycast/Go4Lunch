@@ -36,8 +36,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Details activity
+ * Our view of restaurant details
+ */
 public class DetailsRestaurantActivity extends AppCompatActivity {
-    private final String TAG = "my_logs";
+    private final String TAG = "DEBUG_LOG";
     private final String LOG_INFO = "DetailsRestaurantActivity ";
     private static final int REQUEST_CALL = 123;
 
@@ -95,6 +99,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         viewModel.removeObserver(workmateObserver);
     }
 
+    //The retrofit call of the google api to retrieve the detail of a restaurant from an id
     private void getRestaurantDetails(final String placeId) {
         viewModel.getRestaurantFS(placeId).addOnSuccessListener(restaurant -> viewModel.getRestaurantDetailsApi(placeId, new Callback<PlaceResponse>() {
             @Override
@@ -102,7 +107,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     currentRestaurant = Objects.requireNonNull(response.body()).getResult();
 
-                    if(restaurant != null) {
+                    if (restaurant != null) {
                         currentRestaurant.setUsersChoice(restaurant.getUsersChoice());
                     }
                     viewModel.updateRestaurantIntoFS(currentRestaurant);
@@ -251,6 +256,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         });
     }
 
+    // request permission for make a call
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

@@ -2,7 +2,6 @@ package anthony.brenon.go4lunch.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +19,10 @@ import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityAuthBinding;
 import anthony.brenon.go4lunch.viewmodel.MainActivityViewModel;
 
+/**
+ * Authentication activity
+ * Will be the launch view of our application it will allow the user to connect with his google or facebook account
+ */
 public class AuthActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
@@ -64,7 +67,6 @@ public class AuthActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        Log.d("TAG", "-AuthActivity- " + "on activity result");
         super.onActivityResult(requestCode, resultCode, data);
         this.handleResponseAfterSignIn(requestCode, resultCode, data);
     }

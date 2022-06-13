@@ -95,15 +95,17 @@ public class WorkmateRepository {
         return workmates;
     }
 
-    public Task<List<Workmate>> getListWorkmate() {
+    private Task<List<Workmate>> getListWorkmate() {
         return getWorkmatesCollection().get().continueWith(data ->
                 data.getResult().toObjects(Workmate.class));
     }
 
+    // Get currently logged in google user
     public FirebaseUser getCurrentFirebaseUser() {
         return auth.getCurrentUser();
     }
 
+    // Get the id of google user currently logged
     @Nullable
     public String getCurrentUserId() {
         FirebaseUser user = auth.getCurrentUser();
@@ -114,6 +116,7 @@ public class WorkmateRepository {
         this.listMutableLiveData.removeObserver(observer);
     }
 
+    // call of Firebase of the collection COLLECTION_WORKMATES
     private CollectionReference getWorkmatesCollection() {
         return FirebaseFirestore.getInstance().collection(COLLECTION_WORKMATES);
     }

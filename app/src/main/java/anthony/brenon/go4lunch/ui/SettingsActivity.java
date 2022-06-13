@@ -14,6 +14,13 @@ import anthony.brenon.go4lunch.databinding.ActivitySettingsBinding;
 import anthony.brenon.go4lunch.model.Workmate;
 import anthony.brenon.go4lunch.viewmodel.SettingsActivityViewModel;
 
+/**
+ * Settings activity
+ * Will allow the user to set :
+ * - the restaurant search radius
+ * - activation of notifications
+ * - delete his account
+ */
 public class SettingsActivity extends AppCompatActivity {
 
     private ActivitySettingsBinding binding;
