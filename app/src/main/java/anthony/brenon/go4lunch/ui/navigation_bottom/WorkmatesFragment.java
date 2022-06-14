@@ -22,7 +22,6 @@ public class WorkmatesFragment extends Fragment {
     private FragmentWorkmatesBinding binding;
     private final WorkmatesAdapter adapter = new WorkmatesAdapter(true);
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -30,7 +29,6 @@ public class WorkmatesFragment extends Fragment {
         binding = FragmentWorkmatesBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

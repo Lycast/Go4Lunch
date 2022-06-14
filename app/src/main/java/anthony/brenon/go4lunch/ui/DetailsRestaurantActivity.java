@@ -99,7 +99,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         viewModel.removeObserver(workmateObserver);
     }
 
-    //The retrofit call of the google api to retrieve the detail of a restaurant from an id
+    // The retrofit call of the google api to retrieve the detail of a restaurant from an id
     private void getRestaurantDetails(final String placeId) {
         viewModel.getRestaurantFirestore(placeId).addOnSuccessListener(restaurant -> viewModel.getRestaurantDetailsApi(placeId, new Callback<PlaceResponse>() {
             @Override

@@ -56,7 +56,6 @@ public class RestaurantRepository {
 
     // The call of nearby restaurants to the google api which returns all the restaurants in a perimeter
     public void callNearbyRestaurantsApi(final Location locationUser, String radius) {
-        Log.d("my_logs", " -callNearbyRestaurantsApi- ");
         if(locationUser != null) {
             getRestaurantsDatabase().addOnSuccessListener(restaurantsDb -> {
                 Call<PlacesNearbyResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
@@ -117,6 +116,16 @@ public class RestaurantRepository {
         }
     }
 
+    private Task<List<Restaurant>> getRestaurantsDatabase() {
+        return getRestaurantsCollection().get().continueWith(data ->
+                data.getResult().toObjects(Restaurant.class));
+    }
+
+    private CollectionReference getRestaurantsCollection() {
+        return FirebaseFirestore.getInstance().collection(COLLECTION_RESTAURANTS);
+    }
+
+
     // The methods that will be called by our application
     public LiveData<List<Restaurant>> getLiveDataRestaurants(){
         return liveDataRestaurant;
@@ -125,15 +134,6 @@ public class RestaurantRepository {
     public Task<Restaurant> getRestaurantDatabase(String placeId) {
         return getRestaurantsCollection().document(placeId).get().continueWith(data ->
                 data.getResult().toObject(Restaurant.class));
-    }
-
-    public Task<List<Restaurant>> getRestaurantsDatabase() {
-        return getRestaurantsCollection().get().continueWith(data ->
-                data.getResult().toObjects(Restaurant.class));
-    }
-
-    private CollectionReference getRestaurantsCollection() {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_RESTAURANTS);
     }
 
     public void updateRestaurantDatabase(Restaurant restaurantUpdate) {
@@ -161,6 +161,7 @@ public class RestaurantRepository {
         }
     }
 
+    // It's possible restaurant don't have opening time we delete them form the list
     private List<Restaurant> getRestaurantListWithOpeningTime() {
         restaurantListFiltered = new ArrayList<>();
         for (Restaurant restaurant : restaurantList) {
