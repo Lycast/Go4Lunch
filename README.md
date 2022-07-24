@@ -27,8 +27,6 @@ Functionality :
 <img src="https://i.postimg.cc/0yBwtzwX/Screenshot-go4lunch-092314.png" width="20%" height="20%">&ensp;
 <img src="https://i.postimg.cc/ryNRBn4r/Screenshot-go4lunch-092334.png" width="20%" height="20%">
 
----
-
 ## Library
 
 [Androidx](https://developer.android.com/jetpack/androidx) ,
@@ -38,15 +36,12 @@ Functionality :
 [ViewBinding](https://developer.android.com/topic/libraries/view-binding) ,
 [Retrofit](https://square.github.io/retrofit/) ,
 [Easy Permissions](https://github.com/googlesamples/easypermissions) ,
-
 [Cloud Firestore](https://firebase.google.com/docs/firestore) ,
 [Firebase Authentification](https://firebase.google.com/docs/auth) ,
 [Cloud Storage](https://firebase.google.com/docs/storage) ,
 [Facebook Android SDK](https://developers.facebook.com/docs/android/) ,
 [Maps Android SDK](https://developers.google.com/maps/documentation/android-sdk/intro) ,
 [Place Android SDK](https://developers.google.com/places/android-sdk/intro) ,
-
-
 [Mockito](https://site.mockito.org/) ,
 [Espresso](https://developer.android.com/training/testing/espresso)
 
