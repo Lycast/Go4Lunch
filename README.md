@@ -1,4 +1,4 @@
-"# Go4Lunch" 
+# Go4Lunch
 
 Welcome to my project number seven of my formation developer android application.
 
@@ -29,34 +29,22 @@ Functionality :
 
 ## Library
 
-[Androidx](https://developer.android.com/jetpack/androidx)
+[Androidx](https://developer.android.com/jetpack/androidx),
+[Androidx Lifecycle](https://developer.android.com/jetpack/androidx/releases/lifecycle),
+[Glide](https://github.com/bumptech/glide/),
+[Gson](https://github.com/google/gson/),
+[ViewBinding](https://developer.android.com/topic/libraries/view-binding),
 
-[Androidx Lifecycle](https://developer.android.com/jetpack/androidx/releases/lifecycle)
+[Retrofit](https://square.github.io/retrofit/),
+[Cloud Firestore](https://firebase.google.com/docs/firestore),
+[Firebase Authentification](https://firebase.google.com/docs/auth),
+[Cloud Storage](https://firebase.google.com/docs/storage),
+[Facebook Android SDK](https://developers.facebook.com/docs/android/),
 
-[Glide](https://github.com/bumptech/glide/)
-
-[Gson](https://github.com/google/gson/)
-
-[ViewBinding](https://developer.android.com/topic/libraries/view-binding)
-
-[Retrofit](https://square.github.io/retrofit/)
-
-[Cloud Firestore](https://firebase.google.com/docs/firestore)
-
-[Firebase Authentification](https://firebase.google.com/docs/auth)
-
-[Cloud Storage](https://firebase.google.com/docs/storage)
-
-[Facebook Android SDK](https://developers.facebook.com/docs/android/)
-
-[Maps Android SDK](https://developers.google.com/maps/documentation/android-sdk/intro)
-
-[Place Android SDK](https://developers.google.com/places/android-sdk/intro)
-
-[Easy Permissions](https://github.com/googlesamples/easypermissions)
-
-[Mockito](https://site.mockito.org/)
-
+[Maps Android SDK](https://developers.google.com/maps/documentation/android-sdk/intro),
+[Place Android SDK](https://developers.google.com/places/android-sdk/intro),
+[Easy Permissions](https://github.com/googlesamples/easypermissions),
+[Mockito](https://site.mockito.org/),
 [Espresso](https://developer.android.com/training/testing/espresso)
 
 ## API
