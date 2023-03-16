@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "154450805954",
+    "firebase_url": "https://go4lunch-be14c-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "go4lunch-be14c",
     "storage_bucket": "go4lunch-be14c.appspot.com"
   },
@@ -14,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "154450805954-mh94hbrjcmg90h2qtoc54p4bkop8je90.apps.googleusercontent.com",
+          "client_id": "154450805954-ekc52tju3l0gbiluhhrfpgjdvjg959g2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "anthony.brenon.go4lunch",
-            "certificate_hash": "2677344a60cceee739f024cf2ff080e352831640"
+            "certificate_hash": "17dc0d346443320d3ba81cf4c8fe1cd822c29803"
           }
         },
         {
@@ -28,7 +29,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDagl3z25kGZ1Nm8UgQreh8UJzIEetc9kI"
+          "current_key": "AIzaSyDxwT81XIPCXAkmy5kC6Rr_TgvpMTbTiUw"
         }
       ],
       "services": {
