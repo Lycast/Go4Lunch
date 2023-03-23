@@ -35,7 +35,6 @@
             android:layout_height="wrap_content"
             android:text="@string/radius_of_research_meter"
             android:layout_marginLeft="10dp"
-            android:textColor="@color/black"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider_1"
             app:layout_constraintBottom_toTopOf="@id/divider_2"/>
@@ -65,7 +64,6 @@
             android:layout_height="wrap_content"
             android:text="@string/notification"
             android:layout_marginLeft="10dp"
-            android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider_2"
             app:layout_constraintBottom_toTopOf="@id/divider_3"/>
