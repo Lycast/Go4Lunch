@@ -1,6 +1,5 @@
 package anthony.brenon.go4lunch.repository;
 
-import static anthony.brenon.go4lunch.api.JsonPlaceHolderApi.retrofit;
 
 import android.util.Log;
 
@@ -19,7 +18,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import anthony.brenon.go4lunch.api.JsonPlaceHolderApi;
+import anthony.brenon.go4lunch.BuildConfig;
+import anthony.brenon.go4lunch.api.ApiClient;
+import anthony.brenon.go4lunch.api.GooglePlacesApiService;
 import anthony.brenon.go4lunch.model.Location;
 import anthony.brenon.go4lunch.model.Restaurant;
 import anthony.brenon.go4lunch.model.googleplace_models.PlacesNearbyResponse;
@@ -38,19 +39,19 @@ public class RestaurantRepository {
     private final String LOG_INFO = "RestaurantRepository ";
 
     private static final String COLLECTION_RESTAURANTS = "restaurants";
-    private final JsonPlaceHolderApi jsonPlaceHolderApi;
+    private final GooglePlacesApiService googlePlacesApiService;
     private final MutableLiveData<List<Restaurant>> liveDataRestaurant = new MutableLiveData<>();
     private List<Restaurant> restaurantList = new ArrayList<>();
     private List<Restaurant> restaurantListFiltered = new ArrayList<>();
 
     public RestaurantRepository() {
-        jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
+        googlePlacesApiService = ApiClient.getGooglePlacesApiService();
     }
 
     // GOOGLE API
     // The restaurant details call to the google api which returns the details of a restaurant
     public void callDetailsRestaurantApi(String place_id, Callback<PlaceResponse> callback) {
-        Call<PlaceResponse> restaurantCall = jsonPlaceHolderApi.getApiDetailsResponse(place_id);
+        Call<PlaceResponse> restaurantCall = googlePlacesApiService.getPlaceDetails(place_id, BuildConfig.MAPS_API_KEY);
         restaurantCall.enqueue(callback);
     }
 
@@ -58,7 +59,12 @@ public class RestaurantRepository {
     public void callNearbyRestaurantsApi(final Location locationUser, String radius) {
         if(locationUser != null) {
             getRestaurantsDatabase().addOnSuccessListener(restaurantsDb -> {
-                Call<PlacesNearbyResponse> call = jsonPlaceHolderApi.getApiNearbyRestaurantResponse(locationUser.toString(), radius);
+                Call<PlacesNearbyResponse> call = googlePlacesApiService.getNearbyRestaurants(
+                        locationUser.toString(),
+                        radius,
+                        "restaurant", // Le type est maintenant un paramètre
+                        BuildConfig.MAPS_API_KEY
+                );
                 call.enqueue(new Callback<PlacesNearbyResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<PlacesNearbyResponse> call,

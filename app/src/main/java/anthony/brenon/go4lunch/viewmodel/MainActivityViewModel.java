@@ -53,7 +53,6 @@ public class MainActivityViewModel extends ViewModel {
         if(locationUser != null) {
             this.setLatLngUser(locationUser);
             MainActivityViewModel.locationUser = locationUser;
-            this.callNearbyRestaurantsApi(locationUser);
         }
     }
 

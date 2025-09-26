@@ -7,13 +7,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.firebase.ui.auth.AuthMethodPickerLayout;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import anthony.brenon.go4lunch.R;
 import anthony.brenon.go4lunch.databinding.ActivityAuthBinding;
@@ -33,29 +33,25 @@ public class AuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAuthBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
         viewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
         initUserSession();
     }
 
     // Create a custom layout for SignIn Activity
-    private void customLayoutAuth() {
-        setContentView(binding.getRoot());
-        AuthMethodPickerLayout customLayout = new AuthMethodPickerLayout
-                .Builder(R.layout.activity_auth)
-                .setGoogleButtonId(R.id.sign_in_google)
-                .setFacebookButtonId(R.id.sign_in_facebook)
+    private void startFirebaseAuthFlow() {
+        List<AuthUI.IdpConfig> providers = Collections.singletonList(
+                new AuthUI.IdpConfig.GoogleBuilder().build()
+        );
+
+        Intent signInIntent = AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .setTheme(R.style.Theme_Go4Lunch)
                 .build();
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAuthMethodPickerLayout(customLayout)
-                        .setTheme(R.style.Theme_Go4Lunch)
-                        .setAvailableProviders(Arrays.asList(
-                                new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                new AuthUI.IdpConfig.FacebookBuilder().build()
-                        ))
-                        .build(),
-                RC_SIGN_IN);
+
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     //Method that handles response after SignIn Activity close
@@ -98,7 +94,7 @@ public class AuthActivity extends AppCompatActivity {
         if (viewModel.isCurrentUserLogged()) {
             viewModel.updateCurrentUserDatabase().addOnSuccessListener(user -> startMainActivity());
         } else {
-            customLayoutAuth();
+            startFirebaseAuthFlow();
         }
     }
 

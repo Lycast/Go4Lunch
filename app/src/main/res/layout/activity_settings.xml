@@ -43,9 +43,9 @@
             android:id="@+id/seekBar"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:stepSize="250"
-            android:valueFrom="250"
-            android:valueTo="5000"
+            android:stepSize="500"
+            android:valueFrom="500"
+            android:valueTo="10000"
             app:layout_constraintBottom_toTopOf="@id/divider_2"
             app:layout_constraintEnd_toEndOf="parent" />
 

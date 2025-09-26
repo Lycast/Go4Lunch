@@ -31,4 +31,10 @@
                 app:showAsAction="never|withText" />
         </menu>
     </item>
+
+    <item
+        android:id="@+id/restaurant_refresh"
+        android:icon="@drawable/ic_sync_24"
+        android:title="@string/action_search"
+        app:showAsAction="ifRoom" />
 </menu>

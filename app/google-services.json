@@ -15,28 +15,28 @@
       },
       "oauth_client": [
         {
-          "client_id": "154450805954-ekc52tju3l0gbiluhhrfpgjdvjg959g2.apps.googleusercontent.com",
+          "client_id": "154450805954-5e3rf9bgmoaenl69f6ifrjb78l4b3e5p.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "anthony.brenon.go4lunch",
-            "certificate_hash": "17dc0d346443320d3ba81cf4c8fe1cd822c29803"
+            "certificate_hash": "cbce5f1cfe65702574c73ab35b3078d6d6312255"
           }
         },
         {
-          "client_id": "154450805954-6ubd4nudgkv2d8v86ot735l38ns2gpjg.apps.googleusercontent.com",
+          "client_id": "154450805954-seibb2shvjj85mbcbpu40uktik2q1s1f.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDxwT81XIPCXAkmy5kC6Rr_TgvpMTbTiUw"
+          "current_key": "AIzaSyDagl3z25kGZ1Nm8UgQreh8UJzIEetc9kI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "154450805954-6ubd4nudgkv2d8v86ot735l38ns2gpjg.apps.googleusercontent.com",
+              "client_id": "154450805954-seibb2shvjj85mbcbpu40uktik2q1s1f.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
